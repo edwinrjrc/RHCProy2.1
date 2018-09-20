@@ -1,6 +1,7 @@
 package pe.com.rh.sunat.ejb.session.xml;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBContext;
@@ -12,31 +13,55 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AddressLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AddressType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CountryType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CustomerPartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DeliveryTermsType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DeliveryType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DocumentReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.FinancialAccountType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.InvoiceLineType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.LocationCoordinateType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.LocationType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.MonetaryTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.OrderReferenceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyLegalEntityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyNameType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyTaxSchemeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentTermsType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PeriodType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PersonType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PriceType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PricingReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.RoadTransportType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ShipmentStageType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ShipmentType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.SupplierPartyType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxCategoryType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxSchemeType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxSubtotalType;
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TransportEquipmentType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TransportHandlingUnitType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TransportMeansType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AddressTypeCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceChargeReasonCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceTotalAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIndicatorType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeTotalAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CityNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CitySubdivisionNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CompanyIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CountrySubentityCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CountrySubentityType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CustomizationIDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DistrictType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentCurrencyCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentStatusCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentTypeCodeType;
@@ -45,24 +70,40 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.EndDateT
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.GrossWeightMeasureType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.HandlingCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IdentificationCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InstructionIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InvoiceTypeCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InvoicedQuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IssueDateType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IssueTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LatitudeDirectionCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LicensePlateIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineCountNumericType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineExtensionAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LocaleCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LongitudeDirectionCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MarkAttentionIndicatorType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MaximumQuantityType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MultiplierFactorNumericType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoteType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaidAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PayableAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentPercentType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrepaidAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PriceTypeCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ProfileIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.QuantityType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegistrationNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegistrationNationalityIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StartDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StreetNameType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxInclusiveAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxTypeCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxableAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TransportModeCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.UBLVersionIDType;
 import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
@@ -70,6 +111,7 @@ import oasis.names.specification.ubl.schema.xsd.invoice_2.ObjectFactory;
 import pe.com.rh.sunat.ejb.util.UtilConvertirNumeroLetras;
 import pe.com.rh.sunat.ejb.util.UtilEjb;
 import pe.com.rhsistemas.sunat.comprobantes.ComprobanteDTO;
+import pe.com.rhsistemas.sunat.comprobantes.DetalleComprobanteDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.PersonaDTO;
 
 /**
@@ -383,9 +425,170 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			amountDelivery.setValue(comprobante.getTotalComprobante().getMonto());
 			amountDelivery.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
 			
+			StreetNameType nombreCalle = new StreetNameType();
+			nombreCalle.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getDireccionCompleta());
+			
+			CitySubdivisionNameType citySubdivisionName = new CitySubdivisionNameType();
+			citySubdivisionName.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUrbanizacion());
+			
+			CityNameType cityName = new CityNameType();
+			cityName.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUbigeo().getNombreProvincia());
+			
+			CountrySubentityType departamento = new CountrySubentityType();
+			departamento.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUbigeo().getNombreDepartamento());
+			
+			CountrySubentityCodeType countrySubentityCode = new CountrySubentityCodeType();
+			countrySubentityCode.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUbigeo().getCodigoUbigeoInei());
+			
+			DistrictType distrito = new DistrictType();
+			distrito.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUbigeo().getNombreDistrito());
+			
+			IdentificationCodeType identificacionCode = new IdentificationCodeType();
+			identificacionCode.setValue(comprobante.getEntregaDTO().getDireccionLlegada().getUbigeo().getCodigoPais());
+			
+			CountryType country = new CountryType();
+			country.setIdentificationCode(identificacionCode);
+			
+			AddressType addressLocation = new AddressType();
+			addressLocation.setStreetName(nombreCalle);
+			addressLocation.setCitySubdivisionName(citySubdivisionName);
+			addressLocation.setCityName(cityName);
+			addressLocation.setCountrySubentity(departamento);
+			addressLocation.setCountrySubentityCode(countrySubentityCode);
+			addressLocation.setDistrict(distrito);
+			addressLocation.setCountry(country);
+			
+			LocationType deliveryLocationTerms = new LocationType();
+			deliveryLocationTerms.setAddress(addressLocation);
+			
 			DeliveryTermsType deliveryTerms = new DeliveryTermsType();
 			deliveryTerms.setID(idDeliveryTerms);
 			deliveryTerms.setAmount(amountDelivery);
+			deliveryTerms.setDeliveryLocation(deliveryLocationTerms);
+			
+			IDType idFinancial = new IDType();
+			idFinancial.setValue(comprobante.getNumeroCuentaBNDetraccion());
+
+			FinancialAccountType payeeFinancialAccount = new FinancialAccountType();
+			payeeFinancialAccount.setID(idFinancial);
+			
+			PaymentMeansType paymentMeans = new PaymentMeansType();
+			paymentMeans.setPayeeFinancialAccount(payeeFinancialAccount);
+			
+			IDType idPrepaid = new IDType();
+			idPrepaid.setValue(comprobante.getNumeroComprobanteAnticipo());
+			idPrepaid.setSchemeID(comprobante.getCodigoTipoDocumentoAnticipo());
+			
+			PaidAmountType paidAmount = new PaidAmountType();
+			paidAmount.setValue(comprobante.getMontoAnticipo().getMonto());
+			paidAmount.setCurrencyID(comprobante.getMontoAnticipo().getMoneda().getCodigoInternacional());
+			
+			InstructionIDType instructionId = new InstructionIDType();
+			instructionId.setValue(comprobante.getDocumentoEmpresaAnticipo().getNumeroDocumento());
+			instructionId.setSchemeID(comprobante.getDocumentoEmpresaAnticipo().getTipoDocumento().getCodigo());
+			
+			PaymentType paymentType = new PaymentType();
+			paymentType.setID(idPrepaid);
+			paymentType.setPaidAmount(paidAmount);
+			paymentType.setInstructionID(instructionId);
+			
+			ChargeIndicatorType chargeIndicator = new ChargeIndicatorType();
+			chargeIndicator.setValue(comprobante.isFlagCargoDescuento());
+			
+			AllowanceChargeReasonCodeType allowanceChargeReason = new AllowanceChargeReasonCodeType();
+			allowanceChargeReason.setValue(comprobante.getCodigoMotivoCargoDescuento());
+			
+			MultiplierFactorNumericType multiplierFactor = new MultiplierFactorNumericType();
+			multiplierFactor.setValue(comprobante.getFactorCargoDescuento());
+			
+			AmountType montoCargoDescuento = new AmountType();
+			montoCargoDescuento.setValue(comprobante.getMontoCargoDescuento().getMonto());
+			montoCargoDescuento.setCurrencyID(comprobante.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
+			
+			BaseAmountType baseAmount = new BaseAmountType();
+			baseAmount.setValue(comprobante.getMontoBaseCargoDescuento().getMonto());
+			baseAmount.setCurrencyID(comprobante.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
+			
+			AllowanceChargeType allowanceCharge = new AllowanceChargeType();
+			allowanceCharge.setChargeIndicator(chargeIndicator);
+			allowanceCharge.setAllowanceChargeReasonCode(allowanceChargeReason);
+			allowanceCharge.setMultiplierFactorNumeric(multiplierFactor);
+			allowanceCharge.setAmount(montoCargoDescuento);
+			allowanceCharge.setBaseAmount(baseAmount);
+			
+			TaxAmountType taxAmount = new TaxAmountType();
+			taxAmount.setValue(comprobante.getMontoTotalImpuestos().getMonto());
+			taxAmount.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
+			
+			TaxableAmountType taxableAmount = new TaxableAmountType();
+			taxableAmount.setValue(comprobante.getMontoTotalOperaciones().getMonto());
+			taxableAmount.setCurrencyID(comprobante.getMontoTotalOperaciones().getMoneda().getCodigoInternacional());
+			
+			TaxAmountType taxAmountSubtotal = new TaxAmountType();
+			taxAmountSubtotal.setValue(comprobante.getMontoTotalImpuestos().getMonto());
+			taxAmountSubtotal.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
+			
+			IDType idCategoria = new IDType();
+			idCategoria.setValue(comprobante.getCodigoCategoriaImpuesto().getCodigo());
+			
+			IDType idTaxScheme = new IDType();
+			idTaxScheme.setValue(comprobante.getCodigoTributo().getId());
+			
+			NameType nombreTributo = new NameType();
+			nombreTributo.setValue(comprobante.getCodigoTributo().getValor());
+			
+			TaxTypeCodeType taxTypeCode = new TaxTypeCodeType();
+			taxTypeCode.setValue(comprobante.getCodigoTributo().getCodigo());
+			
+			TaxSchemeType taxScheme = new TaxSchemeType();
+			taxScheme.setID(idTaxScheme);
+			taxScheme.setName(nombreTributo);
+			taxScheme.setTaxTypeCode(taxTypeCode);
+			
+			TaxCategoryType taxCategory = new TaxCategoryType();
+			taxCategory.setID(idCategoria);
+			taxCategory.setTaxScheme(taxScheme);
+			
+			TaxSubtotalType taxSubtotal = new TaxSubtotalType();
+			taxSubtotal.setTaxableAmount(taxableAmount);
+			taxSubtotal.setTaxAmount(taxAmountSubtotal);
+			taxSubtotal.setTaxCategory(taxCategory);
+			
+			TaxTotalType taxTotal = new TaxTotalType();
+			taxTotal.setTaxAmount(taxAmount);
+			taxTotal.getTaxSubtotal().add(taxSubtotal);
+			
+			LineExtensionAmountType lineExtensionAmount = new LineExtensionAmountType();
+			lineExtensionAmount.setValue(comprobante.getMontoTotalValorVenta().getMonto());
+			lineExtensionAmount.setCurrencyID(comprobante.getMontoTotalValorVenta().getMoneda().getCodigoInternacional());
+			
+			TaxInclusiveAmountType taxInclusiveAmount = new TaxInclusiveAmountType();
+			taxInclusiveAmount.setValue(comprobante.getTotalComprobante().getMonto());
+			taxInclusiveAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
+			
+			AllowanceTotalAmountType allowanceTotalAmount = new AllowanceTotalAmountType();
+			allowanceTotalAmount.setValue(comprobante.getTotalDescuentos().getMonto().getMonto());
+			allowanceTotalAmount.setCurrencyID(comprobante.getTotalDescuentos().getMonto().getMoneda().getCodigoInternacional());
+			
+			ChargeTotalAmountType chargeTotalAmount = new ChargeTotalAmountType();
+			chargeTotalAmount.setValue(comprobante.getSumaOtrosCargos().getMonto());
+			chargeTotalAmount.setCurrencyID(comprobante.getSumaOtrosCargos().getMoneda().getCodigoInternacional());
+			
+			PrepaidAmountType prepaidAmount = new PrepaidAmountType();
+			prepaidAmount.setValue(comprobante.getMontoAnticipo().getMonto());
+			prepaidAmount.setCurrencyID(comprobante.getMontoAnticipo().getMoneda().getCodigoInternacional());
+			
+			PayableAmountType payableAmount = new PayableAmountType();
+			payableAmount.setValue(comprobante.getTotalComprobante().getMonto());
+			payableAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
+			
+			MonetaryTotalType monetaryTotal = new MonetaryTotalType();
+			monetaryTotal.setLineExtensionAmount(lineExtensionAmount);
+			monetaryTotal.setTaxInclusiveAmount(taxInclusiveAmount);
+			monetaryTotal.setAllowanceTotalAmount(allowanceTotalAmount);
+			monetaryTotal.setChargeTotalAmount(chargeTotalAmount);
+			monetaryTotal.setPrepaidAmount(prepaidAmount);
+			monetaryTotal.setPayableAmount(payableAmount);
 			
 			ObjectFactory factory = new ObjectFactory();
 			InvoiceType invoice = factory.createInvoiceType();
@@ -409,7 +612,90 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			invoice.setAccountingCustomerParty(adquiriente);
 			invoice.getDelivery().add(delivery);
 			invoice.setDeliveryTerms(deliveryTerms);
-			
+			invoice.getPaymentMeans().add(paymentMeans);
+			PaymentTermsType paymentTerms = null;
+			IDType idPaymentTerms = null;
+			PaymentPercentType porcentajeDetraccion = null;
+			AmountType montoDetraccion = null;
+			BigDecimal montoDetra = BigDecimal.ZERO;
+			for (DetalleComprobanteDTO detalleComprobante : comprobante.getDetalleComprobante()){
+				if (detalleComprobante.getProducto().isAplicaDetraccion()){
+					idPaymentTerms = new IDType();
+					idPaymentTerms.setValue(detalleComprobante.getProducto().getCodigoProducto());
+					
+					porcentajeDetraccion = new PaymentPercentType();
+					porcentajeDetraccion.setValue(detalleComprobante.getProducto().getPorcentajeDetraccion());
+					
+					montoDetra = UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad());
+					montoDetra = montoDetra.multiply(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto());
+					montoDetra = montoDetra.multiply(detalleComprobante.getProducto().getPorcentajeDetraccion());
+					
+					montoDetraccion = new AmountType();
+					montoDetraccion.setValue(montoDetra);
+					
+					paymentTerms = new PaymentTermsType();
+					paymentTerms.setID(idPaymentTerms);
+					paymentTerms.setPaymentPercent(porcentajeDetraccion);
+					paymentTerms.setAmount(montoDetraccion);
+					invoice.getPaymentTerms().add(paymentTerms);
+				}
+			}
+			invoice.getPrepaidPayment().add(paymentType);
+			invoice.getAllowanceCharge().add(allowanceCharge);
+			invoice.getTaxTotal().add(taxTotal);
+			invoice.setLegalMonetaryTotal(monetaryTotal);
+			InvoiceLineType invoiceLine = null;
+			IDType idLine = null;
+			for (int i=0; i<comprobante.getDetalleComprobante().size(); i++){
+				DetalleComprobanteDTO detalleComprobante = comprobante.getDetalleComprobante().get(i);
+				idLine = new IDType();
+				idLine.setValue(String.valueOf((i+1)));
+				
+				InvoicedQuantityType cantidad = new InvoicedQuantityType();
+				cantidad.setValue(UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad()));
+				cantidad.setUnitCode(detalleComprobante.getUnidadMedida());
+				
+				LineExtensionAmountType lineExtensionAmountDetalle = new LineExtensionAmountType();
+				lineExtensionAmountDetalle.setValue(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto().multiply(UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad())));
+				lineExtensionAmountDetalle.setCurrencyID(detalleComprobante.getPrecioVentaUnitario().getMonto().getMoneda().getCodigoInternacional());
+
+				PriceAmountType priceAmountDetalle = new PriceAmountType();
+				priceAmountDetalle.setValue(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto());
+				priceAmountDetalle.setCurrencyID(detalleComprobante.getPrecioVentaUnitario().getMonto().getMoneda().getCodigoInternacional());
+				
+				PriceTypeCodeType priceTypeCode = new PriceTypeCodeType();
+				priceTypeCode.setValue(detalleComprobante.getPrecioVentaUnitario().getCodigoTipoPrecio());
+				
+				PriceType priceType = new PriceType();
+				priceType.setPriceAmount(priceAmountDetalle);
+				priceType.setPriceTypeCode(priceTypeCode);
+				
+				PricingReferenceType pricingReference = new PricingReferenceType();
+				pricingReference.getAlternativeConditionPrice().add(priceType);
+				
+				IDType idPartyIdentificacion = new IDType();
+				idPartyIdentificacion.setValue(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento());
+				idPartyIdentificacion.setSchemeID(detalleComprobante.getHuesped().getDocumentoIdentidad().getTipoDocumento().getCodigo());
+				idPartyIdentificacion.setSchemeAgencyID(detalleComprobante.getHuesped().getDocumentoIdentidad().getTipoDocumento().getAgenciaId());
+				
+				PartyIdentificationType partyIdentificacion = new PartyIdentificationType();
+				partyIdentificacion.setID(idPartyIdentificacion);
+				
+				PartyType deliveryPartyDetalle = new PartyType();
+				deliveryPartyDetalle.getPartyIdentification().add(partyIdentificacion);
+				
+				DeliveryType deliveryDetalle = new DeliveryType();
+				deliveryDetalle.setDeliveryParty(deliveryPartyDetalle);
+				
+				invoiceLine = new InvoiceLineType();
+				invoiceLine.setID(idLine);
+				invoiceLine.setInvoicedQuantity(cantidad);
+				invoiceLine.setLineExtensionAmount(lineExtensionAmountDetalle);
+				invoiceLine.setPricingReference(pricingReference);
+				invoiceLine.getDelivery().add(deliveryDetalle);
+				
+				invoice.getInvoiceLine().add(invoiceLine);
+			}
 			
 			JAXBContext context = JAXBContext.newInstance("generated");
 			JAXBElement<InvoiceType> element = factory.createInvoice(invoice);

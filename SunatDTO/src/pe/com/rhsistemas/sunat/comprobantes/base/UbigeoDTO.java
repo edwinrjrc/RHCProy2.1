@@ -18,6 +18,7 @@ public class UbigeoDTO extends BaseDTO{
 	private String nombreProvincia;
 	private String codigoDistrito;
 	private String nombreDistrito;
+	private String codigoPais;
 	
 	/**
 	 * @return the codigoUbigeoInei
@@ -102,6 +103,18 @@ public class UbigeoDTO extends BaseDTO{
 	 */
 	public void setNombreDistrito(String nombreDistrito) {
 		this.nombreDistrito = nombreDistrito;
+	}
+	/**
+	 * @return the codigoPais
+	 */
+	public String getCodigoPais() {
+		return codigoPais;
+	}
+	/**
+	 * @param codigoPais the codigoPais to set
+	 */
+	public void setCodigoPais(String codigoPais) {
+		this.codigoPais = codigoPais;
 	}
 	
 }

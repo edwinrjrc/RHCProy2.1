@@ -7,6 +7,8 @@ import pe.com.rhsistemas.sunat.comprobantes.base.AfectacionImptoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.BaseDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoCodigoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoValorDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.PersonaDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.ProductoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.TotalOperacionDTO;
 
 /**
@@ -17,7 +19,7 @@ public class DetalleComprobanteDTO extends BaseDTO {
 
 	private static final long serialVersionUID = 2039211191689087518L;
 
-	private String codigoProducto;
+	private ProductoDTO producto;
 	/**
 	 * Unidad de medida por ítem
 	 */
@@ -26,10 +28,6 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * Cantidad de unidades por ítem
 	 */
 	private int cantidad;
-	/**
-	 * Descripción detallada del servicio prestado, bien vendido o cedido en uso, indicando las características
-	 */
-	private String descripcionProducto;
 	/**
 	 * Valor unitario por ítem
 	 */
@@ -67,6 +65,8 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 */
 	private MontoCodigoDTO valorReferencialUnitario;
 	
+	private PersonaDTO huesped;
+	
 	/**
 	 * @return the unidadMedida
 	 */
@@ -90,18 +90,6 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 */
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
-	}
-	/**
-	 * @return the descripcionProducto
-	 */
-	public String getDescripcionProducto() {
-		return descripcionProducto;
-	}
-	/**
-	 * @param descripcionProducto the descripcionProducto to set
-	 */
-	public void setDescripcionProducto(String descripcionProducto) {
-		this.descripcionProducto = descripcionProducto;
 	}
 	/**
 	 * @return the precioUnitarioSinImptos
@@ -188,18 +176,6 @@ public class DetalleComprobanteDTO extends BaseDTO {
 		this.precioTotalSinImptos = precioTotalSinImptos;
 	}
 	/**
-	 * @return the codigoProducto
-	 */
-	public String getCodigoProducto() {
-		return codigoProducto;
-	}
-	/**
-	 * @param codigoProducto the codigoProducto to set
-	 */
-	public void setCodigoProducto(String codigoProducto) {
-		this.codigoProducto = codigoProducto;
-	}
-	/**
 	 * @return the precioVentaUnitario
 	 */
 	public MontoCodigoDTO getPrecioVentaUnitario() {
@@ -222,5 +198,29 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 */
 	public void setValorReferencialUnitario(MontoCodigoDTO valorReferencialUnitario) {
 		this.valorReferencialUnitario = valorReferencialUnitario;
+	}
+	/**
+	 * @return the producto
+	 */
+	public ProductoDTO getProducto() {
+		return producto;
+	}
+	/**
+	 * @param producto the producto to set
+	 */
+	public void setProducto(ProductoDTO producto) {
+		this.producto = producto;
+	}
+	/**
+	 * @return the huesped
+	 */
+	public PersonaDTO getHuesped() {
+		return huesped;
+	}
+	/**
+	 * @param huesped the huesped to set
+	 */
+	public void setHuesped(PersonaDTO huesped) {
+		this.huesped = huesped;
 	}
 }

@@ -15,6 +15,7 @@ public abstract class BaseDTO implements Serializable{
 	
 	private String id;
 	private String agenciaNombre;
+	private String agenciaId;
 	
 	/**
 	 * @return the id
@@ -42,6 +43,20 @@ public abstract class BaseDTO implements Serializable{
 	 */
 	public void setAgenciaNombre(String agenciaNombre) {
 		this.agenciaNombre = agenciaNombre;
+	}
+
+	/**
+	 * @return the agenciaId
+	 */
+	public String getAgenciaId() {
+		return agenciaId;
+	}
+
+	/**
+	 * @param agenciaId the agenciaId to set
+	 */
+	public void setAgenciaId(String agenciaId) {
+		this.agenciaId = agenciaId;
 	}
 	
 	

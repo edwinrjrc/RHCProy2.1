@@ -66,13 +66,22 @@ public class ComprobanteDTO extends BaseDTO {
 	private String codigoTipoDocumentoAnticipo;
 	private MontoValorDTO montoAnticipo;
 	private DocumentoIdentidadDTO documentoEmpresaAnticipo;
-	private String flagCargoDescuento;
+	private boolean flagCargoDescuento;
 	private String codigoMotivoCargoDescuento;
 	private BigDecimal factorCargoDescuento;
 	private MontoValorDTO montoCargoDescuento;
 	private MontoValorDTO montoBaseCargoDescuento;
 	private ServicioReferenciaDTO servicioReferenciaDTO;
 	private EntregaDTO entregaDTO;
+	
+	private String numeroCuentaBNDetraccion;
+	
+	private MontoValorDTO montoTotalImpuestos;
+	private MontoValorDTO montoTotalOperaciones;
+	private BaseVODTO codigoCategoriaImpuesto;
+	private BaseVODTO codigoTributo;
+	
+	private MontoValorDTO montoTotalValorVenta;
 	
 	private List<DetalleComprobanteDTO> detalleComprobante;
 	
@@ -461,18 +470,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.documentoEmpresaAnticipo = documentoEmpresaAnticipo;
 	}
 	/**
-	 * @return the flagCargoDescuento
-	 */
-	public String getFlagCargoDescuento() {
-		return flagCargoDescuento;
-	}
-	/**
-	 * @param flagCargoDescuento the flagCargoDescuento to set
-	 */
-	public void setFlagCargoDescuento(String flagCargoDescuento) {
-		this.flagCargoDescuento = flagCargoDescuento;
-	}
-	/**
 	 * @return the codigoMotivoCargoDescuento
 	 */
 	public String getCodigoMotivoCargoDescuento() {
@@ -567,6 +564,90 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setDestinatario(PersonaDTO destinatario) {
 		this.destinatario = destinatario;
+	}
+	/**
+	 * @return the numeroCuentaBNDetraccion
+	 */
+	public String getNumeroCuentaBNDetraccion() {
+		return numeroCuentaBNDetraccion;
+	}
+	/**
+	 * @param numeroCuentaBNDetraccion the numeroCuentaBNDetraccion to set
+	 */
+	public void setNumeroCuentaBNDetraccion(String numeroCuentaBNDetraccion) {
+		this.numeroCuentaBNDetraccion = numeroCuentaBNDetraccion;
+	}
+	/**
+	 * @return the flagCargoDescuento
+	 */
+	public boolean isFlagCargoDescuento() {
+		return flagCargoDescuento;
+	}
+	/**
+	 * @param flagCargoDescuento the flagCargoDescuento to set
+	 */
+	public void setFlagCargoDescuento(boolean flagCargoDescuento) {
+		this.flagCargoDescuento = flagCargoDescuento;
+	}
+	/**
+	 * @return the montoTotalImpuestos
+	 */
+	public MontoValorDTO getMontoTotalImpuestos() {
+		return montoTotalImpuestos;
+	}
+	/**
+	 * @param montoTotalImpuestos the montoTotalImpuestos to set
+	 */
+	public void setMontoTotalImpuestos(MontoValorDTO montoTotalImpuestos) {
+		this.montoTotalImpuestos = montoTotalImpuestos;
+	}
+	/**
+	 * @return the montoTotalOperaciones
+	 */
+	public MontoValorDTO getMontoTotalOperaciones() {
+		return montoTotalOperaciones;
+	}
+	/**
+	 * @param montoTotalOperaciones the montoTotalOperaciones to set
+	 */
+	public void setMontoTotalOperaciones(MontoValorDTO montoTotalOperaciones) {
+		this.montoTotalOperaciones = montoTotalOperaciones;
+	}
+	/**
+	 * @return the codigoCategoriaImpuesto
+	 */
+	public BaseVODTO getCodigoCategoriaImpuesto() {
+		return codigoCategoriaImpuesto;
+	}
+	/**
+	 * @param codigoCategoriaImpuesto the codigoCategoriaImpuesto to set
+	 */
+	public void setCodigoCategoriaImpuesto(BaseVODTO codigoCategoriaImpuesto) {
+		this.codigoCategoriaImpuesto = codigoCategoriaImpuesto;
+	}
+	/**
+	 * @return the codigoTributo
+	 */
+	public BaseVODTO getCodigoTributo() {
+		return codigoTributo;
+	}
+	/**
+	 * @param codigoTributo the codigoTributo to set
+	 */
+	public void setCodigoTributo(BaseVODTO codigoTributo) {
+		this.codigoTributo = codigoTributo;
+	}
+	/**
+	 * @return the montoTotalValorVenta
+	 */
+	public MontoValorDTO getMontoTotalValorVenta() {
+		return montoTotalValorVenta;
+	}
+	/**
+	 * @param montoTotalValorVenta the montoTotalValorVenta to set
+	 */
+	public void setMontoTotalValorVenta(MontoValorDTO montoTotalValorVenta) {
+		this.montoTotalValorVenta = montoTotalValorVenta;
 	}
 	
 }
