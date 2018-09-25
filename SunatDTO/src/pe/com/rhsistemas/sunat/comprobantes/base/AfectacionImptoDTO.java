@@ -3,6 +3,8 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
+import java.math.BigDecimal;
+
 /**
  * @author Edwin
  *
@@ -11,24 +13,13 @@ public class AfectacionImptoDTO extends BaseDTO {
 
 	private static final long serialVersionUID = 3327809610517051317L;
 
-	private MonedaDTO moneda;
 	private MontoValorDTO totalImpuesto;
 	private BaseVODTO afectacion;
 	private TributoDTO tributo;
 	
+	private BigDecimal porcentaje;
+	private BaseVODTO codigoSistemaIsc;
 	
-	/**
-	 * @return the moneda
-	 */
-	public MonedaDTO getMoneda() {
-		return moneda;
-	}
-	/**
-	 * @param moneda the moneda to set
-	 */
-	public void setMoneda(MonedaDTO moneda) {
-		this.moneda = moneda;
-	}
 	/**
 	 * @return the totalImpuesto
 	 */
@@ -64,6 +55,30 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 */
 	public void setTributo(TributoDTO tributo) {
 		this.tributo = tributo;
+	}
+	/**
+	 * @return the porcentaje
+	 */
+	public BigDecimal getPorcentaje() {
+		return porcentaje;
+	}
+	/**
+	 * @param porcentaje the porcentaje to set
+	 */
+	public void setPorcentaje(BigDecimal porcentaje) {
+		this.porcentaje = porcentaje;
+	}
+	/**
+	 * @return the codigoSistemaIsc
+	 */
+	public BaseVODTO getCodigoSistemaIsc() {
+		return codigoSistemaIsc;
+	}
+	/**
+	 * @param codigoSistemaIsc the codigoSistemaIsc to set
+	 */
+	public void setCodigoSistemaIsc(BaseVODTO codigoSistemaIsc) {
+		this.codigoSistemaIsc = codigoSistemaIsc;
 	}
 		
 }

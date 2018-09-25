@@ -14,6 +14,7 @@ public class ProductoDTO extends BaseDTO {
 	private static final long serialVersionUID = -7312404520348374935L;
 	
 	private String codigoProducto;
+	private String codigoProductoSunat;
 	private String descripcionProducto;
 	private boolean aplicaDetraccion;
 	private BigDecimal porcentajeDetraccion;
@@ -65,6 +66,18 @@ public class ProductoDTO extends BaseDTO {
 	 */
 	public void setPorcentajeDetraccion(BigDecimal porcentajeDetraccion) {
 		this.porcentajeDetraccion = porcentajeDetraccion;
+	}
+	/**
+	 * @return the codigoProductoSunat
+	 */
+	public String getCodigoProductoSunat() {
+		return codigoProductoSunat;
+	}
+	/**
+	 * @param codigoProductoSunat the codigoProductoSunat to set
+	 */
+	public void setCodigoProductoSunat(String codigoProductoSunat) {
+		this.codigoProductoSunat = codigoProductoSunat;
 	}
 
 	

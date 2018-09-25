@@ -3,13 +3,19 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import pe.com.rhsistemas.sunat.comprobantes.base.AfectacionImptoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.BaseDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.BaseVODTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoCodigoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoValorDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.PersonaDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.ProductoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.TotalOperacionDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.UbigeoDTO;
 
 /**
  * @author Edwin
@@ -36,14 +42,8 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * Precio de venta unitario
 	 */
 	private MontoCodigoDTO precioVentaUnitario;
-	/**
-	 * IGV
-	 */
-	private AfectacionImptoDTO afectacionIgv;
-	/**
-	 * ISC
-	 */
-	private AfectacionImptoDTO afectacionIsc;
+	
+	private List<AfectacionImptoDTO> afectacionImpuestos;
 	/**
 	 * Total valor de venta - operaciones gravadas
 	 */
@@ -66,6 +66,23 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	private MontoCodigoDTO valorReferencialUnitario;
 	
 	private PersonaDTO huesped;
+	
+	private UbigeoDTO ciudadOrigen;
+	private UbigeoDTO ciudadDestino;
+	private boolean flagCargoDescuento;
+	
+	private String codigoCargoDescuento;
+	private BigDecimal factorCargoDescuento;
+	private MontoValorDTO montoCargoDescuento;
+	private MontoValorDTO montoBaseCargoDescuento;
+	
+	private MontoValorDTO montoTotal;
+	
+	private BaseVODTO conceptoTributario;
+	private BaseVODTO item;
+	
+	private Date fechaInicio;
+	private Date fechaFin;
 	
 	/**
 	 * @return the unidadMedida
@@ -102,30 +119,6 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 */
 	public void setPrecioUnitarioSinImptos(MontoValorDTO precioUnitarioSinImptos) {
 		this.precioUnitarioSinImptos = precioUnitarioSinImptos;
-	}
-	/**
-	 * @return the afectacionIgv
-	 */
-	public AfectacionImptoDTO getAfectacionIgv() {
-		return afectacionIgv;
-	}
-	/**
-	 * @param afectacionIgv the afectacionIgv to set
-	 */
-	public void setAfectacionIgv(AfectacionImptoDTO afectacionIgv) {
-		this.afectacionIgv = afectacionIgv;
-	}
-	/**
-	 * @return the afectacionIsc
-	 */
-	public AfectacionImptoDTO getAfectacionIsc() {
-		return afectacionIsc;
-	}
-	/**
-	 * @param afectacionIsc the afectacionIsc to set
-	 */
-	public void setAfectacionIsc(AfectacionImptoDTO afectacionIsc) {
-		this.afectacionIsc = afectacionIsc;
 	}
 	/**
 	 * @return the totalOperacionGravada
@@ -222,5 +215,161 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 */
 	public void setHuesped(PersonaDTO huesped) {
 		this.huesped = huesped;
+	}
+	/**
+	 * @return the ciudadOrigen
+	 */
+	public UbigeoDTO getCiudadOrigen() {
+		return ciudadOrigen;
+	}
+	/**
+	 * @param ciudadOrigen the ciudadOrigen to set
+	 */
+	public void setCiudadOrigen(UbigeoDTO ciudadOrigen) {
+		this.ciudadOrigen = ciudadOrigen;
+	}
+	/**
+	 * @return the ciudadDestino
+	 */
+	public UbigeoDTO getCiudadDestino() {
+		return ciudadDestino;
+	}
+	/**
+	 * @param ciudadDestino the ciudadDestino to set
+	 */
+	public void setCiudadDestino(UbigeoDTO ciudadDestino) {
+		this.ciudadDestino = ciudadDestino;
+	}
+	/**
+	 * @return the flagCargoDescuento
+	 */
+	public boolean isFlagCargoDescuento() {
+		return flagCargoDescuento;
+	}
+	/**
+	 * @param flagCargoDescuento the flagCargoDescuento to set
+	 */
+	public void setFlagCargoDescuento(boolean flagCargoDescuento) {
+		this.flagCargoDescuento = flagCargoDescuento;
+	}
+	/**
+	 * @return the codigoCargoDescuento
+	 */
+	public String getCodigoCargoDescuento() {
+		return codigoCargoDescuento;
+	}
+	/**
+	 * @param codigoCargoDescuento the codigoCargoDescuento to set
+	 */
+	public void setCodigoCargoDescuento(String codigoCargoDescuento) {
+		this.codigoCargoDescuento = codigoCargoDescuento;
+	}
+	/**
+	 * @return the factorCargoDescuento
+	 */
+	public BigDecimal getFactorCargoDescuento() {
+		return factorCargoDescuento;
+	}
+	/**
+	 * @param factorCargoDescuento the factorCargoDescuento to set
+	 */
+	public void setFactorCargoDescuento(BigDecimal factorCargoDescuento) {
+		this.factorCargoDescuento = factorCargoDescuento;
+	}
+	/**
+	 * @return the montoCargoDescuento
+	 */
+	public MontoValorDTO getMontoCargoDescuento() {
+		return montoCargoDescuento;
+	}
+	/**
+	 * @param montoCargoDescuento the montoCargoDescuento to set
+	 */
+	public void setMontoCargoDescuento(MontoValorDTO montoCargoDescuento) {
+		this.montoCargoDescuento = montoCargoDescuento;
+	}
+	/**
+	 * @return the montoBaseCargoDescuento
+	 */
+	public MontoValorDTO getMontoBaseCargoDescuento() {
+		return montoBaseCargoDescuento;
+	}
+	/**
+	 * @param montoBaseCargoDescuento the montoBaseCargoDescuento to set
+	 */
+	public void setMontoBaseCargoDescuento(MontoValorDTO montoBaseCargoDescuento) {
+		this.montoBaseCargoDescuento = montoBaseCargoDescuento;
+	}
+	/**
+	 * @return the montoTotal
+	 */
+	public MontoValorDTO getMontoTotal() {
+		return montoTotal;
+	}
+	/**
+	 * @param montoTotal the montoTotal to set
+	 */
+	public void setMontoTotal(MontoValorDTO montoTotal) {
+		this.montoTotal = montoTotal;
+	}
+	/**
+	 * @return the afectacionImpuestos
+	 */
+	public List<AfectacionImptoDTO> getAfectacionImpuestos() {
+		return afectacionImpuestos;
+	}
+	/**
+	 * @param afectacionImpuestos the afectacionImpuestos to set
+	 */
+	public void setAfectacionImpuestos(List<AfectacionImptoDTO> afectacionImpuestos) {
+		this.afectacionImpuestos = afectacionImpuestos;
+	}
+	/**
+	 * @return the conceptoTributario
+	 */
+	public BaseVODTO getConceptoTributario() {
+		return conceptoTributario;
+	}
+	/**
+	 * @param conceptoTributario the conceptoTributario to set
+	 */
+	public void setConceptoTributario(BaseVODTO conceptoTributario) {
+		this.conceptoTributario = conceptoTributario;
+	}
+	/**
+	 * @return the item
+	 */
+	public BaseVODTO getItem() {
+		return item;
+	}
+	/**
+	 * @param item the item to set
+	 */
+	public void setItem(BaseVODTO item) {
+		this.item = item;
+	}
+	/**
+	 * @return the fechaInicio
+	 */
+	public Date getFechaInicio() {
+		return fechaInicio;
+	}
+	/**
+	 * @param fechaInicio the fechaInicio to set
+	 */
+	public void setFechaInicio(Date fechaInicio) {
+		this.fechaInicio = fechaInicio;
+	}
+	/**
+	 * @return the fechaFin
+	 */
+	public Date getFechaFin() {
+		return fechaFin;
+	}
+	/**
+	 * @param fechaFin the fechaFin to set
+	 */
+	public void setFechaFin(Date fechaFin) {
+		this.fechaFin = fechaFin;
 	}
 }
