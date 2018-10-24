@@ -3,22 +3,30 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
 import pe.com.rhsistemas.sunat.comprobantes.base.AfectacionImptoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.BaseDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.BaseVODTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.CodigoDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.ComprobanteAnticipoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.ComprobanteRelacionadoDTO;
-import pe.com.rhsistemas.sunat.comprobantes.base.DocumentoIdentidadDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.DescuentoDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.DireccionDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.EntregaDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.IdDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.MedidaDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MonedaDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.MontoOperacionDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoValorDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.PercepcionDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.PeriodoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.PersonaDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.ServicioReferenciaDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.TotalOperacionDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.TransporteDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.TransportistaDTO;
 
 /**
  * @author Edwin
@@ -30,12 +38,12 @@ public class ComprobanteDTO extends BaseDTO {
 	
 	private Date fechaEmision;
 	private Date fechaVencimiento;
-	private PersonaDTO emisor;
-	private PersonaDTO adquiriente;
-	private PersonaDTO destinatario;
-	private BaseVODTO tipoComprobante;
+	private List<PersonaDTO> listaEmisores;
+	private List<PersonaDTO> listaAdquiriente;
+	private CodigoDTO tipoComprobante;
 	private String numeroSerie;
 	private String correlativo;
+	private List<BaseVODTO> listaNotas;
 	private AfectacionImptoDTO sumaIGV;
 	private AfectacionImptoDTO sumaISC;
 	private AfectacionImptoDTO sumaOtrosTributos;
@@ -46,42 +54,44 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	private MontoValorDTO totalComprobante;
 	private MonedaDTO monedaComprobante;
-	private ComprobanteRelacionadoDTO guiaRelacionada;
+	private List<ComprobanteRelacionadoDTO> listaGuiaRelacionada;
 	private ComprobanteRelacionadoDTO comprobanteRelacionado;
 	private List<BaseVODTO> leyendas;
 	private PercepcionDTO percepcion;
 	private String versionUBL;
 	private String versionDocumento;
 	
-	private String profileId;
+	private IdDTO profileId;
 	private int cantidadItemsComprobante;
-	private Date fechaInicioFacturacion;
-	private Date fechaFinFacturacion;
+	private List<PeriodoDTO> periodoFacturacion;
 	private String numeroOrdenCompra;
 	
 	private String numeroCuentaBancoNacion;
 	private String codigoBienDetraccion;
 	private MontoValorDTO porcentajeDetraccion;
-	private String numeroComprobanteAnticipo;
-	private String codigoTipoDocumentoAnticipo;
-	private MontoValorDTO montoAnticipo;
-	private DocumentoIdentidadDTO documentoEmpresaAnticipo;
-	private boolean flagCargoDescuento;
-	private String codigoMotivoCargoDescuento;
-	private BigDecimal factorCargoDescuento;
-	private MontoValorDTO montoCargoDescuento;
-	private MontoValorDTO montoBaseCargoDescuento;
 	private ServicioReferenciaDTO servicioReferenciaDTO;
-	private EntregaDTO entregaDTO;
+	private List<ComprobanteAnticipoDTO> listaComprobantesAnticipo;
+	private List<EntregaDTO> listaEntregas;
+	private List<TransporteDTO> listaTransportes;
+	private List<TransportistaDTO> listaTransportista;
+	private List<PersonaDTO> listaChoferes;
+	private List<DireccionDTO> listaDireccionLlegada;
+	private List<DireccionDTO> listaDireccionPartida;
 	
 	private String numeroCuentaBNDetraccion;
 	
 	private MontoValorDTO montoTotalImpuestos;
-	private MontoValorDTO montoTotalOperaciones;
 	private BaseVODTO codigoCategoriaImpuesto;
 	private BaseVODTO codigoTributo;
 	
 	private MontoValorDTO montoTotalValorVenta;
+	private String numeroRegistroMTC;
+	
+	private List<String> listaNumeroCuentaDetraccion;
+	private List<DescuentoDTO> listaDescuentos;
+	private List<MontoOperacionDTO> listaMontoOperaciones;
+	
+	private MedidaDTO pesoBruto;
 	
 	private List<DetalleComprobanteDTO> detalleComprobante;
 	
@@ -98,30 +108,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.fechaEmision = fechaEmision;
 	}
 	/**
-	 * @return the adquiriente
-	 */
-	public PersonaDTO getAdquiriente() {
-		return adquiriente;
-	}
-	/**
-	 * @param adquiriente the adquiriente to set
-	 */
-	public void setAdquiriente(PersonaDTO adquiriente) {
-		this.adquiriente = adquiriente;
-	}
-	/**
-	 * @return the tipoComprobante
-	 */
-	public BaseVODTO getTipoComprobante() {
-		return tipoComprobante;
-	}
-	/**
-	 * @param tipoComprobante the tipoComprobante to set
-	 */
-	public void setTipoComprobante(BaseVODTO tipoComprobante) {
-		this.tipoComprobante = tipoComprobante;
-	}
-	/**
 	 * @return the fechaVencimiento
 	 */
 	public Date getFechaVencimiento() {
@@ -132,18 +118,6 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setFechaVencimiento(Date fechaVencimiento) {
 		this.fechaVencimiento = fechaVencimiento;
-	}
-	/**
-	 * @return the emisor
-	 */
-	public PersonaDTO getEmisor() {
-		return emisor;
-	}
-	/**
-	 * @param emisor the emisor to set
-	 */
-	public void setEmisor(PersonaDTO emisor) {
-		this.emisor = emisor;
 	}
 	/**
 	 * @return the numeroSerie
@@ -254,18 +228,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.monedaComprobante = monedaComprobante;
 	}
 	/**
-	 * @return the guiaRelacionada
-	 */
-	public ComprobanteRelacionadoDTO getGuiaRelacionada() {
-		return guiaRelacionada;
-	}
-	/**
-	 * @param guiaRelacionada the guiaRelacionada to set
-	 */
-	public void setGuiaRelacionada(ComprobanteRelacionadoDTO guiaRelacionada) {
-		this.guiaRelacionada = guiaRelacionada;
-	}
-	/**
 	 * @return the comprobanteRelacionado
 	 */
 	public ComprobanteRelacionadoDTO getComprobanteRelacionado() {
@@ -326,18 +288,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.versionDocumento = versionDocumento;
 	}
 	/**
-	 * @return the profileId
-	 */
-	public String getProfileId() {
-		return profileId;
-	}
-	/**
-	 * @param profileId the profileId to set
-	 */
-	public void setProfileId(String profileId) {
-		this.profileId = profileId;
-	}
-	/**
 	 * @return the cantidadItemsComprobante
 	 */
 	public int getCantidadItemsComprobante() {
@@ -348,30 +298,6 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setCantidadItemsComprobante(int cantidadItemsComprobante) {
 		this.cantidadItemsComprobante = cantidadItemsComprobante;
-	}
-	/**
-	 * @return the fechaInicioFacturacion
-	 */
-	public Date getFechaInicioFacturacion() {
-		return fechaInicioFacturacion;
-	}
-	/**
-	 * @param fechaInicioFacturacion the fechaInicioFacturacion to set
-	 */
-	public void setFechaInicioFacturacion(Date fechaInicioFacturacion) {
-		this.fechaInicioFacturacion = fechaInicioFacturacion;
-	}
-	/**
-	 * @return the fechaFinFacturacion
-	 */
-	public Date getFechaFinFacturacion() {
-		return fechaFinFacturacion;
-	}
-	/**
-	 * @param fechaFinFacturacion the fechaFinFacturacion to set
-	 */
-	public void setFechaFinFacturacion(Date fechaFinFacturacion) {
-		this.fechaFinFacturacion = fechaFinFacturacion;
 	}
 	/**
 	 * @return the numeroOrdenCompra
@@ -422,102 +348,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.porcentajeDetraccion = porcentajeDetraccion;
 	}
 	/**
-	 * @return the numeroComprobanteAnticipo
-	 */
-	public String getNumeroComprobanteAnticipo() {
-		return numeroComprobanteAnticipo;
-	}
-	/**
-	 * @param numeroComprobanteAnticipo the numeroComprobanteAnticipo to set
-	 */
-	public void setNumeroComprobanteAnticipo(String numeroComprobanteAnticipo) {
-		this.numeroComprobanteAnticipo = numeroComprobanteAnticipo;
-	}
-	/**
-	 * @return the codigoTipoDocumentoAnticipo
-	 */
-	public String getCodigoTipoDocumentoAnticipo() {
-		return codigoTipoDocumentoAnticipo;
-	}
-	/**
-	 * @param codigoTipoDocumentoAnticipo the codigoTipoDocumentoAnticipo to set
-	 */
-	public void setCodigoTipoDocumentoAnticipo(String codigoTipoDocumentoAnticipo) {
-		this.codigoTipoDocumentoAnticipo = codigoTipoDocumentoAnticipo;
-	}
-	/**
-	 * @return the montoAnticipo
-	 */
-	public MontoValorDTO getMontoAnticipo() {
-		return montoAnticipo;
-	}
-	/**
-	 * @param montoAnticipo the montoAnticipo to set
-	 */
-	public void setMontoAnticipo(MontoValorDTO montoAnticipo) {
-		this.montoAnticipo = montoAnticipo;
-	}
-	/**
-	 * @return the documentoEmpresaAnticipo
-	 */
-	public DocumentoIdentidadDTO getDocumentoEmpresaAnticipo() {
-		return documentoEmpresaAnticipo;
-	}
-	/**
-	 * @param documentoEmpresaAnticipo the documentoEmpresaAnticipo to set
-	 */
-	public void setDocumentoEmpresaAnticipo(DocumentoIdentidadDTO documentoEmpresaAnticipo) {
-		this.documentoEmpresaAnticipo = documentoEmpresaAnticipo;
-	}
-	/**
-	 * @return the codigoMotivoCargoDescuento
-	 */
-	public String getCodigoMotivoCargoDescuento() {
-		return codigoMotivoCargoDescuento;
-	}
-	/**
-	 * @param codigoMotivoCargoDescuento the codigoMotivoCargoDescuento to set
-	 */
-	public void setCodigoMotivoCargoDescuento(String codigoMotivoCargoDescuento) {
-		this.codigoMotivoCargoDescuento = codigoMotivoCargoDescuento;
-	}
-	/**
-	 * @return the factorCargoDescuento
-	 */
-	public BigDecimal getFactorCargoDescuento() {
-		return factorCargoDescuento;
-	}
-	/**
-	 * @param factorCargoDescuento the factorCargoDescuento to set
-	 */
-	public void setFactorCargoDescuento(BigDecimal factorCargoDescuento) {
-		this.factorCargoDescuento = factorCargoDescuento;
-	}
-	/**
-	 * @return the montoCargoDescuento
-	 */
-	public MontoValorDTO getMontoCargoDescuento() {
-		return montoCargoDescuento;
-	}
-	/**
-	 * @param montoCargoDescuento the montoCargoDescuento to set
-	 */
-	public void setMontoCargoDescuento(MontoValorDTO montoCargoDescuento) {
-		this.montoCargoDescuento = montoCargoDescuento;
-	}
-	/**
-	 * @return the montoBaseCargoDescuento
-	 */
-	public MontoValorDTO getMontoBaseCargoDescuento() {
-		return montoBaseCargoDescuento;
-	}
-	/**
-	 * @param montoBaseCargoDescuento the montoBaseCargoDescuento to set
-	 */
-	public void setMontoBaseCargoDescuento(MontoValorDTO montoBaseCargoDescuento) {
-		this.montoBaseCargoDescuento = montoBaseCargoDescuento;
-	}
-	/**
 	 * @return the detalleComprobante
 	 */
 	public List<DetalleComprobanteDTO> getDetalleComprobante() {
@@ -542,30 +372,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.servicioReferenciaDTO = servicioReferenciaDTO;
 	}
 	/**
-	 * @return the entregaDTO
-	 */
-	public EntregaDTO getEntregaDTO() {
-		return entregaDTO;
-	}
-	/**
-	 * @param entregaDTO the entregaDTO to set
-	 */
-	public void setEntregaDTO(EntregaDTO entregaDTO) {
-		this.entregaDTO = entregaDTO;
-	}
-	/**
-	 * @return the destinatario
-	 */
-	public PersonaDTO getDestinatario() {
-		return destinatario;
-	}
-	/**
-	 * @param destinatario the destinatario to set
-	 */
-	public void setDestinatario(PersonaDTO destinatario) {
-		this.destinatario = destinatario;
-	}
-	/**
 	 * @return the numeroCuentaBNDetraccion
 	 */
 	public String getNumeroCuentaBNDetraccion() {
@@ -578,18 +384,6 @@ public class ComprobanteDTO extends BaseDTO {
 		this.numeroCuentaBNDetraccion = numeroCuentaBNDetraccion;
 	}
 	/**
-	 * @return the flagCargoDescuento
-	 */
-	public boolean isFlagCargoDescuento() {
-		return flagCargoDescuento;
-	}
-	/**
-	 * @param flagCargoDescuento the flagCargoDescuento to set
-	 */
-	public void setFlagCargoDescuento(boolean flagCargoDescuento) {
-		this.flagCargoDescuento = flagCargoDescuento;
-	}
-	/**
 	 * @return the montoTotalImpuestos
 	 */
 	public MontoValorDTO getMontoTotalImpuestos() {
@@ -600,18 +394,6 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setMontoTotalImpuestos(MontoValorDTO montoTotalImpuestos) {
 		this.montoTotalImpuestos = montoTotalImpuestos;
-	}
-	/**
-	 * @return the montoTotalOperaciones
-	 */
-	public MontoValorDTO getMontoTotalOperaciones() {
-		return montoTotalOperaciones;
-	}
-	/**
-	 * @param montoTotalOperaciones the montoTotalOperaciones to set
-	 */
-	public void setMontoTotalOperaciones(MontoValorDTO montoTotalOperaciones) {
-		this.montoTotalOperaciones = montoTotalOperaciones;
 	}
 	/**
 	 * @return the codigoCategoriaImpuesto
@@ -649,5 +431,232 @@ public class ComprobanteDTO extends BaseDTO {
 	public void setMontoTotalValorVenta(MontoValorDTO montoTotalValorVenta) {
 		this.montoTotalValorVenta = montoTotalValorVenta;
 	}
-	
+	/**
+	 * @return the profileId
+	 */
+	public IdDTO getProfileId() {
+		return profileId;
+	}
+	/**
+	 * @param profileId the profileId to set
+	 */
+	public void setProfileId(IdDTO profileId) {
+		this.profileId = profileId;
+	}
+	/**
+	 * @return the tipoComprobante
+	 */
+	public CodigoDTO getTipoComprobante() {
+		return tipoComprobante;
+	}
+	/**
+	 * @param tipoComprobante the tipoComprobante to set
+	 */
+	public void setTipoComprobante(CodigoDTO tipoComprobante) {
+		this.tipoComprobante = tipoComprobante;
+	}
+	/**
+	 * @return the listaNotas
+	 */
+	public List<BaseVODTO> getListaNotas() {
+		return listaNotas;
+	}
+	/**
+	 * @param listaNotas the listaNotas to set
+	 */
+	public void setListaNotas(List<BaseVODTO> listaNotas) {
+		this.listaNotas = listaNotas;
+	}
+	/**
+	 * @return the periodoFacturacion
+	 */
+	public List<PeriodoDTO> getPeriodoFacturacion() {
+		return periodoFacturacion;
+	}
+	/**
+	 * @param periodoFacturacion the periodoFacturacion to set
+	 */
+	public void setPeriodoFacturacion(List<PeriodoDTO> periodoFacturacion) {
+		this.periodoFacturacion = periodoFacturacion;
+	}
+	/**
+	 * @return the listaGuiaRelacionada
+	 */
+	public List<ComprobanteRelacionadoDTO> getListaGuiaRelacionada() {
+		return listaGuiaRelacionada;
+	}
+	/**
+	 * @param listaGuiaRelacionada the listaGuiaRelacionada to set
+	 */
+	public void setListaGuiaRelacionada(List<ComprobanteRelacionadoDTO> listaGuiaRelacionada) {
+		this.listaGuiaRelacionada = listaGuiaRelacionada;
+	}
+	/**
+	 * @return the listaEmisores
+	 */
+	public List<PersonaDTO> getListaEmisores() {
+		return listaEmisores;
+	}
+	/**
+	 * @param listaEmisores the listaEmisores to set
+	 */
+	public void setListaEmisores(List<PersonaDTO> listaEmisores) {
+		this.listaEmisores = listaEmisores;
+	}
+	/**
+	 * @return the listaAdquiriente
+	 */
+	public List<PersonaDTO> getListaAdquiriente() {
+		return listaAdquiriente;
+	}
+	/**
+	 * @param listaAdquiriente the listaAdquiriente to set
+	 */
+	public void setListaAdquiriente(List<PersonaDTO> listaAdquiriente) {
+		this.listaAdquiriente = listaAdquiriente;
+	}
+	/**
+	 * @return the listaEntregas
+	 */
+	public List<EntregaDTO> getListaEntregas() {
+		return listaEntregas;
+	}
+	/**
+	 * @param listaEntregas the listaEntregas to set
+	 */
+	public void setListaEntregas(List<EntregaDTO> listaEntregas) {
+		this.listaEntregas = listaEntregas;
+	}
+	/**
+	 * @return the listaTransportes
+	 */
+	public List<TransporteDTO> getListaTransportes() {
+		return listaTransportes;
+	}
+	/**
+	 * @param listaTransportes the listaTransportes to set
+	 */
+	public void setListaTransportes(List<TransporteDTO> listaTransportes) {
+		this.listaTransportes = listaTransportes;
+	}
+	/**
+	 * @return the listaDireccionLlegada
+	 */
+	public List<DireccionDTO> getListaDireccionLlegada() {
+		return listaDireccionLlegada;
+	}
+	/**
+	 * @param listaDireccionLlegada the listaDireccionLlegada to set
+	 */
+	public void setListaDireccionLlegada(List<DireccionDTO> listaDireccionLlegada) {
+		this.listaDireccionLlegada = listaDireccionLlegada;
+	}
+	/**
+	 * @return the listaDireccionPartida
+	 */
+	public List<DireccionDTO> getListaDireccionPartida() {
+		return listaDireccionPartida;
+	}
+	/**
+	 * @param listaDireccionPartida the listaDireccionPartida to set
+	 */
+	public void setListaDireccionPartida(List<DireccionDTO> listaDireccionPartida) {
+		this.listaDireccionPartida = listaDireccionPartida;
+	}
+	/**
+	 * @return the listaTransportista
+	 */
+	public List<TransportistaDTO> getListaTransportista() {
+		return listaTransportista;
+	}
+	/**
+	 * @param listaTransportista the listaTransportista to set
+	 */
+	public void setListaTransportista(List<TransportistaDTO> listaTransportista) {
+		this.listaTransportista = listaTransportista;
+	}
+	/**
+	 * @return the listaChoferes
+	 */
+	public List<PersonaDTO> getListaChoferes() {
+		return listaChoferes;
+	}
+	/**
+	 * @param listaChoferes the listaChoferes to set
+	 */
+	public void setListaChoferes(List<PersonaDTO> listaChoferes) {
+		this.listaChoferes = listaChoferes;
+	}
+	/**
+	 * @return the numeroRegistroMTC
+	 */
+	public String getNumeroRegistroMTC() {
+		return numeroRegistroMTC;
+	}
+	/**
+	 * @param numeroRegistroMTC the numeroRegistroMTC to set
+	 */
+	public void setNumeroRegistroMTC(String numeroRegistroMTC) {
+		this.numeroRegistroMTC = numeroRegistroMTC;
+	}
+	/**
+	 * @return the listaNumeroCuentaDetraccion
+	 */
+	public List<String> getListaNumeroCuentaDetraccion() {
+		return listaNumeroCuentaDetraccion;
+	}
+	/**
+	 * @param listaNumeroCuentaDetraccion the listaNumeroCuentaDetraccion to set
+	 */
+	public void setListaNumeroCuentaDetraccion(List<String> listaNumeroCuentaDetraccion) {
+		this.listaNumeroCuentaDetraccion = listaNumeroCuentaDetraccion;
+	}
+	/**
+	 * @return the listaDescuentos
+	 */
+	public List<DescuentoDTO> getListaDescuentos() {
+		return listaDescuentos;
+	}
+	/**
+	 * @param listaDescuentos the listaDescuentos to set
+	 */
+	public void setListaDescuentos(List<DescuentoDTO> listaDescuentos) {
+		this.listaDescuentos = listaDescuentos;
+	}
+	/**
+	 * @return the listaComprobantesAnticipo
+	 */
+	public List<ComprobanteAnticipoDTO> getListaComprobantesAnticipo() {
+		return listaComprobantesAnticipo;
+	}
+	/**
+	 * @param listaComprobantesAnticipo the listaComprobantesAnticipo to set
+	 */
+	public void setListaComprobantesAnticipo(List<ComprobanteAnticipoDTO> listaComprobantesAnticipo) {
+		this.listaComprobantesAnticipo = listaComprobantesAnticipo;
+	}
+	/**
+	 * @return the listaMontoOperaciones
+	 */
+	public List<MontoOperacionDTO> getListaMontoOperaciones() {
+		return listaMontoOperaciones;
+	}
+	/**
+	 * @param listaMontoOperaciones the listaMontoOperaciones to set
+	 */
+	public void setListaMontoOperaciones(List<MontoOperacionDTO> listaMontoOperaciones) {
+		this.listaMontoOperaciones = listaMontoOperaciones;
+	}
+	/**
+	 * @return the pesoBruto
+	 */
+	public MedidaDTO getPesoBruto() {
+		return pesoBruto;
+	}
+	/**
+	 * @param pesoBruto the pesoBruto to set
+	 */
+	public void setPesoBruto(MedidaDTO pesoBruto) {
+		this.pesoBruto = pesoBruto;
+	}
 }

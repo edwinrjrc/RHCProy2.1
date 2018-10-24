@@ -12,7 +12,7 @@ public class ComprobanteRelacionadoDTO extends BaseDTO {
 	private static final long serialVersionUID = -517682235036451379L;
 
 	private String numeroComprobante;
-	private BaseVODTO tipoComprobante;
+	private CodigoDTO tipoComprobante;
 	
 	/**
 	 * @return the numeroComprobante
@@ -29,13 +29,13 @@ public class ComprobanteRelacionadoDTO extends BaseDTO {
 	/**
 	 * @return the tipoComprobante
 	 */
-	public BaseVODTO getTipoComprobante() {
+	public CodigoDTO getTipoComprobante() {
 		return tipoComprobante;
 	}
 	/**
 	 * @param tipoComprobante the tipoComprobante to set
 	 */
-	public void setTipoComprobante(BaseVODTO tipoComprobante) {
+	public void setTipoComprobante(CodigoDTO tipoComprobante) {
 		this.tipoComprobante = tipoComprobante;
 	}
 	

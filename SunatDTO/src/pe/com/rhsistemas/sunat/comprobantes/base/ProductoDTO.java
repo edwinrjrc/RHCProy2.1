@@ -4,6 +4,7 @@
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author Edwin
@@ -13,35 +14,23 @@ public class ProductoDTO extends BaseDTO {
 
 	private static final long serialVersionUID = -7312404520348374935L;
 	
-	private String codigoProducto;
-	private String codigoProductoSunat;
-	private String descripcionProducto;
+	private IdDTO codigoProducto;
+	private CodigoDTO codigoProductoSunat;
+	private List<String> listaDescripcionProducto;
 	private boolean aplicaDetraccion;
 	private BigDecimal porcentajeDetraccion;
 	
 	/**
 	 * @return the codigoProducto
 	 */
-	public String getCodigoProducto() {
+	public IdDTO getCodigoProducto() {
 		return codigoProducto;
 	}
 	/**
 	 * @param codigoProducto the codigoProducto to set
 	 */
-	public void setCodigoProducto(String codigoProducto) {
+	public void setCodigoProducto(IdDTO codigoProducto) {
 		this.codigoProducto = codigoProducto;
-	}
-	/**
-	 * @return the descripcionProducto
-	 */
-	public String getDescripcionProducto() {
-		return descripcionProducto;
-	}
-	/**
-	 * @param descripcionProducto the descripcionProducto to set
-	 */
-	public void setDescripcionProducto(String descripcionProducto) {
-		this.descripcionProducto = descripcionProducto;
 	}
 	/**
 	 * @return the aplicaDetraccion
@@ -70,14 +59,26 @@ public class ProductoDTO extends BaseDTO {
 	/**
 	 * @return the codigoProductoSunat
 	 */
-	public String getCodigoProductoSunat() {
+	public CodigoDTO getCodigoProductoSunat() {
 		return codigoProductoSunat;
 	}
 	/**
 	 * @param codigoProductoSunat the codigoProductoSunat to set
 	 */
-	public void setCodigoProductoSunat(String codigoProductoSunat) {
+	public void setCodigoProductoSunat(CodigoDTO codigoProductoSunat) {
 		this.codigoProductoSunat = codigoProductoSunat;
+	}
+	/**
+	 * @return the listaDescripcionProducto
+	 */
+	public List<String> getListaDescripcionProducto() {
+		return listaDescripcionProducto;
+	}
+	/**
+	 * @param listaDescripcionProducto the listaDescripcionProducto to set
+	 */
+	public void setListaDescripcionProducto(List<String> listaDescripcionProducto) {
+		this.listaDescripcionProducto = listaDescripcionProducto;
 	}
 
 	

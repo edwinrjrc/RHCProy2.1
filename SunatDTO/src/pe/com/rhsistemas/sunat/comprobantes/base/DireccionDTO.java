@@ -11,6 +11,7 @@ public class DireccionDTO extends BaseDTO {
 
 	private static final long serialVersionUID = 888364242656127995L;
 	
+	private String codigo;
 	private String codigoUbigeo;
 	private String direccionCompleta;
 	private String urbanizacion;
@@ -76,6 +77,18 @@ public class DireccionDTO extends BaseDTO {
 	 */
 	public void setCodigoPais(String codigoPais) {
 		this.codigoPais = codigoPais;
+	}
+	/**
+	 * @return the codigo
+	 */
+	public String getCodigo() {
+		return codigo;
+	}
+	/**
+	 * @param codigo the codigo to set
+	 */
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
 	}
 	
 	

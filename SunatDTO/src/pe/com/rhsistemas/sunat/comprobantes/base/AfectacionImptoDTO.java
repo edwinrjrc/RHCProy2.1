@@ -13,8 +13,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 
 	private static final long serialVersionUID = 3327809610517051317L;
 
+	private IdDTO codigoCategoria;
 	private MontoValorDTO totalImpuesto;
-	private BaseVODTO afectacion;
+	private CodigoDTO afectacion;
 	private TributoDTO tributo;
 	
 	private BigDecimal porcentaje;
@@ -35,13 +36,13 @@ public class AfectacionImptoDTO extends BaseDTO {
 	/**
 	 * @return the afectacion
 	 */
-	public BaseVODTO getAfectacion() {
+	public CodigoDTO getAfectacion() {
 		return afectacion;
 	}
 	/**
 	 * @param afectacion the afectacion to set
 	 */
-	public void setAfectacion(BaseVODTO afectacion) {
+	public void setAfectacion(CodigoDTO afectacion) {
 		this.afectacion = afectacion;
 	}
 	/**
@@ -79,6 +80,18 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 */
 	public void setCodigoSistemaIsc(BaseVODTO codigoSistemaIsc) {
 		this.codigoSistemaIsc = codigoSistemaIsc;
+	}
+	/**
+	 * @return the codigoCategoria
+	 */
+	public IdDTO getCodigoCategoria() {
+		return codigoCategoria;
+	}
+	/**
+	 * @param codigoCategoria the codigoCategoria to set
+	 */
+	public void setCodigoCategoria(IdDTO codigoCategoria) {
+		this.codigoCategoria = codigoCategoria;
 	}
 		
 }

@@ -7,7 +7,7 @@ package pe.com.rhsistemas.sunat.comprobantes.base;
  * @author Edwin
  *
  */
-public class MonedaDTO extends BaseDTO {
+public class MonedaDTO extends CodigoDTO {
 
 	private static final long serialVersionUID = 1745334653156745167L;
 

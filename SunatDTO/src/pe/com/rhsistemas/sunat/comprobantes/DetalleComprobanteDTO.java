@@ -3,17 +3,19 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 import pe.com.rhsistemas.sunat.comprobantes.base.AfectacionImptoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.BaseDTO;
-import pe.com.rhsistemas.sunat.comprobantes.base.BaseVODTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.CantidadDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.DescuentoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoCodigoDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.MontoValorDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.PersonaDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.PrecioDetalleDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.ProductoDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.ProductoServicioDTO;
+import pe.com.rhsistemas.sunat.comprobantes.base.PropiedadesAdicionalesDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.TotalOperacionDTO;
 import pe.com.rhsistemas.sunat.comprobantes.base.UbigeoDTO;
 
@@ -33,7 +35,7 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	/**
 	 * Cantidad de unidades por ítem
 	 */
-	private int cantidad;
+	private CantidadDTO cantidad;
 	/**
 	 * Valor unitario por ítem
 	 */
@@ -70,19 +72,13 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	private UbigeoDTO ciudadOrigen;
 	private UbigeoDTO ciudadDestino;
 	private boolean flagCargoDescuento;
-	
-	private String codigoCargoDescuento;
-	private BigDecimal factorCargoDescuento;
-	private MontoValorDTO montoCargoDescuento;
-	private MontoValorDTO montoBaseCargoDescuento;
+	private List<PrecioDetalleDTO> listaPrecios;
+	private List<ProductoServicioDTO> listaProductoServicio;
+	private List<DescuentoDTO> listaDescuento;
 	
 	private MontoValorDTO montoTotal;
 	
-	private BaseVODTO conceptoTributario;
-	private BaseVODTO item;
-	
-	private Date fechaInicio;
-	private Date fechaFin;
+	private List<PropiedadesAdicionalesDTO> listaPropiedadesAdicionales;
 	
 	/**
 	 * @return the unidadMedida
@@ -99,13 +95,13 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	/**
 	 * @return the cantidad
 	 */
-	public int getCantidad() {
+	public CantidadDTO getCantidad() {
 		return cantidad;
 	}
 	/**
 	 * @param cantidad the cantidad to set
 	 */
-	public void setCantidad(int cantidad) {
+	public void setCantidad(CantidadDTO cantidad) {
 		this.cantidad = cantidad;
 	}
 	/**
@@ -253,54 +249,6 @@ public class DetalleComprobanteDTO extends BaseDTO {
 		this.flagCargoDescuento = flagCargoDescuento;
 	}
 	/**
-	 * @return the codigoCargoDescuento
-	 */
-	public String getCodigoCargoDescuento() {
-		return codigoCargoDescuento;
-	}
-	/**
-	 * @param codigoCargoDescuento the codigoCargoDescuento to set
-	 */
-	public void setCodigoCargoDescuento(String codigoCargoDescuento) {
-		this.codigoCargoDescuento = codigoCargoDescuento;
-	}
-	/**
-	 * @return the factorCargoDescuento
-	 */
-	public BigDecimal getFactorCargoDescuento() {
-		return factorCargoDescuento;
-	}
-	/**
-	 * @param factorCargoDescuento the factorCargoDescuento to set
-	 */
-	public void setFactorCargoDescuento(BigDecimal factorCargoDescuento) {
-		this.factorCargoDescuento = factorCargoDescuento;
-	}
-	/**
-	 * @return the montoCargoDescuento
-	 */
-	public MontoValorDTO getMontoCargoDescuento() {
-		return montoCargoDescuento;
-	}
-	/**
-	 * @param montoCargoDescuento the montoCargoDescuento to set
-	 */
-	public void setMontoCargoDescuento(MontoValorDTO montoCargoDescuento) {
-		this.montoCargoDescuento = montoCargoDescuento;
-	}
-	/**
-	 * @return the montoBaseCargoDescuento
-	 */
-	public MontoValorDTO getMontoBaseCargoDescuento() {
-		return montoBaseCargoDescuento;
-	}
-	/**
-	 * @param montoBaseCargoDescuento the montoBaseCargoDescuento to set
-	 */
-	public void setMontoBaseCargoDescuento(MontoValorDTO montoBaseCargoDescuento) {
-		this.montoBaseCargoDescuento = montoBaseCargoDescuento;
-	}
-	/**
 	 * @return the montoTotal
 	 */
 	public MontoValorDTO getMontoTotal() {
@@ -325,51 +273,51 @@ public class DetalleComprobanteDTO extends BaseDTO {
 		this.afectacionImpuestos = afectacionImpuestos;
 	}
 	/**
-	 * @return the conceptoTributario
+	 * @return the listaPrecios
 	 */
-	public BaseVODTO getConceptoTributario() {
-		return conceptoTributario;
+	public List<PrecioDetalleDTO> getListaPrecios() {
+		return listaPrecios;
 	}
 	/**
-	 * @param conceptoTributario the conceptoTributario to set
+	 * @param listaPrecios the listaPrecios to set
 	 */
-	public void setConceptoTributario(BaseVODTO conceptoTributario) {
-		this.conceptoTributario = conceptoTributario;
+	public void setListaPrecios(List<PrecioDetalleDTO> listaPrecios) {
+		this.listaPrecios = listaPrecios;
 	}
 	/**
-	 * @return the item
+	 * @return the listaProductoServicio
 	 */
-	public BaseVODTO getItem() {
-		return item;
+	public List<ProductoServicioDTO> getListaProductoServicio() {
+		return listaProductoServicio;
 	}
 	/**
-	 * @param item the item to set
+	 * @param listaProductoServicio the listaProductoServicio to set
 	 */
-	public void setItem(BaseVODTO item) {
-		this.item = item;
+	public void setListaProductoServicio(List<ProductoServicioDTO> listaProductoServicio) {
+		this.listaProductoServicio = listaProductoServicio;
 	}
 	/**
-	 * @return the fechaInicio
+	 * @return the listaDescuento
 	 */
-	public Date getFechaInicio() {
-		return fechaInicio;
+	public List<DescuentoDTO> getListaDescuento() {
+		return listaDescuento;
 	}
 	/**
-	 * @param fechaInicio the fechaInicio to set
+	 * @param listaDescuento the listaDescuento to set
 	 */
-	public void setFechaInicio(Date fechaInicio) {
-		this.fechaInicio = fechaInicio;
+	public void setListaDescuento(List<DescuentoDTO> listaDescuento) {
+		this.listaDescuento = listaDescuento;
 	}
 	/**
-	 * @return the fechaFin
+	 * @return the listaPropiedadesAdicionales
 	 */
-	public Date getFechaFin() {
-		return fechaFin;
+	public List<PropiedadesAdicionalesDTO> getListaPropiedadesAdicionales() {
+		return listaPropiedadesAdicionales;
 	}
 	/**
-	 * @param fechaFin the fechaFin to set
+	 * @param listaPropiedadesAdicionales the listaPropiedadesAdicionales to set
 	 */
-	public void setFechaFin(Date fechaFin) {
-		this.fechaFin = fechaFin;
+	public void setListaPropiedadesAdicionales(List<PropiedadesAdicionalesDTO> listaPropiedadesAdicionales) {
+		this.listaPropiedadesAdicionales = listaPropiedadesAdicionales;
 	}
 }
