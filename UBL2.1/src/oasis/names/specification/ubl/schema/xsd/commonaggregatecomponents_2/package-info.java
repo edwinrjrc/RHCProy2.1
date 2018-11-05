@@ -5,5 +5,9 @@
 // Generado el: 2018.09.09 a las 12:31:18 PM COT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2", 
+elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+xmlns={@XmlNs(prefix="cac", namespaceURI="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2")})
 package oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2;
+
+import javax.xml.bind.annotation.XmlNs;

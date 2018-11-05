@@ -5,5 +5,6 @@
 // Generado el: 2018.09.09 a las 12:31:18 PM COT 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2", 
+elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package oasis.names.specification.ubl.schema.xsd.invoice_2;
