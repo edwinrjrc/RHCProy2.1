@@ -3,6 +3,7 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class ComprobanteDTO extends BaseDTO {
 	private MontoValorDTO totalComprobante;
 	private MonedaDTO monedaComprobante;
 	private List<ComprobanteRelacionadoDTO> listaGuiaRelacionada;
-	private ComprobanteRelacionadoDTO comprobanteRelacionado;
+	private List<ComprobanteRelacionadoDTO> listaComprobanteRelacionado;
 	private List<BaseVODTO> leyendas;
 	private PercepcionDTO percepcion;
 	private String versionUBL;
@@ -147,6 +148,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the sumaIGV
 	 */
 	public AfectacionImptoDTO getSumaIGV() {
+		if (sumaIGV == null){
+			sumaIGV = new AfectacionImptoDTO();
+		}
 		return sumaIGV;
 	}
 	/**
@@ -159,6 +163,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the sumaISC
 	 */
 	public AfectacionImptoDTO getSumaISC() {
+		if (sumaISC == null){
+			sumaISC = new AfectacionImptoDTO();
+		}
 		return sumaISC;
 	}
 	/**
@@ -171,6 +178,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the sumaOtrosTributos
 	 */
 	public AfectacionImptoDTO getSumaOtrosTributos() {
+		if (sumaOtrosTributos == null){
+			sumaOtrosTributos = new AfectacionImptoDTO();
+		}
 		return sumaOtrosTributos;
 	}
 	/**
@@ -183,6 +193,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the sumaOtrosCargos
 	 */
 	public MontoValorDTO getSumaOtrosCargos() {
+		if (sumaOtrosCargos == null){
+			sumaOtrosCargos = new MontoValorDTO();
+		}
 		return sumaOtrosCargos;
 	}
 	/**
@@ -195,6 +208,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the totalDescuentos
 	 */
 	public TotalOperacionDTO getTotalDescuentos() {
+		if (totalDescuentos == null){
+			totalDescuentos = new TotalOperacionDTO();
+		}
 		return totalDescuentos;
 	}
 	/**
@@ -207,6 +223,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the totalComprobante
 	 */
 	public MontoValorDTO getTotalComprobante() {
+		if (totalComprobante == null){
+			totalComprobante = new MontoValorDTO();
+		}
 		return totalComprobante;
 	}
 	/**
@@ -219,6 +238,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the monedaComprobante
 	 */
 	public MonedaDTO getMonedaComprobante() {
+		if (monedaComprobante == null){
+			monedaComprobante = new MonedaDTO();
+		}
 		return monedaComprobante;
 	}
 	/**
@@ -228,21 +250,12 @@ public class ComprobanteDTO extends BaseDTO {
 		this.monedaComprobante = monedaComprobante;
 	}
 	/**
-	 * @return the comprobanteRelacionado
-	 */
-	public ComprobanteRelacionadoDTO getComprobanteRelacionado() {
-		return comprobanteRelacionado;
-	}
-	/**
-	 * @param comprobanteRelacionado the comprobanteRelacionado to set
-	 */
-	public void setComprobanteRelacionado(ComprobanteRelacionadoDTO comprobanteRelacionado) {
-		this.comprobanteRelacionado = comprobanteRelacionado;
-	}
-	/**
 	 * @return the leyendas
 	 */
 	public List<BaseVODTO> getLeyendas() {
+		if (leyendas == null){
+			leyendas = new ArrayList<BaseVODTO>();
+		}
 		return leyendas;
 	}
 	/**
@@ -255,6 +268,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the percepcion
 	 */
 	public PercepcionDTO getPercepcion() {
+		if (percepcion == null){
+			percepcion = new PercepcionDTO();
+		}
 		return percepcion;
 	}
 	/**
@@ -339,6 +355,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the porcentajeDetraccion
 	 */
 	public MontoValorDTO getPorcentajeDetraccion() {
+		if (porcentajeDetraccion == null){
+			porcentajeDetraccion = new MontoValorDTO();
+		}
 		return porcentajeDetraccion;
 	}
 	/**
@@ -351,6 +370,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the detalleComprobante
 	 */
 	public List<DetalleComprobanteDTO> getDetalleComprobante() {
+		if (detalleComprobante == null){
+			detalleComprobante = new ArrayList<DetalleComprobanteDTO>();
+		}
 		return detalleComprobante;
 	}
 	/**
@@ -363,6 +385,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the servicioReferenciaDTO
 	 */
 	public ServicioReferenciaDTO getServicioReferenciaDTO() {
+		if (servicioReferenciaDTO == null){
+			servicioReferenciaDTO = new ServicioReferenciaDTO();
+		}
 		return servicioReferenciaDTO;
 	}
 	/**
@@ -387,6 +412,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the montoTotalImpuestos
 	 */
 	public MontoValorDTO getMontoTotalImpuestos() {
+		if (montoTotalImpuestos == null){
+			montoTotalImpuestos = new MontoValorDTO();
+		}
 		return montoTotalImpuestos;
 	}
 	/**
@@ -399,6 +427,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the codigoCategoriaImpuesto
 	 */
 	public BaseVODTO getCodigoCategoriaImpuesto() {
+		if (codigoCategoriaImpuesto == null){
+			codigoCategoriaImpuesto = new BaseVODTO();
+		}
 		return codigoCategoriaImpuesto;
 	}
 	/**
@@ -411,6 +442,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the codigoTributo
 	 */
 	public BaseVODTO getCodigoTributo() {
+		if (codigoTributo == null){
+			codigoTributo = new BaseVODTO();
+		}
 		return codigoTributo;
 	}
 	/**
@@ -423,6 +457,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the montoTotalValorVenta
 	 */
 	public MontoValorDTO getMontoTotalValorVenta() {
+		if (montoTotalValorVenta == null){
+			montoTotalValorVenta = new MontoValorDTO();
+		}
 		return montoTotalValorVenta;
 	}
 	/**
@@ -435,6 +472,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the profileId
 	 */
 	public IdDTO getProfileId() {
+		if (profileId == null){
+			profileId = new IdDTO();
+		}
 		return profileId;
 	}
 	/**
@@ -447,6 +487,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the tipoComprobante
 	 */
 	public CodigoDTO getTipoComprobante() {
+		if (tipoComprobante == null){
+			tipoComprobante = new CodigoDTO();
+		}
 		return tipoComprobante;
 	}
 	/**
@@ -459,6 +502,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaNotas
 	 */
 	public List<BaseVODTO> getListaNotas() {
+		if (listaNotas == null){
+			listaNotas = new ArrayList<BaseVODTO>();
+		}
 		return listaNotas;
 	}
 	/**
@@ -471,6 +517,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the periodoFacturacion
 	 */
 	public List<PeriodoDTO> getPeriodoFacturacion() {
+		if (periodoFacturacion == null){
+			periodoFacturacion = new ArrayList<PeriodoDTO>(); 
+		}
 		return periodoFacturacion;
 	}
 	/**
@@ -483,6 +532,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaGuiaRelacionada
 	 */
 	public List<ComprobanteRelacionadoDTO> getListaGuiaRelacionada() {
+		if (listaGuiaRelacionada == null){
+			listaGuiaRelacionada = new ArrayList<ComprobanteRelacionadoDTO>();
+		}
 		return listaGuiaRelacionada;
 	}
 	/**
@@ -495,6 +547,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaEmisores
 	 */
 	public List<PersonaDTO> getListaEmisores() {
+		if (listaEmisores == null){
+			listaEmisores = new ArrayList<PersonaDTO>();
+		}
 		return listaEmisores;
 	}
 	/**
@@ -507,6 +562,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaAdquiriente
 	 */
 	public List<PersonaDTO> getListaAdquiriente() {
+		if (listaAdquiriente == null){
+			listaAdquiriente = new ArrayList<PersonaDTO>();
+		}
 		return listaAdquiriente;
 	}
 	/**
@@ -519,6 +577,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaEntregas
 	 */
 	public List<EntregaDTO> getListaEntregas() {
+		if (listaEntregas == null){
+			listaEntregas = new ArrayList<EntregaDTO>();
+		}
 		return listaEntregas;
 	}
 	/**
@@ -531,6 +592,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaTransportes
 	 */
 	public List<TransporteDTO> getListaTransportes() {
+		if (listaTransportes == null){
+			listaTransportes = new ArrayList<TransporteDTO>();
+		}
 		return listaTransportes;
 	}
 	/**
@@ -543,6 +607,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaDireccionLlegada
 	 */
 	public List<DireccionDTO> getListaDireccionLlegada() {
+		if (listaDireccionLlegada == null){
+			listaDireccionLlegada = new ArrayList<DireccionDTO>();
+		}
 		return listaDireccionLlegada;
 	}
 	/**
@@ -555,6 +622,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaDireccionPartida
 	 */
 	public List<DireccionDTO> getListaDireccionPartida() {
+		if (listaDireccionPartida == null){
+			listaDireccionPartida = new ArrayList<DireccionDTO>();
+		}
 		return listaDireccionPartida;
 	}
 	/**
@@ -567,6 +637,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaTransportista
 	 */
 	public List<TransportistaDTO> getListaTransportista() {
+		if (listaTransportista == null){
+			listaTransportista = new ArrayList<TransportistaDTO>();
+		}
 		return listaTransportista;
 	}
 	/**
@@ -579,6 +652,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaChoferes
 	 */
 	public List<PersonaDTO> getListaChoferes() {
+		if (listaChoferes == null){
+			listaChoferes = new ArrayList<PersonaDTO>();
+		}
 		return listaChoferes;
 	}
 	/**
@@ -603,6 +679,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaNumeroCuentaDetraccion
 	 */
 	public List<String> getListaNumeroCuentaDetraccion() {
+		if (listaNumeroCuentaDetraccion == null){
+			listaNumeroCuentaDetraccion = new ArrayList<String>();
+		}
 		return listaNumeroCuentaDetraccion;
 	}
 	/**
@@ -615,6 +694,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaDescuentos
 	 */
 	public List<DescuentoDTO> getListaDescuentos() {
+		if (listaDescuentos == null){
+			listaDescuentos = new ArrayList<DescuentoDTO>();
+		}
 		return listaDescuentos;
 	}
 	/**
@@ -627,6 +709,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaComprobantesAnticipo
 	 */
 	public List<ComprobanteAnticipoDTO> getListaComprobantesAnticipo() {
+		if (listaComprobantesAnticipo == null){
+			listaComprobantesAnticipo = new ArrayList<ComprobanteAnticipoDTO>();
+		}
 		return listaComprobantesAnticipo;
 	}
 	/**
@@ -639,6 +724,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the listaMontoOperaciones
 	 */
 	public List<MontoOperacionDTO> getListaMontoOperaciones() {
+		if (listaMontoOperaciones == null){
+			listaMontoOperaciones = new ArrayList<MontoOperacionDTO>();
+		}
 		return listaMontoOperaciones;
 	}
 	/**
@@ -651,6 +739,9 @@ public class ComprobanteDTO extends BaseDTO {
 	 * @return the pesoBruto
 	 */
 	public MedidaDTO getPesoBruto() {
+		if (pesoBruto == null){
+			pesoBruto = new MedidaDTO();
+		}
 		return pesoBruto;
 	}
 	/**
@@ -658,5 +749,20 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setPesoBruto(MedidaDTO pesoBruto) {
 		this.pesoBruto = pesoBruto;
+	}
+	/**
+	 * @return the listacCmprobanteRelacionado
+	 */
+	public List<ComprobanteRelacionadoDTO> getListaComprobanteRelacionado() {
+		if (listaComprobanteRelacionado == null){
+			listaComprobanteRelacionado = new ArrayList<ComprobanteRelacionadoDTO>();
+		}
+		return listaComprobanteRelacionado;
+	}
+	/**
+	 * @param listacCmprobanteRelacionado the listacCmprobanteRelacionado to set
+	 */
+	public void setListaComprobanteRelacionado(List<ComprobanteRelacionadoDTO> listacCmprobanteRelacionado) {
+		this.listaComprobanteRelacionado = listacCmprobanteRelacionado;
 	}
 }

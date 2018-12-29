@@ -3,6 +3,7 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,9 @@ public class ProductoServicioDTO extends BaseDTO {
 	 * @return the numeroAsiento
 	 */
 	public IdDTO getNumeroAsiento() {
+		if (numeroAsiento == null){
+			numeroAsiento = new IdDTO();
+		}
 		return numeroAsiento;
 	}
 
@@ -51,6 +55,9 @@ public class ProductoServicioDTO extends BaseDTO {
 	 * @return the listaPasajeros
 	 */
 	public List<PersonaDTO> getListaPasajeros() {
+		if (listaPasajeros == null){
+			listaPasajeros = new ArrayList<PersonaDTO>();
+		}
 		return listaPasajeros;
 	}
 
@@ -60,6 +67,4 @@ public class ProductoServicioDTO extends BaseDTO {
 	public void setListaPasajeros(List<PersonaDTO> listaPasajeros) {
 		this.listaPasajeros = listaPasajeros;
 	}
-
-	
 }

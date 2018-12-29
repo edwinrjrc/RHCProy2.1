@@ -19,6 +19,9 @@ public class TributoDTO extends BaseDTO {
 	 * @return the codigoInternacional
 	 */
 	public IdDTO getCodigoInternacional() {
+		if (codigoInternacional == null){
+			codigoInternacional = new IdDTO();
+		}
 		return codigoInternacional;
 	}
 	/**

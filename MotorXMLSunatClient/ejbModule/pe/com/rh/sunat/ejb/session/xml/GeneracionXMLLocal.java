@@ -7,5 +7,5 @@ import pe.com.rhsistemas.sunat.comprobantes.ComprobanteDTO;
 @Local
 public interface GeneracionXMLLocal {
 
-	public byte[] generarXML(ComprobanteDTO comprobante);
+	public void generarXML(ComprobanteDTO comprobante);
 }

@@ -53,6 +53,9 @@ public class TrasladoDTO extends BaseDTO {
 	 * @return the documentoTransportista
 	 */
 	public DocumentoIdentidadDTO getDocumentoTransportista() {
+		if (documentoTransportista == null){
+			documentoTransportista = new DocumentoIdentidadDTO();
+		}
 		return documentoTransportista;
 	}
 	/**
@@ -101,6 +104,9 @@ public class TrasladoDTO extends BaseDTO {
 	 * @return the direccionLlegada
 	 */
 	public DireccionDTO getDireccionLlegada() {
+		if (direccionLlegada == null){
+			direccionLlegada = new DireccionDTO();
+		}
 		return direccionLlegada;
 	}
 	/**
@@ -125,6 +131,9 @@ public class TrasladoDTO extends BaseDTO {
 	 * @return the direccionPartida
 	 */
 	public DireccionDTO getDireccionPartida() {
+		if (direccionPartida == null){
+			direccionPartida = new DireccionDTO();
+		}
 		return direccionPartida;
 	}
 	/**
@@ -149,6 +158,9 @@ public class TrasladoDTO extends BaseDTO {
 	 * @return the montoReferencial
 	 */
 	public MontoValorDTO getMontoReferencial() {
+		if (montoReferencial == null){
+			montoReferencial = new MontoValorDTO();
+		}
 		return montoReferencial;
 	}
 	/**

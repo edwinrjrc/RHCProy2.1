@@ -7,5 +7,5 @@ import pe.com.rhsistemas.sunat.comprobantes.ComprobanteDTO;
 @Remote
 public interface GeneracionXMLRemote {
 
-	public byte[] generarXML(ComprobanteDTO comprobante);
+	public void generarXML(ComprobanteDTO comprobante);
 }

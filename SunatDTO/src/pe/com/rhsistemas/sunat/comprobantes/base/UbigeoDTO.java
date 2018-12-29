@@ -108,6 +108,9 @@ public class UbigeoDTO extends BaseDTO{
 	 * @return the codigoPais
 	 */
 	public CodigoDTO getCodigoPais() {
+		if (codigoPais == null){
+			codigoPais = new CodigoDTO();
+		}
 		return codigoPais;
 	}
 	/**

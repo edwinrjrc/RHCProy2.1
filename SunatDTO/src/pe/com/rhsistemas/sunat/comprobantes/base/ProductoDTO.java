@@ -4,6 +4,7 @@
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,6 +25,9 @@ public class ProductoDTO extends BaseDTO {
 	 * @return the codigoProducto
 	 */
 	public IdDTO getCodigoProducto() {
+		if (codigoProducto == null){
+			codigoProducto = new IdDTO();
+		}
 		return codigoProducto;
 	}
 	/**
@@ -72,6 +76,9 @@ public class ProductoDTO extends BaseDTO {
 	 * @return the listaDescripcionProducto
 	 */
 	public List<String> getListaDescripcionProducto() {
+		if (listaDescripcionProducto == null){
+			listaDescripcionProducto = new ArrayList<String>();
+		}
 		return listaDescripcionProducto;
 	}
 	/**
@@ -80,6 +87,4 @@ public class ProductoDTO extends BaseDTO {
 	public void setListaDescripcionProducto(List<String> listaDescripcionProducto) {
 		this.listaDescripcionProducto = listaDescripcionProducto;
 	}
-
-	
 }

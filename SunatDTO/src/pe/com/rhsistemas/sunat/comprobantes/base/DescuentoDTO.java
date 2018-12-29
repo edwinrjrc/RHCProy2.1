@@ -58,6 +58,9 @@ public class DescuentoDTO extends BaseDTO {
 	 * @return the montoCargoDescuento
 	 */
 	public MontoValorDTO getMontoCargoDescuento() {
+		if (montoCargoDescuento == null){
+			montoCargoDescuento = new MontoValorDTO();
+		}
 		return montoCargoDescuento;
 	}
 	/**
@@ -70,6 +73,9 @@ public class DescuentoDTO extends BaseDTO {
 	 * @return the montoBaseCargoDescuento
 	 */
 	public MontoValorDTO getMontoBaseCargoDescuento() {
+		if (montoBaseCargoDescuento == null){
+			montoBaseCargoDescuento = new MontoValorDTO();
+		}
 		return montoBaseCargoDescuento;
 	}
 	/**

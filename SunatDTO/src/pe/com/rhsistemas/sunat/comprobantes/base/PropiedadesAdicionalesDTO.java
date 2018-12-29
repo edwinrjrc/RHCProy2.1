@@ -40,6 +40,9 @@ public class PropiedadesAdicionalesDTO extends BaseDTO {
 	 * @return the codigoConceptoTributario
 	 */
 	public CodigoDTO getCodigoConceptoTributario() {
+		if (codigoConceptoTributario == null){
+			codigoConceptoTributario = new CodigoDTO();
+		}
 		return codigoConceptoTributario;
 	}
 
@@ -54,6 +57,9 @@ public class PropiedadesAdicionalesDTO extends BaseDTO {
 	 * @return the item
 	 */
 	public BaseVODTO getItem() {
+		if (item == null){
+			item = new BaseVODTO();
+		}
 		return item;
 	}
 

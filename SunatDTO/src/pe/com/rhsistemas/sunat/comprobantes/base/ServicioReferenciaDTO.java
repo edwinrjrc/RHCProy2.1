@@ -21,6 +21,9 @@ public class ServicioReferenciaDTO extends BaseDTO {
 	 * @return the tipoServicio
 	 */
 	public CodigoDTO getTipoServicio() {
+		if (tipoServicio == null){
+			tipoServicio = new CodigoDTO();
+		}
 		return tipoServicio;
 	}
 	/**
@@ -33,6 +36,9 @@ public class ServicioReferenciaDTO extends BaseDTO {
 	 * @return the codigoServicio
 	 */
 	public CodigoDTO getCodigoServicio() {
+		if (codigoServicio == null){
+			codigoServicio = new CodigoDTO();
+		}
 		return codigoServicio;
 	}
 	/**
@@ -45,6 +51,9 @@ public class ServicioReferenciaDTO extends BaseDTO {
 	 * @return the codigoTipoTarifa
 	 */
 	public CodigoDTO getCodigoTipoTarifa() {
+		if (codigoTipoTarifa == null){
+			codigoTipoTarifa = new CodigoDTO();
+		}
 		return codigoTipoTarifa;
 	}
 	/**

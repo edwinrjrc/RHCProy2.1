@@ -3,6 +3,7 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pe.com.rhsistemas.sunat.comprobantes.base.AfectacionImptoDTO;
@@ -96,6 +97,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the cantidad
 	 */
 	public CantidadDTO getCantidad() {
+		if (cantidad == null){
+			cantidad = new CantidadDTO();
+		}
 		return cantidad;
 	}
 	/**
@@ -108,6 +112,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the precioUnitarioSinImptos
 	 */
 	public MontoValorDTO getPrecioUnitarioSinImptos() {
+		if (precioUnitarioSinImptos == null){
+			precioUnitarioSinImptos = new MontoValorDTO();
+		}
 		return precioUnitarioSinImptos;
 	}
 	/**
@@ -120,6 +127,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the totalOperacionGravada
 	 */
 	public TotalOperacionDTO getTotalOperacionGravada() {
+		if (totalOperacionGravada == null){
+			totalOperacionGravada = new TotalOperacionDTO();
+		}
 		return totalOperacionGravada;
 	}
 	/**
@@ -132,6 +142,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the totalOperacionInafecta
 	 */
 	public TotalOperacionDTO getTotalOperacionInafecta() {
+		if (totalOperacionInafecta == null){
+			totalOperacionInafecta = new TotalOperacionDTO();
+		}
 		return totalOperacionInafecta;
 	}
 	/**
@@ -144,6 +157,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the totalOperacionExoneradas
 	 */
 	public TotalOperacionDTO getTotalOperacionExoneradas() {
+		if (totalOperacionExoneradas == null){
+			totalOperacionExoneradas = new TotalOperacionDTO();
+		}
 		return totalOperacionExoneradas;
 	}
 	/**
@@ -156,6 +172,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the precioTotalSinImptos
 	 */
 	public MontoValorDTO getPrecioTotalSinImptos() {
+		if (precioTotalSinImptos == null){
+			precioTotalSinImptos = new MontoValorDTO();
+		}
 		return precioTotalSinImptos;
 	}
 	/**
@@ -168,6 +187,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the precioVentaUnitario
 	 */
 	public MontoCodigoDTO getPrecioVentaUnitario() {
+		if (precioVentaUnitario == null){
+			precioVentaUnitario = new MontoCodigoDTO();
+		}
 		return precioVentaUnitario;
 	}
 	/**
@@ -180,6 +202,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the valorReferencialUnitario
 	 */
 	public MontoCodigoDTO getValorReferencialUnitario() {
+		if (valorReferencialUnitario == null){
+			valorReferencialUnitario = new MontoCodigoDTO();
+		}
 		return valorReferencialUnitario;
 	}
 	/**
@@ -192,6 +217,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the producto
 	 */
 	public ProductoDTO getProducto() {
+		if (producto == null){
+			producto = new ProductoDTO();
+		}
 		return producto;
 	}
 	/**
@@ -204,6 +232,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the huesped
 	 */
 	public PersonaDTO getHuesped() {
+		if (huesped == null){
+			huesped = new PersonaDTO();
+		}
 		return huesped;
 	}
 	/**
@@ -216,6 +247,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the ciudadOrigen
 	 */
 	public UbigeoDTO getCiudadOrigen() {
+		if (ciudadOrigen == null){
+			ciudadOrigen = new UbigeoDTO();
+		}
 		return ciudadOrigen;
 	}
 	/**
@@ -228,6 +262,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the ciudadDestino
 	 */
 	public UbigeoDTO getCiudadDestino() {
+		if (ciudadDestino == null){
+			ciudadDestino = new UbigeoDTO();
+		}
 		return ciudadDestino;
 	}
 	/**
@@ -252,6 +289,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the montoTotal
 	 */
 	public MontoValorDTO getMontoTotal() {
+		if (montoTotal == null){
+			montoTotal = new MontoValorDTO();
+		}
 		return montoTotal;
 	}
 	/**
@@ -264,6 +304,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the afectacionImpuestos
 	 */
 	public List<AfectacionImptoDTO> getAfectacionImpuestos() {
+		if (afectacionImpuestos == null){
+			afectacionImpuestos = new ArrayList<AfectacionImptoDTO>();
+		}
 		return afectacionImpuestos;
 	}
 	/**
@@ -276,6 +319,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the listaPrecios
 	 */
 	public List<PrecioDetalleDTO> getListaPrecios() {
+		if (listaPrecios == null){
+			listaPrecios = new ArrayList<PrecioDetalleDTO>();
+		}
 		return listaPrecios;
 	}
 	/**
@@ -288,6 +334,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the listaProductoServicio
 	 */
 	public List<ProductoServicioDTO> getListaProductoServicio() {
+		if (listaProductoServicio == null){
+			listaProductoServicio = new ArrayList<ProductoServicioDTO>();
+		}
 		return listaProductoServicio;
 	}
 	/**
@@ -300,6 +349,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the listaDescuento
 	 */
 	public List<DescuentoDTO> getListaDescuento() {
+		if (listaDescuento == null){
+			listaDescuento = new ArrayList<DescuentoDTO>();
+		}
 		return listaDescuento;
 	}
 	/**
@@ -312,6 +364,9 @@ public class DetalleComprobanteDTO extends BaseDTO {
 	 * @return the listaPropiedadesAdicionales
 	 */
 	public List<PropiedadesAdicionalesDTO> getListaPropiedadesAdicionales() {
+		if (listaPropiedadesAdicionales == null){
+			listaPropiedadesAdicionales = new ArrayList<PropiedadesAdicionalesDTO>();
+		}
 		return listaPropiedadesAdicionales;
 	}
 	/**

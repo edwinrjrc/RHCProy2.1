@@ -18,6 +18,9 @@ public class DocumentoIdentidadDTO extends BaseDTO {
 	 * @return the tipoDocumento
 	 */
 	public BaseVODTO getTipoDocumento() {
+		if (tipoDocumento == null){
+			tipoDocumento = new BaseVODTO();
+		}
 		return tipoDocumento;
 	}
 	/**
@@ -30,6 +33,9 @@ public class DocumentoIdentidadDTO extends BaseDTO {
 	 * @return the numeroDocumento
 	 */
 	public IdDTO getNumeroDocumento() {
+		if (numeroDocumento == null){
+			numeroDocumento = new IdDTO();
+		}
 		return numeroDocumento;
 	}
 	/**

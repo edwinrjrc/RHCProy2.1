@@ -58,6 +58,9 @@ public class DireccionDTO extends BaseDTO {
 	 * @return the ubigeo
 	 */
 	public UbigeoDTO getUbigeo() {
+		if (ubigeo == null){
+			ubigeo = new UbigeoDTO();
+		}
 		return ubigeo;
 	}
 	/**

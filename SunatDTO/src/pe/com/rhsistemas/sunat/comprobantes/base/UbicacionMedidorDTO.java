@@ -44,6 +44,9 @@ public class UbicacionMedidorDTO extends BaseDTO {
 	 * @return the ubigeo
 	 */
 	public UbigeoDTO getUbigeo() {
+		if (ubigeo == null){
+			ubigeo = new UbigeoDTO();
+		}
 		return ubigeo;
 	}
 	/**
@@ -52,6 +55,5 @@ public class UbicacionMedidorDTO extends BaseDTO {
 	public void setUbigeo(UbigeoDTO ubigeo) {
 		this.ubigeo = ubigeo;
 	}
-
 	
 }

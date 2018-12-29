@@ -32,6 +32,9 @@ public class PersonaDTO extends BaseDTO {
 	 * @return the documentoIdentidad
 	 */
 	public DocumentoIdentidadDTO getDocumentoIdentidad() {
+		if (documentoIdentidad == null){
+			documentoIdentidad = new DocumentoIdentidadDTO();
+		}
 		return documentoIdentidad;
 	}
 	/**
@@ -44,6 +47,9 @@ public class PersonaDTO extends BaseDTO {
 	 * @return the direccion
 	 */
 	public DireccionDTO getDireccion() {
+		if (direccion == null){
+			direccion = new DireccionDTO();
+		}
 		return direccion;
 	}
 	/**

@@ -30,6 +30,9 @@ public class ComprobanteRelacionadoDTO extends BaseDTO {
 	 * @return the tipoComprobante
 	 */
 	public CodigoDTO getTipoComprobante() {
+		if (tipoComprobante == null){
+			tipoComprobante = new CodigoDTO();
+		}
 		return tipoComprobante;
 	}
 	/**

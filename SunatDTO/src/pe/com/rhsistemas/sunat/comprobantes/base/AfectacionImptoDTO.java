@@ -25,6 +25,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 * @return the totalImpuesto
 	 */
 	public MontoValorDTO getTotalImpuesto() {
+		if (totalImpuesto == null){
+			totalImpuesto = new MontoValorDTO();
+		}
 		return totalImpuesto;
 	}
 	/**
@@ -37,6 +40,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 * @return the afectacion
 	 */
 	public CodigoDTO getAfectacion() {
+		if (afectacion == null){
+			afectacion = new CodigoDTO();
+		}
 		return afectacion;
 	}
 	/**
@@ -49,6 +55,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 * @return the tributo
 	 */
 	public TributoDTO getTributo() {
+		if (tributo == null){
+			tributo = new TributoDTO();
+		}
 		return tributo;
 	}
 	/**
@@ -73,6 +82,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 * @return the codigoSistemaIsc
 	 */
 	public BaseVODTO getCodigoSistemaIsc() {
+		if (codigoSistemaIsc == null){
+			codigoSistemaIsc = new BaseVODTO();
+		}
 		return codigoSistemaIsc;
 	}
 	/**
@@ -85,6 +97,9 @@ public class AfectacionImptoDTO extends BaseDTO {
 	 * @return the codigoCategoria
 	 */
 	public IdDTO getCodigoCategoria() {
+		if (codigoCategoria == null){
+			codigoCategoria = new IdDTO();
+		}
 		return codigoCategoria;
 	}
 	/**

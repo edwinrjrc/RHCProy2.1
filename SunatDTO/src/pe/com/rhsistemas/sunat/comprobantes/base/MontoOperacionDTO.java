@@ -21,6 +21,9 @@ public class MontoOperacionDTO extends BaseDTO {
 	 * @return the montoOperacion
 	 */
 	public MontoValorDTO getMontoOperacion() {
+		if (montoOperacion == null){
+			montoOperacion = new MontoValorDTO();
+		}
 		return montoOperacion;
 	}
 	/**
@@ -33,6 +36,9 @@ public class MontoOperacionDTO extends BaseDTO {
 	 * @return the tipoOperacion
 	 */
 	public BaseVODTO getTipoOperacion() {
+		if (tipoOperacion == null){
+			tipoOperacion = new BaseVODTO();
+		}
 		return tipoOperacion;
 	}
 	/**
@@ -45,6 +51,9 @@ public class MontoOperacionDTO extends BaseDTO {
 	 * @return the montoImpuesto
 	 */
 	public MontoValorDTO getMontoImpuesto() {
+		if (montoImpuesto == null){
+			montoImpuesto = new MontoValorDTO();
+		}
 		return montoImpuesto;
 	}
 	/**
@@ -57,6 +66,9 @@ public class MontoOperacionDTO extends BaseDTO {
 	 * @return the codigoTributo
 	 */
 	public IdDTO getCodigoTributo() {
+		if (codigoTributo == null){
+			codigoTributo = new IdDTO();
+		}
 		return codigoTributo;
 	}
 	/**

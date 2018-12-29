@@ -3,6 +3,7 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +50,9 @@ public class TransportistaDTO extends PersonaDTO {
 	 * @return the conductores
 	 */
 	public List<PersonaDTO> getConductores() {
+		if (conductores == null){
+			conductores = new ArrayList<PersonaDTO>();
+		}
 		return conductores;
 	}
 

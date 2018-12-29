@@ -33,6 +33,9 @@ public class MontoValorDTO extends BaseDTO {
 	 * @return the moneda
 	 */
 	public MonedaDTO getMoneda() {
+		if (moneda == null){
+			moneda = new MonedaDTO();
+		}
 		return moneda;
 	}
 	/**

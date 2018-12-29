@@ -3,6 +3,7 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,6 +42,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the potenciaContratada
 	 */
 	public CantidadDTO getPotenciaContratada() {
+		if (potenciaContratada == null){
+			potenciaContratada = new CantidadDTO();
+		}
 		return potenciaContratada;
 	}
 	/**
@@ -65,6 +69,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the motivoTraslado
 	 */
 	public CodigoDTO getMotivoTraslado() {
+		if (motivoTraslado == null){
+			motivoTraslado = new CodigoDTO();
+		}
 		return motivoTraslado;
 	}
 	/**
@@ -77,6 +84,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the pesoBruto
 	 */
 	public MedidaDTO getPesoBruto() {
+		if (pesoBruto == null){
+			pesoBruto = new MedidaDTO();
+		}
 		return pesoBruto;
 	}
 	/**
@@ -113,6 +123,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the numeroMedidor
 	 */
 	public IdDTO getNumeroMedidor() {
+		if (numeroMedidor == null){
+			numeroMedidor = new IdDTO();
+		}
 		return numeroMedidor;
 	}
 	/**
@@ -125,6 +138,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the cantidad
 	 */
 	public CantidadDTO getCantidad() {
+		if (cantidad == null){
+			cantidad = new CantidadDTO();
+		}
 		return cantidad;
 	}
 	/**
@@ -137,6 +153,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the listaUbicacionesMedidor
 	 */
 	public List<UbicacionMedidorDTO> getListaUbicacionesMedidor() {
+		if (listaUbicacionesMedidor == null){
+			listaUbicacionesMedidor = new ArrayList<UbicacionMedidorDTO>();
+		}
 		return listaUbicacionesMedidor;
 	}
 	/**
@@ -149,6 +168,9 @@ public class EntregaDTO extends BaseDTO {
 	 * @return the listaDestinatarios
 	 */
 	public List<PersonaDTO> getListaDestinatarios() {
+		if (listaDestinatarios == null){
+			listaDestinatarios = new ArrayList<PersonaDTO>();
+		}
 		return listaDestinatarios;
 	}
 	/**

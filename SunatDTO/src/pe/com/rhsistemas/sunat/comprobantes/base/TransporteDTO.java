@@ -21,6 +21,9 @@ public class TransporteDTO extends BaseDTO {
 	 * @return the modalidadTraslado
 	 */
 	public CodigoDTO getModalidadTraslado() {
+		if (modalidadTraslado == null){
+			modalidadTraslado = new CodigoDTO();
+		}
 		return modalidadTraslado;
 	}
 	/**

@@ -1,6 +1,8 @@
 package pe.com.rh.sunat.ejb.session.xml;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import javax.ejb.Stateless;
@@ -10,6 +12,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.apache.commons.lang.StringUtils;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AddressType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
@@ -68,7 +72,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxInclu
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxableAmountType;
 import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.invoice_2.ObjectFactory;
-import pe.com.rh.sunat.ejb.util.UtilConvertirNumeroLetras;
 import pe.com.rh.sunat.ejb.util.UtilEjb;
 import pe.com.rh.sunat.ejb.util.UtilUBL;
 import pe.com.rhsistemas.sunat.comprobantes.ComprobanteDTO;
@@ -95,571 +98,90 @@ import pe.com.rhsistemas.sunat.comprobantes.base.UbicacionMedidorDTO;
  */
 @Stateless
 public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
-    
-    @Override
-    public byte[] generarXML(ComprobanteDTO comprobante){
-    	try {
-			NoteType noteType = new NoteType();
-			noteType.setValue(UtilConvertirNumeroLetras.convertirNumeroALetras(comprobante.getTotalComprobante().getMonto().doubleValue()));
-			noteType.setLanguageLocaleID("1000");
-			
-			DocumentReferenceType contratoReference = new DocumentReferenceType();
-			contratoReference.setID(UtilUBL.generarIdType(comprobante.getServicioReferenciaDTO().getNumeroSuministro()));
-			contratoReference.setDocumentTypeCode(UtilUBL.generarDocumentTypeCode(comprobante.getServicioReferenciaDTO().getTipoServicio()));
-			contratoReference.setLocaleCode(UtilUBL.generarLocaleCode(comprobante.getServicioReferenciaDTO().getCodigoServicio()));
-			contratoReference.setDocumentStatusCode(UtilUBL.generarDocumentStatusCode(comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa()));
-			
-			DocumentReferenceType addDocumentReference = new DocumentReferenceType();
-			addDocumentReference.setID(UtilUBL.generarIdType(comprobante.getComprobanteRelacionado().getNumeroComprobante()));
-			addDocumentReference.setDocumentTypeCode(UtilUBL.generarDocumentTypeCode(comprobante.getComprobanteRelacionado().getTipoComprobante()));
-			
-			AddressTypeCodeType codigoTipoDireccion = new AddressTypeCodeType();
-			AddressType direccionEmisor = new AddressType();
-			
-			PartyType partyEmisor = new PartyType();
-			for (PersonaDTO emisor : comprobante.getListaEmisores()){
-				partyEmisor.getPartyName().add(UtilUBL.generarPartyName(emisor.getNombreComercial()));
-			}
-			PartyTaxSchemeType partyTaxSchemaEmisor = null;
-			for (PersonaDTO emisor : comprobante.getListaEmisores()){
-				codigoTipoDireccion.setValue(UtilUBL.parsearDatoSiNull(emisor.getDireccion().getCodigo(), "0000"));
-				direccionEmisor.setAddressTypeCode(codigoTipoDireccion);
-				
-				partyTaxSchemaEmisor = new PartyTaxSchemeType();
-				partyTaxSchemaEmisor.setRegistrationName(UtilUBL.generarRegistrationName(emisor.getNombrePersona()));
-				partyTaxSchemaEmisor.setCompanyID(UtilUBL.generarCompanyId(emisor.getDocumentoIdentidad().getNumeroDocumento()));
-				partyTaxSchemaEmisor.setRegistrationAddress(direccionEmisor);
-				partyEmisor.getPartyTaxScheme().add(partyTaxSchemaEmisor);
-			}
-			SupplierPartyType emisor = new SupplierPartyType();
-			emisor.setParty(partyEmisor);
-			
-			PartyTaxSchemeType partyTaxSchemaAdquiriente = null;
-			
-			AddressTypeCodeType codigoTipoDireccionAdquiriente = new AddressTypeCodeType();
-			AddressType direccionAdquiriente = new AddressType();
-			
-			PartyType partyAdquiriente = new PartyType();
-			for (PersonaDTO persona : comprobante.getListaAdquiriente()){
-				codigoTipoDireccionAdquiriente.setValue(UtilUBL.parsearDatoSiNull(persona.getDireccion().getCodigo(), "0000"));
-				direccionAdquiriente.setAddressTypeCode(codigoTipoDireccion);
-				
-				partyTaxSchemaAdquiriente = new PartyTaxSchemeType();
-				partyTaxSchemaAdquiriente.setRegistrationName(UtilUBL.generarRegistrationName(persona.getNombrePersona()));
-				partyTaxSchemaAdquiriente.setRegistrationAddress(direccionAdquiriente);
-				partyTaxSchemaAdquiriente.setCompanyID(UtilUBL.generarCompanyId(persona.getDocumentoIdentidad().getNumeroDocumento()));
-				
-				partyAdquiriente.getPartyTaxScheme().add(partyTaxSchemaAdquiriente);
-			}
-			
-			CustomerPartyType adquiriente = new CustomerPartyType();
-			adquiriente.setParty(partyAdquiriente);
-			
-			AmountType amountDelivery = new AmountType();
-			amountDelivery.setValue(comprobante.getTotalComprobante().getMonto());
-			amountDelivery.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
-			
-			DireccionDTO direccionLlegada = comprobante.getListaDireccionLlegada().get(0);
-			CountryType country = new CountryType();
-			country.setIdentificationCode(UtilUBL.generarIdentificationCode(direccionLlegada.getUbigeo().getCodigoPais()));
-			
-			AddressType addressLocation = new AddressType();
-			addressLocation.setStreetName(UtilUBL.generarStreetName(direccionLlegada.getDireccionCompleta()));
-			addressLocation.setCitySubdivisionName(UtilUBL.generarCitySubdivision(direccionLlegada.getUrbanizacion()));
-			addressLocation.setCityName(UtilUBL.generarCityName(direccionLlegada.getUbigeo().getNombreProvincia()));
-			addressLocation.setCountrySubentity(UtilUBL.generarCountrySubentity(direccionLlegada.getUbigeo().getNombreDepartamento()));
-			addressLocation.setCountrySubentityCode(UtilUBL.generarCountrySubentityCode(direccionLlegada.getUbigeo().getCodigoUbigeoInei()));
-			addressLocation.setDistrict(UtilUBL.generarDistrict(direccionLlegada.getUbigeo().getNombreDistrito()));
-			addressLocation.setCountry(country);
-			
-			LocationType deliveryLocationTerms = new LocationType();
-			deliveryLocationTerms.setAddress(addressLocation);
-			
-			DeliveryTermsType deliveryTerms = new DeliveryTermsType();
-			deliveryTerms.setID(UtilUBL.generarIdType(comprobante.getNumeroRegistroMTC()));
-			deliveryTerms.setAmount(amountDelivery);
-			deliveryTerms.setDeliveryLocation(deliveryLocationTerms);
 
-			LineExtensionAmountType lineExtensionAmount = new LineExtensionAmountType();
-			lineExtensionAmount.setValue(comprobante.getMontoTotalValorVenta().getMonto());
-			lineExtensionAmount.setCurrencyID(comprobante.getMontoTotalValorVenta().getMoneda().getCodigoInternacional());
-			
-			TaxInclusiveAmountType taxInclusiveAmount = new TaxInclusiveAmountType();
-			taxInclusiveAmount.setValue(comprobante.getTotalComprobante().getMonto());
-			taxInclusiveAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
-			
-			AllowanceTotalAmountType allowanceTotalAmount = new AllowanceTotalAmountType();
-			allowanceTotalAmount.setValue(comprobante.getTotalDescuentos().getMonto().getMonto());
-			allowanceTotalAmount.setCurrencyID(comprobante.getTotalDescuentos().getMonto().getMoneda().getCodigoInternacional());
-			
-			ChargeTotalAmountType chargeTotalAmount = new ChargeTotalAmountType();
-			chargeTotalAmount.setValue(comprobante.getSumaOtrosCargos().getMonto());
-			chargeTotalAmount.setCurrencyID(comprobante.getSumaOtrosCargos().getMoneda().getCodigoInternacional());
-			
-			PayableAmountType payableAmount = new PayableAmountType();
-			payableAmount.setValue(comprobante.getTotalComprobante().getMonto());
-			payableAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
-			
+	public void generarXML(ComprobanteDTO comprobante) {
+		try {
+			byte[] bytes = generadorXML(comprobante);
+			String nombreArchivo = comprobante.getNumeroSerie() + "-";
+			nombreArchivo = nombreArchivo + comprobante.getCorrelativo() + ".xml";
+			FileOutputStream fos = new FileOutputStream("D:\\" + nombreArchivo);
+			fos.write(bytes);
+			fos.flush();
+			fos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private byte[] generadorXML(ComprobanteDTO comprobante) {
+		try {
 			ObjectFactory factory = new ObjectFactory();
 			InvoiceType invoice = factory.createInvoiceType();
-			invoice.setID(UtilUBL.generarIdType(comprobante.getNumeroSerie()+"-"+comprobante.getCorrelativo()));
-			invoice.setUBLVersionID(UtilUBL.generarUBLVersion(comprobante.getVersionUBL()));
-			invoice.setCustomizationID(UtilUBL.generarCustomizationId(comprobante.getVersionDocumento()));
-			invoice.setProfileID(UtilUBL.generarProfileId(comprobante.getProfileId()));
-			invoice.setIssueDate(UtilUBL.generarIssueDate(comprobante.getFechaEmision()));
-			invoice.setIssueTime(UtilUBL.generarIssueTime(comprobante.getFechaEmision()));
-			invoice.setDueDate(UtilUBL.generarDueDate(comprobante.getFechaVencimiento()));
-			invoice.setInvoiceTypeCode(UtilUBL.generarInvoiceTypeCode(comprobante.getTipoComprobante()));
-			NoteType nota = null;
-			for (BaseVODTO baseVO : comprobante.getListaNotas()){
-				nota = new NoteType();
-				nota.setLanguageID(baseVO.getCodigo());
-				nota.setValue(baseVO.getValor());
-				invoice.getNote().add(nota);
+			if (StringUtils.isNotBlank(comprobante.getNumeroSerie())
+					&& StringUtils.isNotBlank(comprobante.getCorrelativo())) {
+				invoice.setID(UtilUBL.generarIdType(comprobante.getNumeroSerie() + "-" + comprobante.getCorrelativo()));
 			}
-			invoice.setDocumentCurrencyCode(UtilUBL.generarDocumentCurrencyCode(comprobante.getMonedaComprobante()));
-			invoice.setLineCountNumeric(UtilUBL.generarLineCount(comprobante.getDetalleComprobante().size()));
-			PeriodType periodoTipo = null;
-			for (PeriodoDTO periodo : comprobante.getPeriodoFacturacion()){
-				periodoTipo = new PeriodType();
-				periodoTipo.setStartDate(UtilUBL.generarStartDate(periodo.getFechaInicioFacturacion()));
-				periodoTipo.setEndDate(UtilUBL.generarEndDate(periodo.getFechaFinFacturacion()));
-				invoice.getInvoicePeriod().add(periodoTipo);
+			if (StringUtils.isNotBlank(comprobante.getVersionUBL())) {
+				invoice.setUBLVersionID(UtilUBL.generarUBLVersion(comprobante.getVersionUBL()));
 			}
-			invoice.setOrderReference(UtilUBL.generarOrderReference(comprobante.getNumeroOrdenCompra()));
-			DocumentReferenceType documentReference = null;
-			for (ComprobanteRelacionadoDTO compro : comprobante.getListaGuiaRelacionada()){
-				documentReference = new DocumentReferenceType();
-				documentReference.setID(UtilUBL.generarIdType(compro.getNumeroComprobante()));
-				documentReference.setDocumentTypeCode(UtilUBL.generarDocumentTypeCode(compro.getTipoComprobante()));
-				invoice.getDespatchDocumentReference().add(documentReference);
+			if (StringUtils.isNotBlank(comprobante.getVersionDocumento())) {
+				invoice.setCustomizationID(UtilUBL.generarCustomizationId(comprobante.getVersionDocumento()));
 			}
-			invoice.getContractDocumentReference().add(contratoReference);
-			invoice.getAdditionalDocumentReference().add(addDocumentReference);
-			invoice.setAccountingSupplierParty(emisor);
-			invoice.setAccountingCustomerParty(adquiriente);
-			
-			DeliveryType delivery = null;
-			LocationType deliveryLocation = null;
-			ShipmentType shipment = null;
-			ShipmentStageType shipmentStage = null;
-			TransportMeansType transportMeans = null;
-			PersonType conductor = null;
-			PartyType carrierParty = null;
-			PartyLegalEntityType carrierLegalEntity = null;
-			for (EntregaDTO entrega : comprobante.getListaEntregas()){
-				for (TransporteDTO transporte : comprobante.getListaTransportes()){
-					shipmentStage = new ShipmentStageType();
-					shipmentStage.setTransportModeCode(UtilUBL.generarTransportMode(transporte.getModalidadTraslado()));
-					shipmentStage.setTransitPeriod(UtilUBL.generarPeriod(transporte.getFechaInicioTraslado()));
-					
-					carrierParty = new PartyType();
-					for (TransportistaDTO transportista : comprobante.getListaTransportista()){
-						carrierLegalEntity = new PartyLegalEntityType();
-						carrierLegalEntity.setCompanyID(UtilUBL.generarCompanyId(transportista.getDocumentoIdentidad().getNumeroDocumento()));
-						carrierLegalEntity.setRegistrationName(UtilUBL.generarRegistrationName(transportista.getNombrePersona()));
-						
-						carrierParty.getPartyLegalEntity().add(carrierLegalEntity);
-					}
-					shipmentStage.getCarrierParty().add(carrierParty);
-					transportMeans = new TransportMeansType();
-					transportMeans.setRoadTransport(UtilUBL.generarRoadTransport(transporte.getNumeroPlaca()));
-					transportMeans.setRegistrationNationalityID(UtilUBL.generarRegistrationNationality(transporte.getNumeroRegistroMTC()));
-					shipmentStage.setTransportMeans(transportMeans);
-					for (PersonaDTO personaConduce : comprobante.getListaChoferes()){
-						conductor = new PersonType();
-						conductor.setID(UtilUBL.generarId(personaConduce.getDocumentoIdentidad().getNumeroDocumento()));
-						shipmentStage.getDriverPerson().add(conductor);
-					}
-					shipment.getShipmentStage().add(shipmentStage);
-				}
-				
-				AddressType deliveryAdress = new AddressType();
-				deliveryAdress.setCountrySubentityCode(UtilUBL.generarCountrySubentityCode(comprobante.getListaDireccionLlegada().get(0).getCodigoUbigeo()));
-				for (DireccionDTO direccion : comprobante.getListaDireccionLlegada()){
-					deliveryAdress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
-				}
-				DeliveryType deliveryShipment = new DeliveryType();
-				deliveryShipment.setDeliveryAddress(deliveryAdress);
-				deliveryShipment.setDeliveryParty(UtilUBL.generarParty(comprobante.getListaEntregas().get(0).isFlagSubcontratacion()));
-				shipment.setDelivery(deliveryShipment);
-				
-				TransportHandlingUnitType transportHandling = new TransportHandlingUnitType();
-				transportHandling.getTransportEquipment().add(UtilUBL.generarTransportEquipment(comprobante.getListaTransportes().get(0).getNumeroPlaca()));
-				shipment.getTransportHandlingUnit().add(transportHandling);
-				
-				AddressType originAddress = new AddressType();
-				originAddress.setCountrySubentityCode(UtilUBL.generarCountrySubentityCode(comprobante.getListaDireccionPartida().get(0).getCodigoUbigeo()));
-				for (DireccionDTO direccion : comprobante.getListaDireccionPartida()){
-					originAddress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
-				}
-				shipment.setOriginAddress(originAddress);
-				
-				delivery = new DeliveryType();
-				delivery.setID(UtilUBL.generarId(entrega.getNumeroMedidor()));
-				delivery.setQuantity(UtilUBL.generarCantidad(entrega.getCantidad()));
-				delivery.setMaximumQuantity(UtilUBL.generarMaximunQuantity(entrega.getPotenciaContratada()));
-				
-				LocationCoordinateType locacion = null;
-				deliveryLocation = new LocationType();
-				for (UbicacionMedidorDTO ubicacion : entrega.getListaUbicacionesMedidor()){
-					locacion = new LocationCoordinateType();
-					locacion.setLatitudeDirectionCode(UtilUBL.generarLatitudeDirection(ubicacion.getLatitud()));
-					locacion.setLongitudeDirectionCode(UtilUBL.generarLongitudDirection(ubicacion.getLongitud()));
-					deliveryLocation.getLocationCoordinate().add(locacion);
-				}
-				delivery.setDeliveryLocation(deliveryLocation);
-				
-				PartyType deliveryParty = new PartyType();
-				PartyLegalEntityType partyLegalEntity = null;
-				for (PersonaDTO destinatario : entrega.getListaDestinatarios()){
-					partyLegalEntity = new PartyLegalEntityType();
-					partyLegalEntity.setCompanyID(UtilUBL.generarCompanyId(destinatario.getDocumentoIdentidad().getNumeroDocumento()));
-					partyLegalEntity.setRegistrationName(UtilUBL.generarRegistrationName(destinatario.getNombrePersona()));
-					deliveryParty.getPartyLegalEntity().add(partyLegalEntity);
-				}
-				delivery.setDeliveryParty(deliveryParty);
-				
-				shipment = new ShipmentType();
-				shipment.setHandlingCode(UtilUBL.generarHandlingCode(entrega.getMotivoTraslado()));
-				shipment.setGrossWeightMeasure(UtilUBL.generarWeightMeasure(entrega.getPesoBruto()));
-				delivery.setShipment(shipment);
-				invoice.getDelivery().add(delivery);
+			if (comprobante.getProfileId() != null && StringUtils.isNotBlank(comprobante.getProfileId().getValor())) {
+				invoice.setProfileID(UtilUBL.generarProfileId(comprobante.getProfileId()));
 			}
-			
-			invoice.setDeliveryTerms(deliveryTerms);
-			FinancialAccountType payeeFinancialAccount = null;
-			PaymentMeansType paymentMeans = null;
-			for (String numeroCuenta : comprobante.getListaNumeroCuentaDetraccion()){
-				payeeFinancialAccount = new FinancialAccountType();
-				payeeFinancialAccount.setID(UtilUBL.generarIdType(numeroCuenta));
-				paymentMeans = new PaymentMeansType();
-				paymentMeans.setPayeeFinancialAccount(payeeFinancialAccount);
-				
-				invoice.getPaymentMeans().add(paymentMeans);
+			if (comprobante.getFechaEmision() != null) {
+				invoice.setIssueDate(UtilUBL.generarIssueDate(comprobante.getFechaEmision()));
 			}
-			PaymentTermsType paymentTerms = null;
-			PaymentPercentType porcentajeDetraccion = null;
-			AmountType montoDetraccion = null;
-			BigDecimal montoDetra = BigDecimal.ZERO;
-			for (DetalleComprobanteDTO detalleComprobante : comprobante.getDetalleComprobante()){
-				if (detalleComprobante.getProducto().isAplicaDetraccion()){
-					porcentajeDetraccion = new PaymentPercentType();
-					porcentajeDetraccion.setValue(detalleComprobante.getProducto().getPorcentajeDetraccion());
-					
-					montoDetra = UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad().getValor());
-					montoDetra = montoDetra.multiply(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto());
-					montoDetra = montoDetra.multiply(detalleComprobante.getProducto().getPorcentajeDetraccion());
-					
-					montoDetraccion = new AmountType();
-					montoDetraccion.setValue(montoDetra);
-					
-					paymentTerms = new PaymentTermsType();
-					paymentTerms.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
-					paymentTerms.setPaymentPercent(porcentajeDetraccion);
-					paymentTerms.setAmount(montoDetraccion);
-					invoice.getPaymentTerms().add(paymentTerms);
-				}
+			if (comprobante.getFechaEmision() != null) {
+				invoice.setIssueTime(UtilUBL.generarIssueTime(comprobante.getFechaEmision()));
 			}
-			PaidAmountType paidAmount = null;
-			PaymentType paymentType = null;
-			for (ComprobanteAnticipoDTO comproAnticipo : comprobante.getListaComprobantesAnticipo()){
-				paidAmount = new PaidAmountType();
-				paidAmount.setValue(comproAnticipo.getMontoComprobante().getMonto());
-				paidAmount.setCurrencyID(comproAnticipo.getMontoComprobante().getMoneda().getCodigoInternacional());
-				
-				paymentType = new PaymentType();
-				paymentType.setID(UtilUBL.generarId(comproAnticipo.getNumeroComprobanteAnticipo()));
-				paymentType.setPaidAmount(paidAmount);
-				paymentType.setInstructionID(UtilUBL.generarInstructionId(comproAnticipo.getDocumentoIdentidadEmisor()));
-				
-				invoice.getPrepaidPayment().add(paymentType);
+			if (comprobante.getFechaVencimiento() != null) {
+				invoice.setDueDate(UtilUBL.generarDueDate(comprobante.getFechaVencimiento()));
 			}
-			
-			AmountType montoCargoDescuento = null;
-			BaseAmountType baseAmount = null;
-			AllowanceChargeType allowanceCharge = null;
-			for (DescuentoDTO descuento : comprobante.getListaDescuentos()){
-				montoCargoDescuento = new AmountType();
-				montoCargoDescuento.setValue(descuento.getMontoCargoDescuento().getMonto());
-				montoCargoDescuento.setCurrencyID(descuento.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
-				
-				baseAmount = new BaseAmountType();
-				baseAmount.setValue(descuento.getMontoBaseCargoDescuento().getMonto());
-				baseAmount.setCurrencyID(descuento.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
-				
-				allowanceCharge = new AllowanceChargeType();
-				allowanceCharge.setChargeIndicator(UtilUBL.generarChargeIndicator(descuento.isFlagCargoDescuento()));
-				allowanceCharge.setAllowanceChargeReasonCode(UtilUBL.generarAllowanceChargeReasonCode(descuento.getCodigoMotivoCargoDescuento()));
-				allowanceCharge.setMultiplierFactorNumeric(UtilUBL.generarMultiplierFactorNumeric(descuento.getFactorCargoDescuento()));
-				allowanceCharge.setAmount(montoCargoDescuento);
-				allowanceCharge.setBaseAmount(baseAmount);
-				
-				invoice.getAllowanceCharge().add(allowanceCharge);
+			if (comprobante.getTipoComprobante() != null) {
+				invoice.setInvoiceTypeCode(UtilUBL.generarInvoiceTypeCode(comprobante.getTipoComprobante()));
 			}
-			TaxAmountType taxAmount = new TaxAmountType();
-			taxAmount.setValue(comprobante.getMontoTotalImpuestos().getMonto());
-			taxAmount.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
-			
-			TaxTotalType taxTotal = new TaxTotalType();
-			taxTotal.setTaxAmount(taxAmount);
-			
-			TaxableAmountType taxableAmount = null;
-			TaxAmountType taxAmountSubtotal = null;
-			TaxSchemeType taxScheme = null;
-			TaxCategoryType taxCategory = null;
-			TaxSubtotalType taxSubtotal = null;
-			for (MontoOperacionDTO montoOperacion : comprobante.getListaMontoOperaciones()){
-				taxableAmount = new TaxableAmountType();
-				taxableAmount.setValue(montoOperacion.getMontoOperacion().getMonto());
-				taxableAmount.setCurrencyID(montoOperacion.getMontoOperacion().getMoneda().getCodigoInternacional());
-				
-				taxAmountSubtotal = new TaxAmountType();
-				taxAmountSubtotal.setValue(comprobante.getMontoTotalImpuestos().getMonto());
-				taxAmountSubtotal.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
-				
-				taxScheme = new TaxSchemeType();
-				taxScheme.setID(UtilUBL.generarId(montoOperacion.getCodigoTributo()));
-				taxScheme.setName(UtilUBL.generarName(comprobante.getCodigoTributo().getValor()));
-				taxScheme.setTaxTypeCode(UtilUBL.generarTaxTypeCode(comprobante.getCodigoTributo().getCodigo()));
-				
-				taxCategory = new TaxCategoryType();
-				taxCategory.setID(UtilUBL.generarIdType(comprobante.getCodigoCategoriaImpuesto().getCodigo()));
-				taxCategory.setTaxScheme(taxScheme);
-				
-				taxSubtotal = new TaxSubtotalType();
-				taxSubtotal.setTaxableAmount(taxableAmount);
-				taxSubtotal.setTaxAmount(taxAmountSubtotal);
-				taxSubtotal.setTaxCategory(taxCategory);
-				
-				taxTotal.getTaxSubtotal().add(taxSubtotal);
-			}
-			invoice.getTaxTotal().add(taxTotal);
-			
-			ComprobanteAnticipoDTO comprobanteAnticipo = comprobante.getListaComprobantesAnticipo().get(0);
-			
-			PrepaidAmountType prepaidAmount = new PrepaidAmountType();
-			prepaidAmount.setValue(comprobanteAnticipo.getMontoComprobante().getMonto());
-			prepaidAmount.setCurrencyID(comprobanteAnticipo.getMontoComprobante().getMoneda().getCodigoInternacional());
-			
-			MonetaryTotalType monetaryTotal = new MonetaryTotalType();
-			monetaryTotal.setLineExtensionAmount(lineExtensionAmount);
-			monetaryTotal.setTaxInclusiveAmount(taxInclusiveAmount);
-			monetaryTotal.setAllowanceTotalAmount(allowanceTotalAmount);
-			monetaryTotal.setChargeTotalAmount(chargeTotalAmount);
-			monetaryTotal.setPrepaidAmount(prepaidAmount);
-			monetaryTotal.setPayableAmount(payableAmount);
-			invoice.setLegalMonetaryTotal(monetaryTotal);
-			
-			InvoiceLineType invoiceLine = null;
-			PricingReferenceType pricingReference = null;
-			PartyIdentificationType partyIdentificacion = null;
-			CountryType pais = null;
-			AllowanceChargeType allowanceChargeDetalle = null;
-			AmountType montoCargoDescuentoDetalle = null;
-			BaseAmountType baseMontoCargoDescuento = null;
-			for (int i=0; i<comprobante.getDetalleComprobante().size(); i++){
-				DetalleComprobanteDTO detalleComprobante = comprobante.getDetalleComprobante().get(i);
 
-				LineExtensionAmountType lineExtensionAmountDetalle = new LineExtensionAmountType();
-				lineExtensionAmountDetalle.setValue(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto().multiply(UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad().getValor())));
-				lineExtensionAmountDetalle.setCurrencyID(detalleComprobante.getPrecioVentaUnitario().getMonto().getMoneda().getCodigoInternacional());
-
-				pricingReference = new PricingReferenceType();
-				PriceType priceType = null;
-				PriceAmountType priceAmountDetalle = null;
-				for (PrecioDetalleDTO precio : detalleComprobante.getListaPrecios()){
-					priceAmountDetalle = new PriceAmountType();
-					priceAmountDetalle.setValue(precio.getPrecio().getMonto());
-					priceAmountDetalle.setCurrencyID(precio.getPrecio().getMoneda().getCodigoInternacional());
-					
-					priceType = new PriceType();
-					priceType.setPriceAmount(priceAmountDetalle);
-					priceType.setPriceTypeCode(UtilUBL.generarPriceTypeCode(precio.getTipoPrecio()));
-					
-					pricingReference.getAlternativeConditionPrice().add(priceType);
-				}
-				partyIdentificacion = new PartyIdentificationType();
-				partyIdentificacion.setID(UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
-				
-				PartyNameType partyNameHuesped = new PartyNameType();
-				partyNameHuesped.setName(UtilUBL.generarName(detalleComprobante.getHuesped().getNombrePersona()));
-				
-				pais = new CountryType();
-				pais.setIdentificationCode(UtilUBL.generarIdentificationCode(detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais()));
-				
-				AddressType postalAdress = new AddressType();
-				postalAdress.setCountry(pais);
-				
-				PersonType personHuesped = new PersonType();
-				personHuesped.setID(UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
-				personHuesped.setFirstName(UtilUBL.generarFirstName(detalleComprobante.getHuesped().getNombrePersona()));
-				
-				PartyType deliveryPartyDetalle = new PartyType();
-				deliveryPartyDetalle.getPartyIdentification().add(partyIdentificacion);
-				deliveryPartyDetalle.getPartyName().add(UtilUBL.generarPartyName(detalleComprobante.getHuesped().getNombrePersona()));
-				deliveryPartyDetalle.setPostalAddress(postalAdress);
-				deliveryPartyDetalle.getPerson().add(personHuesped);
-				
-				DeliveryType deliveryPasajero = new DeliveryType();
-				deliveryPasajero.setDeliveryAddress(UtilUBL.generarAddress(detalleComprobante.getCiudadDestino().getCodigoUbigeoInei()));
-				
-				AddressType originAddressPasajero = new AddressType();
-				originAddressPasajero.setCountrySubentityCode(UtilUBL.generarCountrySubentityCode(detalleComprobante.getCiudadOrigen().getCodigoUbigeoInei()));
-				
-				ShipmentType shipmentDelivery = new ShipmentType();
-				ShipmentStageType shipmentStagePasajero = null;
-				TransportEventType departureTransport = null;
-				OccurrenceDateType fechaOcurencia = null;
-				PersonType pasajero = null;
-				FirstNameType nombrePasajero = null;
-				for (ProductoServicioDTO proServicio : detalleComprobante.getListaProductoServicio()){
-					fechaOcurencia = new OccurrenceDateType();
-					fechaOcurencia.setValue(UtilEjb.convertirDateAGregorian(proServicio.getFechaInicioProgramado()));
-					
-					departureTransport = new TransportEventType();
-					departureTransport.setOccurrenceDate(fechaOcurencia);
-					
-					shipmentStagePasajero = new ShipmentStageType();
-					shipmentStagePasajero.setID(UtilUBL.generarId(proServicio.getNumeroAsiento()));
-					shipmentStagePasajero.setPlannedDepartureTransportEvent(departureTransport);
-					for (PersonaDTO paxs : proServicio.getListaPasajeros()){
-						nombrePasajero = new FirstNameType();
-						nombrePasajero.setValue(paxs.getNombrePersona());
-						
-						pasajero = new PersonType();
-						pasajero.setID(UtilUBL.generarId(paxs.getDocumentoIdentidad().getNumeroDocumento()));
-						pasajero.setFirstName(nombrePasajero);
-						
-						shipmentStagePasajero.getPassengerPerson().add(pasajero);
-					}
-					shipmentDelivery.getShipmentStage().add(shipmentStagePasajero);
-				}
-				shipmentDelivery.setDelivery(deliveryPasajero);
-				shipmentDelivery.setOriginAddress(originAddressPasajero);
-				
-				DeliveryType deliveryDetalle = new DeliveryType();
-				deliveryDetalle.setDeliveryParty(deliveryPartyDetalle);
-				deliveryDetalle.setShipment(shipmentDelivery);
-				
-				invoiceLine = new InvoiceLineType();
-				invoiceLine.setID(UtilUBL.generarIdType(String.valueOf((i+1))));
-				invoiceLine.setInvoicedQuantity(UtilUBL.generarInvoicedQuantity(detalleComprobante.getCantidad()));
-				invoiceLine.setLineExtensionAmount(lineExtensionAmountDetalle);
-				invoiceLine.setPricingReference(pricingReference);
-				invoiceLine.getDelivery().add(deliveryDetalle);
-				
-				for (DescuentoDTO dscto : detalleComprobante.getListaDescuento()){
-					montoCargoDescuentoDetalle = new AmountType();
-					montoCargoDescuentoDetalle.setValue(dscto.getMontoCargoDescuento().getMonto());
-					montoCargoDescuentoDetalle.setCurrencyID(dscto.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
-					
-					baseMontoCargoDescuento = new BaseAmountType();
-					baseMontoCargoDescuento.setValue(dscto.getMontoBaseCargoDescuento().getMonto());
-					baseMontoCargoDescuento.setCurrencyID(dscto.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
-					
-					allowanceChargeDetalle = new AllowanceChargeType();
-					allowanceChargeDetalle.setChargeIndicator(UtilUBL.generarChargeIndicator(dscto.isFlagCargoDescuento()));
-					allowanceChargeDetalle.setAllowanceChargeReasonCode(UtilUBL.generarAllowanceChargeReasonCode(dscto.getCodigoMotivoCargoDescuento()));
-					allowanceChargeDetalle.setMultiplierFactorNumeric(UtilUBL.generarMultiplierFactorNumeric(dscto.getFactorCargoDescuento()));
-					allowanceChargeDetalle.setAmount(montoCargoDescuentoDetalle);
-					allowanceChargeDetalle.setBaseAmount(baseMontoCargoDescuento);
-					
-					invoiceLine.getAllowanceCharge().add(allowanceChargeDetalle);
-				}
-				
-				TaxTotalType taxTotalDetalle = null;
-				TaxAmountType taxAmountDetalle = null;
-				TaxableAmountType taxableAmountDetalle = null;
-				TaxAmountType taxAmountSubtotal2 = null;
-				TaxCategoryType taxCategoryDetalle = null;
-				TaxSchemeType taxSchemeCategory = null;
-				for (AfectacionImptoDTO afecImpto : detalleComprobante.getAfectacionImpuestos()){
-					taxAmountDetalle = new TaxAmountType();
-					taxAmountDetalle.setValue(afecImpto.getTotalImpuesto().getMonto());
-					taxAmountDetalle.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
-					
-					taxableAmountDetalle = new TaxableAmountType();
-					taxableAmountDetalle.setValue(detalleComprobante.getMontoTotal().getMonto());
-					taxableAmountDetalle.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
-					
-					taxAmountSubtotal2 = new TaxAmountType();
-					taxAmountSubtotal2.setValue(afecImpto.getTotalImpuesto().getMonto());
-					taxAmountSubtotal2.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
-					
-					taxSchemeCategory = new TaxSchemeType();
-					taxSchemeCategory.setID(UtilUBL.generarId(afecImpto.getTributo().getCodigoInternacional()));
-					taxSchemeCategory.setName(UtilUBL.generarName(afecImpto.getTributo().getNombre()));
-					taxSchemeCategory.setTaxTypeCode(UtilUBL.generarTaxTypeCode(afecImpto.getTributo().getCodigo()));
-					
-					taxCategoryDetalle = new TaxCategoryType();
-					taxCategoryDetalle.setID(UtilUBL.generarId(afecImpto.getCodigoCategoria()));
-					taxCategoryDetalle.setPercent(UtilUBL.generarPercent(afecImpto.getPorcentaje()));
-					taxCategoryDetalle.setTaxExemptionReasonCode(UtilUBL.generarTaxExemptionReasonCode(afecImpto.getAfectacion()));
-					taxCategoryDetalle.setTierRange(UtilUBL.generarTierRange(afecImpto.getCodigoSistemaIsc().getCodigo()));
-					taxCategoryDetalle.setTaxScheme(taxSchemeCategory);
-					
-					TaxSubtotalType taxSubtotalDetalle = new TaxSubtotalType();
-					taxSubtotalDetalle.setTaxableAmount(taxableAmountDetalle);
-					taxSubtotalDetalle.setTaxAmount(taxAmountSubtotal2);
-					taxSubtotalDetalle.setTaxCategory(taxCategoryDetalle);
-					
-					taxTotalDetalle = new TaxTotalType();
-					taxTotalDetalle.setTaxAmount(taxAmountDetalle);
-					taxTotalDetalle.getTaxSubtotal().add(taxSubtotalDetalle);
-					
-					invoiceLine.getTaxTotal().add(taxTotalDetalle);
-				}
-				ItemIdentificationType sellersItemIdentification = new ItemIdentificationType();
-				sellersItemIdentification.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
-				
-				CommodityClassificationType commodityClassification = new CommodityClassificationType();
-				commodityClassification.setItemClassificationCode(UtilUBL.generarItemClassificationCode(detalleComprobante.getProducto().getCodigoProductoSunat()));
-				
-				ItemType itemDetalle = null;
-				for (String descripcion : detalleComprobante.getProducto().getListaDescripcionProducto()){
-					itemDetalle = new ItemType();
-					itemDetalle.getDescription().add(UtilUBL.generarDescription(descripcion));
-					
-					itemDetalle.getCommodityClassification().add(commodityClassification);
-				}
-				itemDetalle.setSellersItemIdentification(sellersItemIdentification);
-				
-				
-				PeriodType usabilityPeriodo = null;
-				for (PropiedadesAdicionalesDTO propiedad : detalleComprobante.getListaPropiedadesAdicionales()){
-					usabilityPeriodo = new PeriodType();
-					usabilityPeriodo.setStartDate(UtilUBL.generarStartDate(propiedad.getFechaInicio()));
-					usabilityPeriodo.setEndDate(UtilUBL.generarEndDate(propiedad.getFechaFin()));
-					
-					ItemPropertyType adicionalProperty = new ItemPropertyType();
-					adicionalProperty.setName(UtilUBL.generarName(propiedad.getNombreConceptoTributario()));
-					adicionalProperty.setNameCode(UtilUBL.generarNameCode(propiedad.getCodigoConceptoTributario()));
-					adicionalProperty.setValue(UtilUBL.generarValue(propiedad.getItem().getValor()));
-					adicionalProperty.getValueQualifier().add(UtilUBL.generarValueQualifier(propiedad.getItem().getCodigo()));
-					adicionalProperty.setUsabilityPeriod(usabilityPeriodo);
-					
-					itemDetalle.getAdditionalItemProperty().add(adicionalProperty);
-				}
-				PriceAmountType priceAmountDetalle2 = new PriceAmountType();
-				priceAmountDetalle2.setValue(detalleComprobante.getMontoTotal().getMonto());
-				priceAmountDetalle2.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
-				
-				PriceType price = new PriceType();
-				price.setPriceAmount(priceAmountDetalle2);
-				
-				invoice.getInvoiceLine().add(invoiceLine);
-				invoiceLine.setItem(itemDetalle);
-				invoiceLine.setPrice(price);
+			invoice = generarNoteInvoice(invoice, comprobante);
+			if (comprobante.getMonedaComprobante() != null
+					&& StringUtils.isNotBlank(comprobante.getMonedaComprobante().getValor())) {
+				invoice.setDocumentCurrencyCode(
+						UtilUBL.generarDocumentCurrencyCode(comprobante.getMonedaComprobante()));
 			}
-			
-			JAXBContext context = JAXBContext.newInstance("generated");
+
+			if (comprobante.getDetalleComprobante() != null && !comprobante.getDetalleComprobante().isEmpty()) {
+				invoice.setLineCountNumeric(UtilUBL.generarLineCount(comprobante.getDetalleComprobante().size()));
+			}
+
+			invoice = generarPeriodos(invoice, comprobante);
+			if (StringUtils.isNotBlank(comprobante.getNumeroOrdenCompra())) {
+				invoice.setOrderReference(UtilUBL.generarOrderReference(comprobante.getNumeroOrdenCompra()));
+			}
+
+			invoice = generarDocumentoReferencia(invoice, comprobante);
+			invoice = generarDocumentReference(invoice, comprobante);
+			invoice = generarAdicionalDocumento(invoice, comprobante);
+			invoice.setAccountingSupplierParty(generarSupplierParty(comprobante));
+			invoice.setAccountingCustomerParty(generarCustomerParty(comprobante));
+			invoice = generarDelivery(invoice, comprobante);
+			invoice.setDeliveryTerms(generarDeliveryTerms(comprobante));
+			invoice = generarPaymentMeans(invoice, comprobante);
+			invoice = generarPaymentTerms(invoice, comprobante);
+			invoice = generarPrepaidPayment(invoice, comprobante);
+			invoice = generarAllowanceCharge(invoice, comprobante);
+			invoice = generarTaxtotal(invoice, comprobante);
+			invoice.setLegalMonetaryTotal(generarMonetaryTotal(comprobante));
+			invoice = generarInvoiceLine(invoice, comprobante);
+
+			JAXBContext context = JAXBContext.newInstance(InvoiceType.class);
 			JAXBElement<InvoiceType> element = factory.createInvoice(invoice);
 			Marshaller marshaller = context.createMarshaller();
-			marshaller.setProperty("jaxb.formatted.output",Boolean.TRUE);
+			marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			marshaller.marshal(element,baos);
-			
+			marshaller.marshal(element, baos);
+
 			return baos.toByteArray();
 		} catch (PropertyException e) {
 			// TODO Auto-generated catch block
@@ -671,6 +193,992 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	return null;
-    }
+		return null;
+	}
+
+	private InvoiceType generarNoteInvoice(InvoiceType invoice, ComprobanteDTO comprobante) {
+		NoteType nota = null;
+		for (BaseVODTO baseVO : comprobante.getListaNotas()) {
+			if (baseVO != null && StringUtils.isNotBlank(baseVO.getValor())) {
+				nota = new NoteType();
+				nota.setLanguageID(baseVO.getCodigo());
+				nota.setValue(baseVO.getValor());
+				invoice.getNote().add(nota);
+			}
+		}
+		return invoice;
+	}
+
+	private InvoiceType generarPeriodos(InvoiceType invoice, ComprobanteDTO comprobante)
+			throws DatatypeConfigurationException {
+		PeriodType periodoTipo = null;
+		for (PeriodoDTO periodo : comprobante.getPeriodoFacturacion()) {
+			if (periodo.getFechaInicioFacturacion() != null && periodo.getFechaFinFacturacion() != null) {
+				periodoTipo = new PeriodType();
+				periodoTipo.setStartDate(UtilUBL.generarStartDate(periodo.getFechaInicioFacturacion()));
+				periodoTipo.setEndDate(UtilUBL.generarEndDate(periodo.getFechaFinFacturacion()));
+				invoice.getInvoicePeriod().add(periodoTipo);
+			}
+		}
+		return invoice;
+	}
+
+	private InvoiceType generarDocumentoReferencia(InvoiceType invoice, ComprobanteDTO comprobante) {
+		DocumentReferenceType documentReference = null;
+		for (ComprobanteRelacionadoDTO compro : comprobante.getListaGuiaRelacionada()) {
+			if (StringUtils.isNotBlank(compro.getNumeroComprobante()) && compro.getTipoComprobante() != null
+					&& StringUtils.isNotBlank(compro.getTipoComprobante().getValor())) {
+				documentReference = new DocumentReferenceType();
+				documentReference.setID(UtilUBL.generarIdType(compro.getNumeroComprobante()));
+				documentReference.setDocumentTypeCode(UtilUBL.generarDocumentTypeCode(compro.getTipoComprobante()));
+				invoice.getDespatchDocumentReference().add(documentReference);
+			}
+		}
+		return invoice;
+	}
+
+	private InvoiceType generarDocumentReference(InvoiceType invoice, ComprobanteDTO comprobante) {
+		if (StringUtils.isBlank(comprobante.getServicioReferenciaDTO().getNumeroSuministro())
+				&& StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getTipoServicio().getValor())
+				&& comprobante.getServicioReferenciaDTO().getCodigoServicio() == null
+				&& comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa() == null) {
+			return null;
+		}
+		boolean existeDato = false;
+
+		DocumentReferenceType contratoReference = new DocumentReferenceType();
+		if (StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getNumeroSuministro())) {
+			contratoReference
+					.setID(UtilUBL.generarIdType(comprobante.getServicioReferenciaDTO().getNumeroSuministro()));
+			existeDato = true;
+		}
+		if (StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getTipoServicio().getValor())) {
+			contratoReference.setDocumentTypeCode(
+					UtilUBL.generarDocumentTypeCode(comprobante.getServicioReferenciaDTO().getTipoServicio()));
+			existeDato = true;
+		}
+		if (comprobante.getServicioReferenciaDTO().getCodigoServicio() == null) {
+			contratoReference.setLocaleCode(
+					UtilUBL.generarLocaleCode(comprobante.getServicioReferenciaDTO().getCodigoServicio()));
+			existeDato = true;
+		}
+		if (comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa() == null) {
+			contratoReference.setDocumentStatusCode(
+					UtilUBL.generarDocumentStatusCode(comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa()));
+			existeDato = true;
+		}
+		if (existeDato) {
+			invoice.getContractDocumentReference().add(contratoReference);
+		}
+
+		return invoice;
+	}
+
+	private InvoiceType generarAdicionalDocumento(InvoiceType invoice, ComprobanteDTO comprobante) {
+		DocumentReferenceType addDocumentReference = null;
+		boolean agregar = false;
+		for (ComprobanteRelacionadoDTO relacionado : comprobante.getListaComprobanteRelacionado()) {
+			addDocumentReference = new DocumentReferenceType();
+			agregar = false;
+			if (StringUtils.isNotBlank(relacionado.getNumeroComprobante()) && relacionado.getTipoComprobante() != null
+					&& StringUtils.isNotBlank(relacionado.getTipoComprobante().getValor())) {
+				addDocumentReference.setID(UtilUBL.generarIdType(relacionado.getNumeroComprobante()));
+				agregar = true;
+			}
+
+			if (agregar) {
+				invoice.getAdditionalDocumentReference().add(addDocumentReference);
+			}
+		}
+
+		return invoice;
+	}
+
+	private InvoiceType generarDelivery(InvoiceType invoice, ComprobanteDTO comprobante)
+			throws DatatypeConfigurationException {
+		DeliveryType delivery = null;
+		LocationType deliveryLocation = null;
+		ShipmentType shipment = new ShipmentType();
+		ShipmentStageType shipmentStage = null;
+		TransportMeansType transportMeans = null;
+		PersonType conductor = null;
+		PartyType carrierParty = null;
+		PartyLegalEntityType carrierLegalEntity = null;
+		boolean valorDato = false;
+		boolean datoNulo = false;
+		for (EntregaDTO entrega : comprobante.getListaEntregas()) {
+			for (TransporteDTO transporte : comprobante.getListaTransportes()) {
+				shipmentStage = new ShipmentStageType();
+				if (transporte.getModalidadTraslado() != null) {
+					shipmentStage.setTransportModeCode(UtilUBL.generarTransportMode(transporte.getModalidadTraslado()));
+				} else {
+					datoNulo = true;
+				}
+				if (transporte.getFechaInicioTraslado() != null) {
+					shipmentStage.setTransitPeriod(UtilUBL.generarPeriod(transporte.getFechaInicioTraslado()));
+				} else {
+					datoNulo = true;
+				}
+
+				if (!comprobante.getListaTransportista().isEmpty()) {
+					carrierParty = new PartyType();
+					for (TransportistaDTO transportista : comprobante.getListaTransportista()) {
+						carrierLegalEntity = new PartyLegalEntityType();
+						valorDato = false;
+						if (transportista.getDocumentoIdentidad().getNumeroDocumento() != null && StringUtils
+								.isNotBlank(transportista.getDocumentoIdentidad().getNumeroDocumento().getValor())) {
+							carrierLegalEntity.setCompanyID(UtilUBL
+									.generarCompanyId(transportista.getDocumentoIdentidad().getNumeroDocumento()));
+							valorDato = true;
+						}
+						if (StringUtils.isNotBlank(transportista.getNombrePersona())) {
+							carrierLegalEntity.setRegistrationName(
+									UtilUBL.generarRegistrationName(transportista.getNombrePersona()));
+							valorDato = true;
+						}
+
+						if (valorDato) {
+							carrierParty.getPartyLegalEntity().add(carrierLegalEntity);
+						}
+					}
+					if (!carrierParty.getPartyLegalEntity().isEmpty()) {
+						shipmentStage.getCarrierParty().add(carrierParty);
+					}
+				}
+
+				transportMeans = new TransportMeansType();
+				if (StringUtils.isNotBlank(transporte.getNumeroPlaca())) {
+					transportMeans.setRoadTransport(UtilUBL.generarRoadTransport(transporte.getNumeroPlaca()));
+				} else {
+					datoNulo = true;
+				}
+
+				if (StringUtils.isNotBlank(transporte.getNumeroRegistroMTC())) {
+					transportMeans.setRegistrationNationalityID(
+							UtilUBL.generarRegistrationNationality(transporte.getNumeroRegistroMTC()));
+				} else {
+					datoNulo = true;
+				}
+				if (!datoNulo) {
+					shipmentStage.setTransportMeans(transportMeans);
+				}
+
+				for (PersonaDTO personaConduce : comprobante.getListaChoferes()) {
+					if (personaConduce.getDocumentoIdentidad().getNumeroDocumento() != null && StringUtils
+							.isNotBlank(personaConduce.getDocumentoIdentidad().getNumeroDocumento().getValor())) {
+						conductor = new PersonType();
+						conductor.setID(UtilUBL.generarId(personaConduce.getDocumentoIdentidad().getNumeroDocumento()));
+						shipmentStage.getDriverPerson().add(conductor);
+					} else {
+						datoNulo = true;
+					}
+				}
+				if (!datoNulo) {
+					shipment.getShipmentStage().add(shipmentStage);
+				}
+			}
+
+			int canti = comprobante.getListaDireccionLlegada().size();
+			DeliveryType deliveryShipment = new DeliveryType();
+			AddressType deliveryAdress = new AddressType();
+			if (canti > 0) {
+				deliveryAdress.setCountrySubentityCode(UtilUBL
+						.generarCountrySubentityCode(comprobante.getListaDireccionLlegada().get(0).getCodigoUbigeo()));
+				for (DireccionDTO direccion : comprobante.getListaDireccionLlegada()) {
+					deliveryAdress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
+				}
+			}
+			deliveryShipment.setDeliveryAddress(deliveryAdress);
+			canti = comprobante.getListaEntregas().size();
+			if (canti > 0) {
+				deliveryShipment.setDeliveryParty(
+						UtilUBL.generarParty(comprobante.getListaEntregas().get(0).isFlagSubcontratacion()));
+			}
+			shipment.setDelivery(deliveryShipment);
+
+			canti = comprobante.getListaTransportes().size();
+			if (canti > 0) {
+				TransportHandlingUnitType transportHandling = new TransportHandlingUnitType();
+				transportHandling.getTransportEquipment().add(
+						UtilUBL.generarTransportEquipment(comprobante.getListaTransportes().get(0).getNumeroPlaca()));
+				shipment.getTransportHandlingUnit().add(transportHandling);
+			}
+
+			canti = comprobante.getListaDireccionPartida().size();
+			if (canti > 0) {
+				AddressType originAddress = new AddressType();
+				originAddress.setCountrySubentityCode(UtilUBL
+						.generarCountrySubentityCode(comprobante.getListaDireccionPartida().get(0).getCodigoUbigeo()));
+				for (DireccionDTO direccion : comprobante.getListaDireccionPartida()) {
+					originAddress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
+				}
+				shipment.setOriginAddress(originAddress);
+			}
+
+			delivery = new DeliveryType();
+			if (entrega.getNumeroMedidor() != null && StringUtils.isNotBlank(entrega.getNumeroMedidor().getValor())) {
+				delivery.setID(UtilUBL.generarId(entrega.getNumeroMedidor()));
+			}
+			if (entrega.getCantidad() != null && StringUtils.isNotBlank(entrega.getCantidad().getValor())) {
+				delivery.setQuantity(UtilUBL.generarCantidad(entrega.getCantidad()));
+			}
+			if (entrega.getPotenciaContratada() != null
+					&& StringUtils.isNotBlank(entrega.getPotenciaContratada().getValor())) {
+				delivery.setMaximumQuantity(UtilUBL.generarMaximunQuantity(entrega.getPotenciaContratada()));
+			}
+
+			LocationCoordinateType locacion = null;
+			deliveryLocation = new LocationType();
+			for (UbicacionMedidorDTO ubicacion : entrega.getListaUbicacionesMedidor()) {
+				locacion = new LocationCoordinateType();
+				boolean dato = false;
+				if (StringUtils.isNotBlank(ubicacion.getLatitud())) {
+					locacion.setLatitudeDirectionCode(UtilUBL.generarLatitudeDirection(ubicacion.getLatitud()));
+					dato = true;
+				}
+				if (StringUtils.isNotBlank(ubicacion.getLongitud())) {
+					locacion.setLongitudeDirectionCode(UtilUBL.generarLongitudDirection(ubicacion.getLongitud()));
+					dato = true;
+				}
+				if (dato) {
+					deliveryLocation.getLocationCoordinate().add(locacion);
+				}
+			}
+			delivery.setDeliveryLocation(deliveryLocation);
+
+			PartyType deliveryParty = new PartyType();
+			PartyLegalEntityType partyLegalEntity = null;
+			for (PersonaDTO destinatario : entrega.getListaDestinatarios()) {
+				partyLegalEntity = new PartyLegalEntityType();
+				partyLegalEntity.setCompanyID(
+						UtilUBL.generarCompanyId(destinatario.getDocumentoIdentidad().getNumeroDocumento()));
+				partyLegalEntity.setRegistrationName(UtilUBL.generarRegistrationName(destinatario.getNombrePersona()));
+				deliveryParty.getPartyLegalEntity().add(partyLegalEntity);
+			}
+			delivery.setDeliveryParty(deliveryParty);
+
+			shipment = new ShipmentType();
+			boolean dato = false;
+			if (entrega.getMotivoTraslado() != null && StringUtils.isNotBlank(entrega.getMotivoTraslado().getValor())) {
+				shipment.setHandlingCode(UtilUBL.generarHandlingCode(entrega.getMotivoTraslado()));
+				dato = true;
+			}
+			if (entrega.getPesoBruto() != null && entrega.getPesoBruto().getValor() != null) {
+				shipment.setGrossWeightMeasure(UtilUBL.generarWeightMeasure(entrega.getPesoBruto()));
+				dato = true;
+			}
+			if (dato) {
+				delivery.setShipment(shipment);
+			}
+			invoice.getDelivery().add(delivery);
+		}
+
+		return invoice;
+	}
+
+	private DeliveryTermsType generarDeliveryTerms(ComprobanteDTO comprobante) {
+		int canti = comprobante.getListaDireccionLlegada().size();
+		AddressType addressLocation = null;
+		LocationType deliveryLocationTerms = new LocationType();
+		boolean dato = false;
+		if (canti > 0) {
+			DireccionDTO direccionLlegada = comprobante.getListaDireccionLlegada().get(0);
+			CountryType country = null;
+			addressLocation = new AddressType();
+			if (direccionLlegada.getUbigeo().getCodigoPais() != null
+					&& StringUtils.isNotBlank(direccionLlegada.getUbigeo().getCodigoPais().getValor())) {
+				country = new CountryType();
+				country.setIdentificationCode(
+						UtilUBL.generarIdentificationCode(direccionLlegada.getUbigeo().getCodigoPais()));
+				addressLocation.setCountry(country);
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getDireccionCompleta())) {
+				addressLocation.setStreetName(UtilUBL.generarStreetName(direccionLlegada.getDireccionCompleta()));
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getUrbanizacion())) {
+				addressLocation
+						.setCitySubdivisionName(UtilUBL.generarCitySubdivision(direccionLlegada.getUrbanizacion()));
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getUbigeo().getNombreProvincia())) {
+				addressLocation.setCityName(UtilUBL.generarCityName(direccionLlegada.getUbigeo().getNombreProvincia()));
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getUbigeo().getNombreDepartamento())) {
+				addressLocation.setCountrySubentity(
+						UtilUBL.generarCountrySubentity(direccionLlegada.getUbigeo().getNombreDepartamento()));
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getUbigeo().getCodigoUbigeoInei())) {
+				addressLocation.setCountrySubentityCode(
+						UtilUBL.generarCountrySubentityCode(direccionLlegada.getUbigeo().getCodigoUbigeoInei()));
+				dato = true;
+			}
+			if (StringUtils.isNotBlank(direccionLlegada.getUbigeo().getNombreDistrito())) {
+				addressLocation.setDistrict(UtilUBL.generarDistrict(direccionLlegada.getUbigeo().getNombreDistrito()));
+				dato = true;
+			}
+			if (dato) {
+				deliveryLocationTerms.setAddress(addressLocation);
+			}
+		}
+		boolean datoAmountDelivery = false;
+		AmountType amountDelivery = new AmountType();
+		if (comprobante.getTotalComprobante().getMonto() != null) {
+			amountDelivery.setValue(comprobante.getTotalComprobante().getMonto());
+			datoAmountDelivery = true;
+		}
+		if (StringUtils.isNotBlank(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional())) {
+			amountDelivery.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
+			datoAmountDelivery = true;
+		}
+		if (!datoAmountDelivery) {
+			amountDelivery = null;
+		}
+
+		boolean datoDeliveryTerms = false;
+		DeliveryTermsType deliveryTerms = new DeliveryTermsType();
+		if (StringUtils.isNotBlank(comprobante.getNumeroRegistroMTC())) {
+			deliveryTerms.setID(UtilUBL.generarIdType(comprobante.getNumeroRegistroMTC()));
+			datoDeliveryTerms = true;
+		}
+		if (datoAmountDelivery) {
+			deliveryTerms.setAmount(amountDelivery);
+			datoDeliveryTerms = true;
+		}
+		if (dato) {
+			deliveryTerms.setDeliveryLocation(deliveryLocationTerms);
+			datoDeliveryTerms = true;
+		}
+		if (!datoDeliveryTerms) {
+			deliveryTerms = null;
+		}
+
+		return deliveryTerms;
+	}
+
+	private InvoiceType generarPaymentMeans(InvoiceType invoice, ComprobanteDTO comprobante) {
+		FinancialAccountType payeeFinancialAccount = null;
+		PaymentMeansType paymentMeans = null;
+		for (String numeroCuenta : comprobante.getListaNumeroCuentaDetraccion()) {
+			if (StringUtils.isNotBlank(numeroCuenta)) {
+				payeeFinancialAccount = new FinancialAccountType();
+				payeeFinancialAccount.setID(UtilUBL.generarIdType(numeroCuenta));
+
+				paymentMeans = new PaymentMeansType();
+				paymentMeans.setPayeeFinancialAccount(payeeFinancialAccount);
+
+				invoice.getPaymentMeans().add(paymentMeans);
+			}
+		}
+
+		return invoice;
+	}
+
+	private InvoiceType generarPaymentTerms(InvoiceType invoice, ComprobanteDTO comprobante) {
+		PaymentTermsType paymentTerms = null;
+		PaymentPercentType porcentajeDetraccion = null;
+		AmountType montoDetraccion = null;
+		BigDecimal montoDetra = BigDecimal.ZERO;
+		for (DetalleComprobanteDTO detalleComprobante : comprobante.getDetalleComprobante()) {
+			if (detalleComprobante.getProducto().isAplicaDetraccion()) {
+				if (detalleComprobante.getProducto().getPorcentajeDetraccion() != null) {
+					porcentajeDetraccion = new PaymentPercentType();
+					porcentajeDetraccion.setValue(detalleComprobante.getProducto().getPorcentajeDetraccion());
+				}
+
+				if (StringUtils.isNotBlank(detalleComprobante.getCantidad().getValor())) {
+					montoDetra = UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad().getValor());
+					if (detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto() != null) {
+						montoDetra = montoDetra
+								.multiply(detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto());
+						if (detalleComprobante.getProducto().getPorcentajeDetraccion() != null) {
+							montoDetraccion = new AmountType();
+							montoDetra = montoDetra
+									.multiply(detalleComprobante.getProducto().getPorcentajeDetraccion());
+							montoDetraccion.setValue(montoDetra);
+						}
+					}
+				}
+				boolean dato = false;
+				paymentTerms = new PaymentTermsType();
+				if (detalleComprobante.getProducto().getCodigoProducto() != null
+						&& StringUtils.isNotBlank(detalleComprobante.getProducto().getCodigoProducto().getValor())) {
+					paymentTerms.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
+					dato = true;
+				}
+				if (porcentajeDetraccion != null) {
+					paymentTerms.setPaymentPercent(porcentajeDetraccion);
+					dato = true;
+				}
+				if (montoDetraccion != null) {
+					paymentTerms.setAmount(montoDetraccion);
+					dato = true;
+				}
+				if (dato) {
+					invoice.getPaymentTerms().add(paymentTerms);
+				}
+			}
+		}
+
+		return invoice;
+	}
+
+	private InvoiceType generarPrepaidPayment(InvoiceType invoice, ComprobanteDTO comprobante) {
+		PaidAmountType paidAmount = null;
+		PaymentType paymentType = null;
+		for (ComprobanteAnticipoDTO comproAnticipo : comprobante.getListaComprobantesAnticipo()) {
+			if (comproAnticipo.getMontoComprobante().getMonto() != null) {
+				paidAmount = new PaidAmountType();
+				paidAmount.setValue(comproAnticipo.getMontoComprobante().getMonto());
+				paidAmount.setCurrencyID(comproAnticipo.getMontoComprobante().getMoneda().getCodigoInternacional());
+			}
+			boolean dato = false;
+			paymentType = new PaymentType();
+			if (comproAnticipo.getNumeroComprobanteAnticipo() != null
+					&& StringUtils.isNotBlank(comproAnticipo.getNumeroComprobanteAnticipo().getValor())) {
+				paymentType.setID(UtilUBL.generarId(comproAnticipo.getNumeroComprobanteAnticipo()));
+				dato = true;
+			}
+			if (paidAmount != null) {
+				paymentType.setPaidAmount(paidAmount);
+				dato = true;
+			}
+			if (comproAnticipo.getDocumentoIdentidadEmisor() != null
+					&& StringUtils.isNotBlank(comproAnticipo.getDocumentoIdentidadEmisor().getValor())) {
+				paymentType
+						.setInstructionID(UtilUBL.generarInstructionId(comproAnticipo.getDocumentoIdentidadEmisor()));
+				dato = true;
+			}
+			if (dato) {
+				invoice.getPrepaidPayment().add(paymentType);
+			}
+		}
+		return invoice;
+	}
+
+	private InvoiceType generarAllowanceCharge(InvoiceType invoice, ComprobanteDTO comprobante) {
+		AmountType montoCargoDescuento = null;
+		BaseAmountType baseAmount = null;
+		AllowanceChargeType allowanceCharge = null;
+		for (DescuentoDTO descuento : comprobante.getListaDescuentos()) {
+			if (descuento.getMontoCargoDescuento() != null && descuento.getMontoCargoDescuento().getMonto() != null) {
+				montoCargoDescuento = new AmountType();
+				montoCargoDescuento.setValue(descuento.getMontoCargoDescuento().getMonto());
+				montoCargoDescuento
+						.setCurrencyID(descuento.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
+			}
+			if (descuento.getMontoBaseCargoDescuento() != null
+					&& descuento.getMontoBaseCargoDescuento().getMonto() != null) {
+				baseAmount = new BaseAmountType();
+				baseAmount.setValue(descuento.getMontoBaseCargoDescuento().getMonto());
+				baseAmount.setCurrencyID(descuento.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
+			}
+
+			allowanceCharge = new AllowanceChargeType();
+			allowanceCharge.setChargeIndicator(UtilUBL.generarChargeIndicator(descuento.isFlagCargoDescuento()));
+			if (StringUtils.isNotBlank(descuento.getCodigoMotivoCargoDescuento())) {
+				allowanceCharge.setAllowanceChargeReasonCode(
+						UtilUBL.generarAllowanceChargeReasonCode(descuento.getCodigoMotivoCargoDescuento()));
+			}
+			if (descuento.getFactorCargoDescuento() != null) {
+				allowanceCharge.setMultiplierFactorNumeric(
+						UtilUBL.generarMultiplierFactorNumeric(descuento.getFactorCargoDescuento()));
+			}
+			if (montoCargoDescuento != null) {
+				allowanceCharge.setAmount(montoCargoDescuento);
+			}
+			if (baseAmount != null) {
+				allowanceCharge.setBaseAmount(baseAmount);
+			}
+
+			invoice.getAllowanceCharge().add(allowanceCharge);
+		}
+		return invoice;
+	}
+
+	private InvoiceType generarTaxtotal(InvoiceType invoice, ComprobanteDTO comprobante) {
+		TaxAmountType taxAmount = null;
+		TaxTotalType taxTotal = null;
+
+		if (comprobante.getMontoTotalImpuestos() != null && comprobante.getMontoTotalImpuestos().getMonto() != null) {
+			taxAmount = new TaxAmountType();
+			taxAmount.setValue(comprobante.getMontoTotalImpuestos().getMonto());
+			taxAmount.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
+
+			taxTotal = new TaxTotalType();
+			taxTotal.setTaxAmount(taxAmount);
+		}
+
+		TaxableAmountType taxableAmount = null;
+		TaxAmountType taxAmountSubtotal = null;
+		TaxSchemeType taxScheme = null;
+		TaxCategoryType taxCategory = null;
+		TaxSubtotalType taxSubtotal = null;
+		for (MontoOperacionDTO montoOperacion : comprobante.getListaMontoOperaciones()) {
+			if (montoOperacion.getMontoOperacion() != null && montoOperacion.getMontoOperacion().getMonto() != null) {
+				taxableAmount = new TaxableAmountType();
+				taxableAmount.setValue(montoOperacion.getMontoOperacion().getMonto());
+				taxableAmount.setCurrencyID(montoOperacion.getMontoOperacion().getMoneda().getCodigoInternacional());
+			}
+			if (comprobante.getMontoTotalImpuestos() != null
+					&& comprobante.getMontoTotalImpuestos().getMonto() != null) {
+				taxAmountSubtotal = new TaxAmountType();
+				taxAmountSubtotal.setValue(comprobante.getMontoTotalImpuestos().getMonto());
+				taxAmountSubtotal
+						.setCurrencyID(comprobante.getMontoTotalImpuestos().getMoneda().getCodigoInternacional());
+			}
+
+			if (montoOperacion.getCodigoTributo() != null
+					&& StringUtils.isNotBlank(comprobante.getCodigoTributo().getValor())
+					&& StringUtils.isNotBlank(comprobante.getCodigoTributo().getCodigo())) {
+				taxScheme = new TaxSchemeType();
+				taxScheme.setID(UtilUBL.generarId(montoOperacion.getCodigoTributo()));
+				taxScheme.setName(UtilUBL.generarName(comprobante.getCodigoTributo().getValor()));
+				taxScheme.setTaxTypeCode(UtilUBL.generarTaxTypeCode(comprobante.getCodigoTributo().getCodigo()));
+
+				if (comprobante.getCodigoCategoriaImpuesto() != null
+						&& StringUtils.isNotBlank(comprobante.getCodigoCategoriaImpuesto().getCodigo())) {
+					taxCategory = new TaxCategoryType();
+					taxCategory.setID(UtilUBL.generarIdType(comprobante.getCodigoCategoriaImpuesto().getCodigo()));
+					taxCategory.setTaxScheme(taxScheme);
+				}
+			}
+
+			boolean dato = true;
+			taxSubtotal = new TaxSubtotalType();
+			if (taxableAmount != null) {
+				taxSubtotal.setTaxableAmount(taxableAmount);
+			} else {
+				dato = false;
+			}
+			if (taxAmountSubtotal != null) {
+				taxSubtotal.setTaxAmount(taxAmountSubtotal);
+			} else {
+				dato = false;
+			}
+			if (taxCategory != null) {
+				taxSubtotal.setTaxCategory(taxCategory);
+			} else {
+				dato = false;
+			}
+
+			if (dato) {
+				taxTotal.getTaxSubtotal().add(taxSubtotal);
+			}
+		}
+		return invoice;
+	}
+
+	private MonetaryTotalType generarMonetaryTotal(ComprobanteDTO comprobante) {
+		ChargeTotalAmountType chargeTotalAmount = null;
+		if (comprobante.getSumaOtrosCargos() != null) {
+			chargeTotalAmount = new ChargeTotalAmountType();
+			chargeTotalAmount.setValue(comprobante.getSumaOtrosCargos().getMonto());
+			chargeTotalAmount.setCurrencyID(comprobante.getSumaOtrosCargos().getMoneda().getCodigoInternacional());
+		}
+
+		PayableAmountType payableAmount = null;
+		if (comprobante.getTotalComprobante() != null) {
+			payableAmount = new PayableAmountType();
+			payableAmount.setValue(comprobante.getTotalComprobante().getMonto());
+			payableAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
+		}
+
+		LineExtensionAmountType lineExtensionAmount = null;
+		if (comprobante.getMontoTotalValorVenta() != null) {
+			lineExtensionAmount = new LineExtensionAmountType();
+			lineExtensionAmount.setValue(comprobante.getMontoTotalValorVenta().getMonto());
+			lineExtensionAmount
+					.setCurrencyID(comprobante.getMontoTotalValorVenta().getMoneda().getCodigoInternacional());
+		}
+
+		TaxInclusiveAmountType taxInclusiveAmount = null;
+		if (comprobante.getTotalComprobante() != null) {
+			taxInclusiveAmount = new TaxInclusiveAmountType();
+			taxInclusiveAmount.setValue(comprobante.getTotalComprobante().getMonto());
+			taxInclusiveAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
+		}
+
+		AllowanceTotalAmountType allowanceTotalAmount = null;
+		if (comprobante.getTotalDescuentos() != null && comprobante.getTotalDescuentos().getMonto() != null) {
+			allowanceTotalAmount = new AllowanceTotalAmountType();
+			allowanceTotalAmount.setValue(comprobante.getTotalDescuentos().getMonto().getMonto());
+			allowanceTotalAmount
+					.setCurrencyID(comprobante.getTotalDescuentos().getMonto().getMoneda().getCodigoInternacional());
+		}
+
+		int canti = comprobante.getListaComprobantesAnticipo().size();
+		PrepaidAmountType prepaidAmount = null;
+		if (canti > 0) {
+			ComprobanteAnticipoDTO comprobanteAnticipo = comprobante.getListaComprobantesAnticipo().get(0);
+			prepaidAmount = new PrepaidAmountType();
+			prepaidAmount.setValue(comprobanteAnticipo.getMontoComprobante().getMonto());
+			prepaidAmount.setCurrencyID(comprobanteAnticipo.getMontoComprobante().getMoneda().getCodigoInternacional());
+		}
+		boolean dato = false;
+		MonetaryTotalType monetaryTotal = new MonetaryTotalType();
+		if (lineExtensionAmount != null) {
+			monetaryTotal.setLineExtensionAmount(lineExtensionAmount);
+			dato = true;
+		}
+		if (taxInclusiveAmount != null) {
+			monetaryTotal.setTaxInclusiveAmount(taxInclusiveAmount);
+			dato = true;
+		}
+		if (allowanceTotalAmount != null) {
+			monetaryTotal.setAllowanceTotalAmount(allowanceTotalAmount);
+			dato = true;
+		}
+		if (chargeTotalAmount != null) {
+			monetaryTotal.setChargeTotalAmount(chargeTotalAmount);
+			dato = true;
+		}
+		if (prepaidAmount != null) {
+			monetaryTotal.setPrepaidAmount(prepaidAmount);
+			dato = true;
+		}
+		if (payableAmount != null) {
+			monetaryTotal.setPayableAmount(payableAmount);
+			dato = true;
+		}
+
+		return dato ? monetaryTotal : null;
+	}
+
+	private CustomerPartyType generarCustomerParty(ComprobanteDTO comprobante) {
+		PartyTaxSchemeType partyTaxSchemaAdquiriente = null;
+		AddressTypeCodeType codigoTipoDireccionAdquiriente = null;
+		AddressType direccionAdquiriente = null;
+		PartyType partyAdquiriente = null;
+		CustomerPartyType adquiriente = null;
+		for (PersonaDTO persona : comprobante.getListaAdquiriente()) {
+			codigoTipoDireccionAdquiriente = new AddressTypeCodeType();
+			codigoTipoDireccionAdquiriente
+					.setValue(UtilUBL.parsearDatoSiNull(persona.getDireccion().getCodigo(), "0000"));
+
+			direccionAdquiriente = new AddressType();
+			direccionAdquiriente.setAddressTypeCode(codigoTipoDireccionAdquiriente);
+
+			partyTaxSchemaAdquiriente = new PartyTaxSchemeType();
+			if (StringUtils.isNotBlank(persona.getNombrePersona())) {
+				partyTaxSchemaAdquiriente
+						.setRegistrationName(UtilUBL.generarRegistrationName(persona.getNombrePersona()));
+			}
+			partyTaxSchemaAdquiriente.setRegistrationAddress(direccionAdquiriente);
+			if (persona.getDocumentoIdentidad().getNumeroDocumento() != null
+					&& StringUtils.isNotBlank(persona.getDocumentoIdentidad().getNumeroDocumento().getValor())) {
+				partyTaxSchemaAdquiriente
+						.setCompanyID(UtilUBL.generarCompanyId(persona.getDocumentoIdentidad().getNumeroDocumento()));
+			}
+			partyAdquiriente = new PartyType();
+			partyAdquiriente.getPartyTaxScheme().add(partyTaxSchemaAdquiriente);
+		}
+		if (partyAdquiriente != null) {
+			adquiriente = new CustomerPartyType();
+			adquiriente.setParty(partyAdquiriente);
+		}
+
+		return adquiriente;
+	}
+
+	private SupplierPartyType generarSupplierParty(ComprobanteDTO comprobante) {
+		AddressTypeCodeType codigoTipoDireccion = new AddressTypeCodeType();
+		AddressType direccionEmisor = null;
+		PartyType partyEmisor = null;
+		if (comprobante.getListaEmisores() != null && !comprobante.getListaEmisores().isEmpty()) {
+			partyEmisor = new PartyType();
+			for (PersonaDTO emisor : comprobante.getListaEmisores()) {
+				if (StringUtils.isNotBlank(emisor.getNombreComercial())) {
+					partyEmisor.getPartyName().add(UtilUBL.generarPartyName(emisor.getNombreComercial()));
+				}
+			}
+		}
+
+		PartyTaxSchemeType partyTaxSchemaEmisor = null;
+		for (PersonaDTO emisor : comprobante.getListaEmisores()) {
+			if (emisor.getDireccion() != null && StringUtils.isNotBlank(emisor.getDireccion().getCodigo())) {
+				direccionEmisor = new AddressType();
+				codigoTipoDireccion.setValue(UtilUBL.parsearDatoSiNull(emisor.getDireccion().getCodigo(), "0000"));
+				direccionEmisor.setAddressTypeCode(codigoTipoDireccion);
+			}
+			boolean dato = false;
+			partyTaxSchemaEmisor = new PartyTaxSchemeType();
+			if (StringUtils.isNotBlank(emisor.getNombrePersona())) {
+				partyTaxSchemaEmisor.setRegistrationName(UtilUBL.generarRegistrationName(emisor.getNombrePersona()));
+				dato = true;
+			}
+			if (emisor.getDocumentoIdentidad() != null && emisor.getDocumentoIdentidad().getNumeroDocumento() != null) {
+				partyTaxSchemaEmisor
+						.setCompanyID(UtilUBL.generarCompanyId(emisor.getDocumentoIdentidad().getNumeroDocumento()));
+				dato = true;
+			}
+			if (direccionEmisor != null) {
+				partyTaxSchemaEmisor.setRegistrationAddress(direccionEmisor);
+				dato = true;
+			}
+			if (dato) {
+				partyEmisor.getPartyTaxScheme().add(partyTaxSchemaEmisor);
+			}
+		}
+		if (partyEmisor != null) {
+			SupplierPartyType emisor = new SupplierPartyType();
+			emisor.setParty(partyEmisor);
+			return emisor;
+		}
+		return null;
+	}
+
+	private InvoiceType generarInvoiceLine(InvoiceType invoice, ComprobanteDTO comprobante)
+			throws DatatypeConfigurationException {
+		InvoiceLineType invoiceLine = null;
+		PricingReferenceType pricingReference = null;
+		PartyIdentificationType partyIdentificacion = null;
+		CountryType pais = null;
+		AllowanceChargeType allowanceChargeDetalle = null;
+		AmountType montoCargoDescuentoDetalle = null;
+		BaseAmountType baseMontoCargoDescuento = null;
+		DetalleComprobanteDTO detalleComprobante = null;
+		for (int i = 0; i < comprobante.getDetalleComprobante().size(); i++) {
+			detalleComprobante = comprobante.getDetalleComprobante().get(i);
+
+			LineExtensionAmountType lineExtensionAmountDetalle = new LineExtensionAmountType();
+
+			if (detalleComprobante.getPrecioVentaUnitario() != null
+					&& detalleComprobante.getPrecioVentaUnitario().getMonto() != null
+					&& detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto() != null
+					&& detalleComprobante.getCantidad() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getCantidad().getValor())) {
+				BigDecimal totalCalculo = null;
+				totalCalculo = detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto()
+						.multiply(UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad().getValor()));
+				lineExtensionAmountDetalle.setValue(totalCalculo);
+
+				lineExtensionAmountDetalle.setCurrencyID(
+						detalleComprobante.getPrecioVentaUnitario().getMonto().getMoneda().getCodigoInternacional());
+			}
+
+			pricingReference = new PricingReferenceType();
+			PriceType priceType = null;
+			PriceAmountType priceAmountDetalle = null;
+			if (detalleComprobante.getListaPrecios() != null && !detalleComprobante.getListaPrecios().isEmpty()){
+				for (PrecioDetalleDTO precio : detalleComprobante.getListaPrecios()) {
+					if (precio.getPrecio() != null && precio.getPrecio().getMonto() != null) {
+						priceAmountDetalle = new PriceAmountType();
+						priceAmountDetalle.setValue(precio.getPrecio().getMonto());
+						priceAmountDetalle.setCurrencyID(precio.getPrecio().getMoneda().getCodigoInternacional());
+					}
+
+					boolean dato = false;
+					priceType = new PriceType();
+					if (priceAmountDetalle != null) {
+						priceType.setPriceAmount(priceAmountDetalle);
+						dato = true;
+					}
+					if (precio.getTipoPrecio() != null) {
+						priceType.setPriceTypeCode(UtilUBL.generarPriceTypeCode(precio.getTipoPrecio()));
+						dato = true;
+					}
+					if (dato){
+						pricingReference.getAlternativeConditionPrice().add(priceType);
+					}
+				}
+			}
+			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDocumentoIdentidad() != null && detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null){
+				partyIdentificacion = new PartyIdentificationType();
+				partyIdentificacion.setID(
+						UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
+			}
+			if (detalleComprobante.getHuesped()!=  null && StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())){
+				PartyNameType partyNameHuesped = new PartyNameType();
+				partyNameHuesped.setName(UtilUBL.generarName(detalleComprobante.getHuesped().getNombrePersona()));
+			}
+			AddressType postalAdress = null;
+			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDireccion() != null && detalleComprobante.getHuesped().getDireccion().getUbigeo() != null && detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais() != null){
+				pais = new CountryType();
+				pais.setIdentificationCode(UtilUBL.generarIdentificationCode(detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais()));
+				
+				postalAdress = new AddressType();
+				postalAdress.setCountry(pais);
+			}
+			PersonType personHuesped = new PersonType();
+			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDocumentoIdentidad() != null && detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null){
+				personHuesped.setID(UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
+			}
+			if (detalleComprobante.getHuesped() != null && StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())){
+				personHuesped.setFirstName(UtilUBL.generarFirstName(detalleComprobante.getHuesped().getNombrePersona()));
+			}
+
+			PartyType deliveryPartyDetalle = new PartyType();
+			deliveryPartyDetalle.getPartyIdentification().add(partyIdentificacion);
+			deliveryPartyDetalle.getPartyName()
+					.add(UtilUBL.generarPartyName(detalleComprobante.getHuesped().getNombrePersona()));
+			deliveryPartyDetalle.setPostalAddress(postalAdress);
+			deliveryPartyDetalle.getPerson().add(personHuesped);
+
+			DeliveryType deliveryPasajero = new DeliveryType();
+			deliveryPasajero.setDeliveryAddress(
+					UtilUBL.generarAddress(detalleComprobante.getCiudadDestino().getCodigoUbigeoInei()));
+
+			AddressType originAddressPasajero = new AddressType();
+			originAddressPasajero.setCountrySubentityCode(
+					UtilUBL.generarCountrySubentityCode(detalleComprobante.getCiudadOrigen().getCodigoUbigeoInei()));
+
+			ShipmentType shipmentDelivery = new ShipmentType();
+			ShipmentStageType shipmentStagePasajero = null;
+			TransportEventType departureTransport = null;
+			OccurrenceDateType fechaOcurencia = null;
+			PersonType pasajero = null;
+			FirstNameType nombrePasajero = null;
+			for (ProductoServicioDTO proServicio : detalleComprobante.getListaProductoServicio()) {
+				fechaOcurencia = new OccurrenceDateType();
+				fechaOcurencia.setValue(UtilEjb.convertirDateAGregorian(proServicio.getFechaInicioProgramado()));
+
+				departureTransport = new TransportEventType();
+				departureTransport.setOccurrenceDate(fechaOcurencia);
+
+				shipmentStagePasajero = new ShipmentStageType();
+				shipmentStagePasajero.setID(UtilUBL.generarId(proServicio.getNumeroAsiento()));
+				shipmentStagePasajero.setPlannedDepartureTransportEvent(departureTransport);
+				for (PersonaDTO paxs : proServicio.getListaPasajeros()) {
+					nombrePasajero = new FirstNameType();
+					nombrePasajero.setValue(paxs.getNombrePersona());
+
+					pasajero = new PersonType();
+					pasajero.setID(UtilUBL.generarId(paxs.getDocumentoIdentidad().getNumeroDocumento()));
+					pasajero.setFirstName(nombrePasajero);
+
+					shipmentStagePasajero.getPassengerPerson().add(pasajero);
+				}
+				shipmentDelivery.getShipmentStage().add(shipmentStagePasajero);
+			}
+			shipmentDelivery.setDelivery(deliveryPasajero);
+			shipmentDelivery.setOriginAddress(originAddressPasajero);
+
+			DeliveryType deliveryDetalle = new DeliveryType();
+			deliveryDetalle.setDeliveryParty(deliveryPartyDetalle);
+			deliveryDetalle.setShipment(shipmentDelivery);
+
+			invoiceLine = new InvoiceLineType();
+			invoiceLine.setID(UtilUBL.generarIdType(String.valueOf((i + 1))));
+			invoiceLine.setInvoicedQuantity(UtilUBL.generarInvoicedQuantity(detalleComprobante.getCantidad()));
+			invoiceLine.setLineExtensionAmount(lineExtensionAmountDetalle);
+			invoiceLine.setPricingReference(pricingReference);
+			invoiceLine.getDelivery().add(deliveryDetalle);
+
+			for (DescuentoDTO dscto : detalleComprobante.getListaDescuento()) {
+				montoCargoDescuentoDetalle = new AmountType();
+				montoCargoDescuentoDetalle.setValue(dscto.getMontoCargoDescuento().getMonto());
+				montoCargoDescuentoDetalle
+						.setCurrencyID(dscto.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
+
+				baseMontoCargoDescuento = new BaseAmountType();
+				baseMontoCargoDescuento.setValue(dscto.getMontoBaseCargoDescuento().getMonto());
+				baseMontoCargoDescuento
+						.setCurrencyID(dscto.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
+
+				allowanceChargeDetalle = new AllowanceChargeType();
+				allowanceChargeDetalle.setChargeIndicator(UtilUBL.generarChargeIndicator(dscto.isFlagCargoDescuento()));
+				allowanceChargeDetalle.setAllowanceChargeReasonCode(
+						UtilUBL.generarAllowanceChargeReasonCode(dscto.getCodigoMotivoCargoDescuento()));
+				allowanceChargeDetalle.setMultiplierFactorNumeric(
+						UtilUBL.generarMultiplierFactorNumeric(dscto.getFactorCargoDescuento()));
+				allowanceChargeDetalle.setAmount(montoCargoDescuentoDetalle);
+				allowanceChargeDetalle.setBaseAmount(baseMontoCargoDescuento);
+
+				invoiceLine.getAllowanceCharge().add(allowanceChargeDetalle);
+			}
+
+			TaxTotalType taxTotalDetalle = null;
+			TaxAmountType taxAmountDetalle = null;
+			TaxableAmountType taxableAmountDetalle = null;
+			TaxAmountType taxAmountSubtotal2 = null;
+			TaxCategoryType taxCategoryDetalle = null;
+			TaxSchemeType taxSchemeCategory = null;
+			for (AfectacionImptoDTO afecImpto : detalleComprobante.getAfectacionImpuestos()) {
+				taxAmountDetalle = new TaxAmountType();
+				taxAmountDetalle.setValue(afecImpto.getTotalImpuesto().getMonto());
+				taxAmountDetalle.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+
+				taxableAmountDetalle = new TaxableAmountType();
+				taxableAmountDetalle.setValue(detalleComprobante.getMontoTotal().getMonto());
+				taxableAmountDetalle
+						.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
+
+				taxAmountSubtotal2 = new TaxAmountType();
+				taxAmountSubtotal2.setValue(afecImpto.getTotalImpuesto().getMonto());
+				taxAmountSubtotal2.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+
+				taxSchemeCategory = new TaxSchemeType();
+				taxSchemeCategory.setID(UtilUBL.generarId(afecImpto.getTributo().getCodigoInternacional()));
+				taxSchemeCategory.setName(UtilUBL.generarName(afecImpto.getTributo().getNombre()));
+				taxSchemeCategory.setTaxTypeCode(UtilUBL.generarTaxTypeCode(afecImpto.getTributo().getCodigo()));
+
+				taxCategoryDetalle = new TaxCategoryType();
+				taxCategoryDetalle.setID(UtilUBL.generarId(afecImpto.getCodigoCategoria()));
+				taxCategoryDetalle.setPercent(UtilUBL.generarPercent(afecImpto.getPorcentaje()));
+				taxCategoryDetalle
+						.setTaxExemptionReasonCode(UtilUBL.generarTaxExemptionReasonCode(afecImpto.getAfectacion()));
+				taxCategoryDetalle.setTierRange(UtilUBL.generarTierRange(afecImpto.getCodigoSistemaIsc().getCodigo()));
+				taxCategoryDetalle.setTaxScheme(taxSchemeCategory);
+
+				TaxSubtotalType taxSubtotalDetalle = new TaxSubtotalType();
+				taxSubtotalDetalle.setTaxableAmount(taxableAmountDetalle);
+				taxSubtotalDetalle.setTaxAmount(taxAmountSubtotal2);
+				taxSubtotalDetalle.setTaxCategory(taxCategoryDetalle);
+
+				taxTotalDetalle = new TaxTotalType();
+				taxTotalDetalle.setTaxAmount(taxAmountDetalle);
+				taxTotalDetalle.getTaxSubtotal().add(taxSubtotalDetalle);
+
+				invoiceLine.getTaxTotal().add(taxTotalDetalle);
+			}
+			ItemIdentificationType sellersItemIdentification = new ItemIdentificationType();
+			sellersItemIdentification.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
+
+			CommodityClassificationType commodityClassification = new CommodityClassificationType();
+			commodityClassification.setItemClassificationCode(
+					UtilUBL.generarItemClassificationCode(detalleComprobante.getProducto().getCodigoProductoSunat()));
+
+			ItemType itemDetalle = null;
+			for (String descripcion : detalleComprobante.getProducto().getListaDescripcionProducto()) {
+				itemDetalle = new ItemType();
+				itemDetalle.getDescription().add(UtilUBL.generarDescription(descripcion));
+
+				itemDetalle.getCommodityClassification().add(commodityClassification);
+			}
+			itemDetalle.setSellersItemIdentification(sellersItemIdentification);
+
+			PeriodType usabilityPeriodo = null;
+			for (PropiedadesAdicionalesDTO propiedad : detalleComprobante.getListaPropiedadesAdicionales()) {
+				usabilityPeriodo = new PeriodType();
+				usabilityPeriodo.setStartDate(UtilUBL.generarStartDate(propiedad.getFechaInicio()));
+				usabilityPeriodo.setEndDate(UtilUBL.generarEndDate(propiedad.getFechaFin()));
+
+				ItemPropertyType adicionalProperty = new ItemPropertyType();
+				adicionalProperty.setName(UtilUBL.generarName(propiedad.getNombreConceptoTributario()));
+				adicionalProperty.setNameCode(UtilUBL.generarNameCode(propiedad.getCodigoConceptoTributario()));
+				adicionalProperty.setValue(UtilUBL.generarValue(propiedad.getItem().getValor()));
+				adicionalProperty.getValueQualifier()
+						.add(UtilUBL.generarValueQualifier(propiedad.getItem().getCodigo()));
+				adicionalProperty.setUsabilityPeriod(usabilityPeriodo);
+
+				itemDetalle.getAdditionalItemProperty().add(adicionalProperty);
+			}
+			PriceAmountType priceAmountDetalle2 = new PriceAmountType();
+			priceAmountDetalle2.setValue(detalleComprobante.getMontoTotal().getMonto());
+			priceAmountDetalle2.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
+
+			PriceType price = new PriceType();
+			price.setPriceAmount(priceAmountDetalle2);
+
+			invoice.getInvoiceLine().add(invoiceLine);
+			invoiceLine.setItem(itemDetalle);
+			invoiceLine.setPrice(price);
+		}
+
+		return invoice;
+	}
 }

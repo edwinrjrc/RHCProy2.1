@@ -117,22 +117,86 @@ public class UtilUBL {
 	}
 	
 	public static ProfileIDType generarProfileId(IdDTO valor){
-		ProfileIDType profileType = (ProfileIDType) generarIdentifier(valor);
+		ProfileIDType profileType = new ProfileIDType();
+		profileType.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getEsquemaNombre())){
+			profileType.setSchemeName(valor.getEsquemaNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
+			profileType.setSchemeAgencyName(valor.getEsquemaNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaURI())){
+			profileType.setSchemeURI(valor.getEsquemaURI());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaId())){
+			profileType.setSchemeID(valor.getEsquemaId());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaIdAgencia())){
+			profileType.setSchemeAgencyID(valor.getEsquemaIdAgencia());
+		}
 		return profileType;
 	}
 	
 	public static CompanyIDType generarCompanyId(IdDTO valor){
-		CompanyIDType company = (CompanyIDType) generarIdentifier(valor);
+		CompanyIDType company = new CompanyIDType();
+		company.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getEsquemaNombre())){
+			company.setSchemeName(valor.getEsquemaNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
+			company.setSchemeAgencyName(valor.getEsquemaNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
+			company.setSchemeURI(valor.getEsquemaURI());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaId())){
+			company.setSchemeID(valor.getEsquemaId());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaIdAgencia())){
+			company.setSchemeAgencyID(valor.getEsquemaIdAgencia());
+		}
 		return company;
 	}
 	
 	public static IDType generarId(IdDTO valor){
-		IDType id = (IDType) generarIdentifier(valor);
+		IDType id = new IDType();
+		id.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getEsquemaNombre())){
+			id.setSchemeName(valor.getEsquemaNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
+			id.setSchemeAgencyName(valor.getEsquemaNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaURI())){
+			id.setSchemeURI(valor.getEsquemaURI());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaId())){
+			id.setSchemeID(valor.getEsquemaId());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaIdAgencia())){
+			id.setSchemeAgencyID(valor.getEsquemaIdAgencia());
+		}
 		return id;
 	}
 	
 	public static InstructionIDType generarInstructionId(IdDTO valor){
-		InstructionIDType instruccion = (InstructionIDType) generarIdentifier(valor);
+		InstructionIDType instruccion = new InstructionIDType();
+		instruccion.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getEsquemaNombre())){
+			instruccion.setSchemeName(valor.getEsquemaNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
+			instruccion.setSchemeAgencyName(valor.getEsquemaNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaURI())){
+			instruccion.setSchemeURI(valor.getEsquemaURI());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaId())){
+			instruccion.setSchemeID(valor.getEsquemaId());
+		}
+		if (StringUtils.isNotBlank(valor.getEsquemaIdAgencia())){
+			instruccion.setSchemeAgencyID(valor.getEsquemaIdAgencia());
+		}
 		return instruccion;
 	}
 	
@@ -145,8 +209,8 @@ public class UtilUBL {
 		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
 			profileType.setSchemeAgencyName(valor.getEsquemaNombreAgencia());
 		}
-		if (StringUtils.isNotBlank(valor.getEsquemaNombreAgencia())){
-			profileType.setSchemeURI(valor.getEsquemaNombreAgencia());
+		if (StringUtils.isNotBlank(valor.getEsquemaURI())){
+			profileType.setSchemeURI(valor.getEsquemaURI());
 		}
 		if (StringUtils.isNotBlank(valor.getEsquemaId())){
 			profileType.setSchemeID(valor.getEsquemaId());
@@ -176,42 +240,140 @@ public class UtilUBL {
 	}
 	
 	public static InvoiceTypeCodeType generarInvoiceTypeCode(CodigoDTO valor){
-		InvoiceTypeCodeType tipoComprobante = (InvoiceTypeCodeType) generarCode(valor);
+		InvoiceTypeCodeType tipoComprobante = new InvoiceTypeCodeType();
+		tipoComprobante.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			tipoComprobante.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			tipoComprobante.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			tipoComprobante.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			tipoComprobante.setListID(valor.getListId());
+		}
 		return tipoComprobante;
 	}
 	
 	public static DocumentCurrencyCodeType generarDocumentCurrencyCode(CodigoDTO valor){
-		DocumentCurrencyCodeType moneda = (DocumentCurrencyCodeType) generarCode(valor);
+		DocumentCurrencyCodeType moneda = new DocumentCurrencyCodeType();
+		moneda.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			moneda.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			moneda.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			moneda.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			moneda.setListID(valor.getListId());
+		}
 		return moneda;
 	}
 	
 	public static DocumentTypeCodeType generarDocumentTypeCode(CodigoDTO valor){
-		DocumentTypeCodeType document = (DocumentTypeCodeType) generarCode(valor);
-		return document;
+		DocumentTypeCodeType tipoComprobante = new DocumentTypeCodeType();
+		tipoComprobante.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			tipoComprobante.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			tipoComprobante.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			tipoComprobante.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			tipoComprobante.setListID(valor.getListId());
+		}
+		return tipoComprobante;
 	}
 	
 	public static LocaleCodeType generarLocaleCode(CodigoDTO valor){
-		LocaleCodeType localCode = (LocaleCodeType) generarCode(valor);
+		LocaleCodeType localCode = new LocaleCodeType();
+		localCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			localCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			localCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			localCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			localCode.setListID(valor.getListId());
+		}
 		return localCode;
 	}
 	
 	public static DocumentStatusCodeType generarDocumentStatusCode(CodigoDTO valor){
-		DocumentStatusCodeType documentStatus = (DocumentStatusCodeType) generarCode(valor);
+		DocumentStatusCodeType documentStatus = new DocumentStatusCodeType();
+		documentStatus.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			documentStatus.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			documentStatus.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			documentStatus.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			documentStatus.setListID(valor.getListId());
+		}
 		return documentStatus;
 	}
 	
 	public static TransportModeCodeType generarTransportModeCode(CodigoDTO valor){
-		TransportModeCodeType transportMode = (TransportModeCodeType) generarCode(valor);
+		TransportModeCodeType transportMode = new TransportModeCodeType();
+		transportMode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			transportMode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			transportMode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			transportMode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			transportMode.setListID(valor.getListId());
+		}
 		return transportMode;
 	}
 	
 	public static PriceTypeCodeType generarPriceTypeCode(CodigoDTO valor){
-		PriceTypeCodeType tipoPrecio = (PriceTypeCodeType) generarCode(valor);
+		PriceTypeCodeType tipoPrecio = new PriceTypeCodeType();
+		tipoPrecio.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			tipoPrecio.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			tipoPrecio.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			tipoPrecio.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			tipoPrecio.setListID(valor.getListId());
+		}
 		return tipoPrecio;
 	}
 	
 	public static GrossWeightMeasureType generarWeightMeasure(MedidaDTO valor){
-		GrossWeightMeasureType peso = (GrossWeightMeasureType) generarMeasure(valor);
+		GrossWeightMeasureType peso = new GrossWeightMeasureType();
+		peso.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getCodigoUnidad())){
+			peso.setUnitCode(valor.getCodigoUnidad());
+		}
+		if (StringUtils.isNotBlank(valor.getCodigoListaVersionId())){
+			peso.setUnitCodeListVersionID(valor.getCodigoListaVersionId());
+		}
 		return peso;
 	}
 	
@@ -301,7 +463,17 @@ public class UtilUBL {
 	}
 	
 	public static MaximumQuantityType generarMaximunQuantity(CantidadDTO valor){
-		MaximumQuantityType maximaCantidad = (MaximumQuantityType) generarQuantity(valor);
+		MaximumQuantityType maximaCantidad = new MaximumQuantityType();
+		maximaCantidad.setValue(valor.getValorNumerico());
+		if (StringUtils.isNotBlank(valor.getUnidadMedida())){
+			maximaCantidad.setUnitCode(valor.getUnidadMedida());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			maximaCantidad.setUnitCodeListID(valor.getUnidadListaId());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			maximaCantidad.setUnitCodeListAgencyName(valor.getUnidadListaAgencia());
+		}
 		return maximaCantidad;
 	}
 	
@@ -318,12 +490,38 @@ public class UtilUBL {
 	}
 	
 	public static HandlingCodeType generarHandlingCode(CodigoDTO valor){
-		HandlingCodeType handlingCode = (HandlingCodeType) generarCode(valor);
+		HandlingCodeType handlingCode = new HandlingCodeType();
+		handlingCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			handlingCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			handlingCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			handlingCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			handlingCode.setListID(valor.getListId());
+		}
 		return handlingCode;
 	}
 	
 	public static TransportModeCodeType generarTransportMode(CodigoDTO valor){
-		TransportModeCodeType transportModeCode = (TransportModeCodeType) generarCode(valor);
+		TransportModeCodeType transportModeCode = new TransportModeCodeType();
+		transportModeCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			transportModeCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			transportModeCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			transportModeCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			transportModeCode.setListID(valor.getListId());
+		}
 		return transportModeCode;
 	}
 	
@@ -418,7 +616,20 @@ public class UtilUBL {
 	}
 	
 	public static IdentificationCodeType generarIdentificationCode(CodigoDTO valor){
-		IdentificationCodeType identificacionCode = (IdentificationCodeType) generarCode(valor);
+		IdentificationCodeType identificacionCode = new IdentificationCodeType();
+		identificacionCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			identificacionCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			identificacionCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			identificacionCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			identificacionCode.setListID(valor.getListId());
+		}
 		return identificacionCode;
 	}
 	
@@ -465,7 +676,20 @@ public class UtilUBL {
 	}
 	
 	public static TaxExemptionReasonCodeType generarTaxExemptionReasonCode(CodigoDTO valor){
-		TaxExemptionReasonCodeType codigoAfectacion = (TaxExemptionReasonCodeType) generarCode(valor);
+		TaxExemptionReasonCodeType codigoAfectacion = new TaxExemptionReasonCodeType();
+		codigoAfectacion.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			codigoAfectacion.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			codigoAfectacion.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			codigoAfectacion.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			codigoAfectacion.setListID(valor.getListId());
+		}
 		return codigoAfectacion;
 	}
 	
@@ -488,12 +712,38 @@ public class UtilUBL {
 	}
 	
 	public static ItemClassificationCodeType generarItemClassificationCode(CodigoDTO valor){
-		ItemClassificationCodeType itemClasificacion = (ItemClassificationCodeType) generarCode(valor);
+		ItemClassificationCodeType itemClasificacion = new ItemClassificationCodeType();
+		itemClasificacion.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			itemClasificacion.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			itemClasificacion.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			itemClasificacion.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			itemClasificacion.setListID(valor.getListId());
+		}
 		return itemClasificacion;
 	}
 	
 	public static NameCodeType generarNameCode(CodigoDTO valor){
-		NameCodeType nameCode = (NameCodeType) generarCode(valor);
+		NameCodeType nameCode = new NameCodeType();
+		nameCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			nameCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			nameCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			nameCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			nameCode.setListID(valor.getListId());
+		}
 		return nameCode;
 	}
 	
@@ -529,12 +779,32 @@ public class UtilUBL {
 	}
 	
 	public static InvoicedQuantityType generarInvoicedQuantity(CantidadDTO valor){
-		InvoicedQuantityType cantidad = (InvoicedQuantityType) generarQuantity(valor);
+		InvoicedQuantityType cantidad = new InvoicedQuantityType();
+		cantidad.setValue(valor.getValorNumerico());
+		if (StringUtils.isNotBlank(valor.getUnidadMedida())){
+			cantidad.setUnitCode(valor.getUnidadMedida());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			cantidad.setUnitCodeListID(valor.getUnidadListaId());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			cantidad.setUnitCodeListAgencyName(valor.getUnidadListaAgencia());
+		}
 		return cantidad;
 	}
 	
 	public static QuantityType generarCantidad(CantidadDTO valor){
-		QuantityType cantidad = (QuantityType) generarQuantity(valor);
+		QuantityType cantidad = new QuantityType();
+		cantidad.setValue(valor.getValorNumerico());
+		if (StringUtils.isNotBlank(valor.getUnidadMedida())){
+			cantidad.setUnitCode(valor.getUnidadMedida());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			cantidad.setUnitCodeListID(valor.getUnidadListaId());
+		}
+		if (StringUtils.isNotBlank(valor.getUnidadListaId())){
+			cantidad.setUnitCodeListAgencyName(valor.getUnidadListaAgencia());
+		}
 		return cantidad;
 	}
 	

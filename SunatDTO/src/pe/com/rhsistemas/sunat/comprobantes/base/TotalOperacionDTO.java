@@ -30,6 +30,9 @@ public class TotalOperacionDTO extends BaseDTO {
 	 * @return the monto
 	 */
 	public MontoValorDTO getMonto() {
+		if (monto == null){
+			monto = new MontoValorDTO();
+		}
 		return monto;
 	}
 	/**

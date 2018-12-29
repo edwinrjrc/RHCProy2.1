@@ -19,6 +19,9 @@ public class PrecioDetalleDTO extends BaseDTO {
 	 * @return the precio
 	 */
 	public MontoValorDTO getPrecio() {
+		if (precio == null){
+			precio = new MontoValorDTO();
+		}
 		return precio;
 	}
 	/**
@@ -31,6 +34,9 @@ public class PrecioDetalleDTO extends BaseDTO {
 	 * @return the tipoPrecio
 	 */
 	public CodigoDTO getTipoPrecio() {
+		if (tipoPrecio == null){
+			tipoPrecio = new CodigoDTO();
+		}
 		return tipoPrecio;
 	}
 	/**
@@ -39,6 +45,4 @@ public class PrecioDetalleDTO extends BaseDTO {
 	public void setTipoPrecio(CodigoDTO tipoPrecio) {
 		this.tipoPrecio = tipoPrecio;
 	}
-	
-	
 }
