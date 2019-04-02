@@ -40,6 +40,11 @@ public class UtilEjb {
 		return sdf.parse(fecha);
 	}
 	
+	public static String parseaFecha(Date fecha, String pattern) throws ParseException{
+		SimpleDateFormat sdf = new SimpleDateFormat(pattern);
+		return sdf.format(fecha);
+	}
+	
 	public static boolean validaDatoEsBlancoNullo(Object objeto){
 		if (objeto instanceof String){
 			if (StringUtils.isBlank(objeto.toString())){

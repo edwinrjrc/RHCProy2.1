@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.Date;
 
 import javax.ejb.Stateless;
 import javax.xml.bind.JAXBContext;
@@ -12,6 +14,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.PropertyException;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -58,10 +61,12 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.Allowanc
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeTotalAmountType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentTypeCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FirstNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineExtensionAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoteType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OccurrenceDateType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.OccurrenceTimeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaidAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PayableAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentPercentType;
@@ -192,6 +197,9 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		} catch (DatatypeConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -276,6 +284,7 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 
 	private InvoiceType generarAdicionalDocumento(InvoiceType invoice, ComprobanteDTO comprobante) {
 		DocumentReferenceType addDocumentReference = null;
+		DocumentTypeCodeType codigoTipoDocumento = null;
 		boolean agregar = false;
 		for (ComprobanteRelacionadoDTO relacionado : comprobante.getListaComprobanteRelacionado()) {
 			addDocumentReference = new DocumentReferenceType();
@@ -283,6 +292,10 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			if (StringUtils.isNotBlank(relacionado.getNumeroComprobante()) && relacionado.getTipoComprobante() != null
 					&& StringUtils.isNotBlank(relacionado.getTipoComprobante().getValor())) {
 				addDocumentReference.setID(UtilUBL.generarIdType(relacionado.getNumeroComprobante()));
+				codigoTipoDocumento = new DocumentTypeCodeType();
+				codigoTipoDocumento.setValue(relacionado.getTipoComprobante().getValor());
+				addDocumentReference
+						.setDocumentTypeCode(UtilUBL.generarDocumentTypeCode(relacionado.getTipoComprobante()));
 				agregar = true;
 			}
 
@@ -305,24 +318,22 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		PartyType carrierParty = null;
 		PartyLegalEntityType carrierLegalEntity = null;
 		boolean valorDato = false;
-		boolean datoNulo = false;
+		boolean datoBien = false;
 		for (EntregaDTO entrega : comprobante.getListaEntregas()) {
-			for (TransporteDTO transporte : comprobante.getListaTransportes()) {
+			for (TransporteDTO transporte : entrega.getListaTransporte()) {
 				shipmentStage = new ShipmentStageType();
 				if (transporte.getModalidadTraslado() != null) {
 					shipmentStage.setTransportModeCode(UtilUBL.generarTransportMode(transporte.getModalidadTraslado()));
-				} else {
-					datoNulo = true;
+					datoBien = true;
 				}
 				if (transporte.getFechaInicioTraslado() != null) {
 					shipmentStage.setTransitPeriod(UtilUBL.generarPeriod(transporte.getFechaInicioTraslado()));
-				} else {
-					datoNulo = true;
+					datoBien = true;
 				}
-
-				if (!comprobante.getListaTransportista().isEmpty()) {
+				boolean datoTransportista = false;
+				if (!transporte.getListaTransportista().isEmpty()) {
 					carrierParty = new PartyType();
-					for (TransportistaDTO transportista : comprobante.getListaTransportista()) {
+					for (TransportistaDTO transportista : transporte.getListaTransportista()) {
 						carrierLegalEntity = new PartyLegalEntityType();
 						valorDato = false;
 						if (transportista.getDocumentoIdentidad().getNumeroDocumento() != null && StringUtils
@@ -343,48 +354,45 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 					}
 					if (!carrierParty.getPartyLegalEntity().isEmpty()) {
 						shipmentStage.getCarrierParty().add(carrierParty);
+						datoTransportista = true;
 					}
 				}
-
+				boolean datoTransporte = false;
 				transportMeans = new TransportMeansType();
 				if (StringUtils.isNotBlank(transporte.getNumeroPlaca())) {
 					transportMeans.setRoadTransport(UtilUBL.generarRoadTransport(transporte.getNumeroPlaca()));
-				} else {
-					datoNulo = true;
+					datoTransporte = true;
 				}
-
 				if (StringUtils.isNotBlank(transporte.getNumeroRegistroMTC())) {
 					transportMeans.setRegistrationNationalityID(
 							UtilUBL.generarRegistrationNationality(transporte.getNumeroRegistroMTC()));
-				} else {
-					datoNulo = true;
+					datoTransporte = true;
 				}
-				if (!datoNulo) {
+				if (datoTransporte) {
 					shipmentStage.setTransportMeans(transportMeans);
 				}
 
-				for (PersonaDTO personaConduce : comprobante.getListaChoferes()) {
+				for (PersonaDTO personaConduce : transporte.getListaConductores()) {
 					if (personaConduce.getDocumentoIdentidad().getNumeroDocumento() != null && StringUtils
 							.isNotBlank(personaConduce.getDocumentoIdentidad().getNumeroDocumento().getValor())) {
 						conductor = new PersonType();
 						conductor.setID(UtilUBL.generarId(personaConduce.getDocumentoIdentidad().getNumeroDocumento()));
 						shipmentStage.getDriverPerson().add(conductor);
-					} else {
-						datoNulo = true;
 					}
 				}
-				if (!datoNulo) {
+				if (datoTransporte || datoTransportista || datoBien) {
 					shipment.getShipmentStage().add(shipmentStage);
 				}
 			}
 
-			int canti = comprobante.getListaDireccionLlegada().size();
+			int canti = entrega.getListaDireccionLlegada().size();
 			DeliveryType deliveryShipment = new DeliveryType();
-			AddressType deliveryAdress = new AddressType();
+			AddressType deliveryAdress = null;
 			if (canti > 0) {
+				deliveryAdress = new AddressType();
 				deliveryAdress.setCountrySubentityCode(UtilUBL
-						.generarCountrySubentityCode(comprobante.getListaDireccionLlegada().get(0).getCodigoUbigeo()));
-				for (DireccionDTO direccion : comprobante.getListaDireccionLlegada()) {
+						.generarCountrySubentityCode(entrega.getListaDireccionLlegada().get(0).getCodigoUbigeo()));
+				for (DireccionDTO direccion : entrega.getListaDireccionLlegada()) {
 					deliveryAdress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
 				}
 			}
@@ -398,10 +406,12 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 
 			canti = comprobante.getListaTransportes().size();
 			if (canti > 0) {
-				TransportHandlingUnitType transportHandling = new TransportHandlingUnitType();
-				transportHandling.getTransportEquipment().add(
-						UtilUBL.generarTransportEquipment(comprobante.getListaTransportes().get(0).getNumeroPlaca()));
-				shipment.getTransportHandlingUnit().add(transportHandling);
+				if (StringUtils.isNotBlank(comprobante.getListaTransportes().get(0).getNumeroPlaca())) {
+					TransportHandlingUnitType transportHandling = new TransportHandlingUnitType();
+					transportHandling.getTransportEquipment().add(UtilUBL
+							.generarTransportEquipment(comprobante.getListaTransportes().get(0).getNumeroPlaca()));
+					shipment.getTransportHandlingUnit().add(transportHandling);
+				}
 			}
 
 			canti = comprobante.getListaDireccionPartida().size();
@@ -457,7 +467,6 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			}
 			delivery.setDeliveryParty(deliveryParty);
 
-			shipment = new ShipmentType();
 			boolean dato = false;
 			if (entrega.getMotivoTraslado() != null && StringUtils.isNotBlank(entrega.getMotivoTraslado().getValor())) {
 				shipment.setHandlingCode(UtilUBL.generarHandlingCode(entrega.getMotivoTraslado()));
@@ -605,7 +614,8 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 				boolean dato = false;
 				paymentTerms = new PaymentTermsType();
 				if (detalleComprobante.getProducto().getCodigoProducto() != null
-						&& StringUtils.isNotBlank(detalleComprobante.getProducto().getCodigoProducto().getValor())) {
+						&& StringUtils.isNotBlank(detalleComprobante.getProducto().getCodigoProducto().getValor())
+						&& detalleComprobante.getProducto().isAplicaDetraccion()) {
 					paymentTerms.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
 					dato = true;
 				}
@@ -702,7 +712,8 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 	private InvoiceType generarTaxtotal(InvoiceType invoice, ComprobanteDTO comprobante) {
 		TaxAmountType taxAmount = null;
 		TaxTotalType taxTotal = null;
-
+		boolean datoTax = false;
+		
 		if (comprobante.getMontoTotalImpuestos() != null && comprobante.getMontoTotalImpuestos().getMonto() != null) {
 			taxAmount = new TaxAmountType();
 			taxAmount.setValue(comprobante.getMontoTotalImpuestos().getMonto());
@@ -710,6 +721,7 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 
 			taxTotal = new TaxTotalType();
 			taxTotal.setTaxAmount(taxAmount);
+			datoTax = true;
 		}
 
 		TaxableAmountType taxableAmount = null;
@@ -747,26 +759,27 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 				}
 			}
 
-			boolean dato = true;
+			boolean dato = false;
 			taxSubtotal = new TaxSubtotalType();
 			if (taxableAmount != null) {
 				taxSubtotal.setTaxableAmount(taxableAmount);
-			} else {
-				dato = false;
+				dato = true;
 			}
 			if (taxAmountSubtotal != null) {
 				taxSubtotal.setTaxAmount(taxAmountSubtotal);
-			} else {
-				dato = false;
-			}
+				dato = true;
+			} 
 			if (taxCategory != null) {
 				taxSubtotal.setTaxCategory(taxCategory);
-			} else {
-				dato = false;
+				dato = true;
+			}
+			
+			if (dato){
+				taxTotal.getTaxSubtotal().add(taxSubtotal);
 			}
 
-			if (dato) {
-				taxTotal.getTaxSubtotal().add(taxSubtotal);
+			if (dato || datoTax) {
+				invoice.getTaxTotal().add(taxTotal);
 			}
 		}
 		return invoice;
@@ -774,21 +787,21 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 
 	private MonetaryTotalType generarMonetaryTotal(ComprobanteDTO comprobante) {
 		ChargeTotalAmountType chargeTotalAmount = null;
-		if (comprobante.getSumaOtrosCargos() != null) {
+		if (comprobante.getSumaOtrosCargos() != null && comprobante.getSumaOtrosCargos().getMonto() != null) {
 			chargeTotalAmount = new ChargeTotalAmountType();
 			chargeTotalAmount.setValue(comprobante.getSumaOtrosCargos().getMonto());
 			chargeTotalAmount.setCurrencyID(comprobante.getSumaOtrosCargos().getMoneda().getCodigoInternacional());
 		}
 
 		PayableAmountType payableAmount = null;
-		if (comprobante.getTotalComprobante() != null) {
+		if (comprobante.getTotalComprobante() != null && comprobante.getTotalComprobante().getMonto() != null) {
 			payableAmount = new PayableAmountType();
 			payableAmount.setValue(comprobante.getTotalComprobante().getMonto());
 			payableAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
 		}
 
 		LineExtensionAmountType lineExtensionAmount = null;
-		if (comprobante.getMontoTotalValorVenta() != null) {
+		if (comprobante.getMontoTotalValorVenta() != null && comprobante.getMontoTotalValorVenta().getMonto() != null) {
 			lineExtensionAmount = new LineExtensionAmountType();
 			lineExtensionAmount.setValue(comprobante.getMontoTotalValorVenta().getMonto());
 			lineExtensionAmount
@@ -796,14 +809,15 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		}
 
 		TaxInclusiveAmountType taxInclusiveAmount = null;
-		if (comprobante.getTotalComprobante() != null) {
+		if (comprobante.getTotalComprobante() != null && comprobante.getTotalComprobante().getMonto() != null) {
 			taxInclusiveAmount = new TaxInclusiveAmountType();
 			taxInclusiveAmount.setValue(comprobante.getTotalComprobante().getMonto());
 			taxInclusiveAmount.setCurrencyID(comprobante.getTotalComprobante().getMoneda().getCodigoInternacional());
 		}
 
 		AllowanceTotalAmountType allowanceTotalAmount = null;
-		if (comprobante.getTotalDescuentos() != null && comprobante.getTotalDescuentos().getMonto() != null) {
+		if (comprobante.getTotalDescuentos() != null && comprobante.getTotalDescuentos().getMonto() != null
+				&& comprobante.getTotalDescuentos().getMonto().getMonto() != null) {
 			allowanceTotalAmount = new AllowanceTotalAmountType();
 			allowanceTotalAmount.setValue(comprobante.getTotalDescuentos().getMonto().getMonto());
 			allowanceTotalAmount
@@ -932,7 +946,7 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 	}
 
 	private InvoiceType generarInvoiceLine(InvoiceType invoice, ComprobanteDTO comprobante)
-			throws DatatypeConfigurationException {
+			throws DatatypeConfigurationException, ParseException {
 		InvoiceLineType invoiceLine = null;
 		PricingReferenceType pricingReference = null;
 		PartyIdentificationType partyIdentificacion = null;
@@ -944,26 +958,26 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		for (int i = 0; i < comprobante.getDetalleComprobante().size(); i++) {
 			detalleComprobante = comprobante.getDetalleComprobante().get(i);
 
-			LineExtensionAmountType lineExtensionAmountDetalle = new LineExtensionAmountType();
-
+			LineExtensionAmountType lineExtensionAmountDetalle = null;
+			BigDecimal totalCalculo = null;
 			if (detalleComprobante.getPrecioVentaUnitario() != null
 					&& detalleComprobante.getPrecioVentaUnitario().getMonto() != null
 					&& detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto() != null
 					&& detalleComprobante.getCantidad() != null
 					&& StringUtils.isNotBlank(detalleComprobante.getCantidad().getValor())) {
-				BigDecimal totalCalculo = null;
 				totalCalculo = detalleComprobante.getPrecioVentaUnitario().getMonto().getMonto()
 						.multiply(UtilEjb.convertirABigDecimal(detalleComprobante.getCantidad().getValor()));
+
+				lineExtensionAmountDetalle = new LineExtensionAmountType();
 				lineExtensionAmountDetalle.setValue(totalCalculo);
 
 				lineExtensionAmountDetalle.setCurrencyID(
 						detalleComprobante.getPrecioVentaUnitario().getMonto().getMoneda().getCodigoInternacional());
 			}
 
-			pricingReference = new PricingReferenceType();
 			PriceType priceType = null;
 			PriceAmountType priceAmountDetalle = null;
-			if (detalleComprobante.getListaPrecios() != null && !detalleComprobante.getListaPrecios().isEmpty()){
+			if (detalleComprobante.getListaPrecios() != null && !detalleComprobante.getListaPrecios().isEmpty()) {
 				for (PrecioDetalleDTO precio : detalleComprobante.getListaPrecios()) {
 					if (precio.getPrecio() != null && precio.getPrecio().getMonto() != null) {
 						priceAmountDetalle = new PriceAmountType();
@@ -981,114 +995,247 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 						priceType.setPriceTypeCode(UtilUBL.generarPriceTypeCode(precio.getTipoPrecio()));
 						dato = true;
 					}
-					if (dato){
+					if (dato) {
+						pricingReference = new PricingReferenceType();
 						pricingReference.getAlternativeConditionPrice().add(priceType);
 					}
 				}
 			}
-			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDocumentoIdentidad() != null && detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null){
+			if (detalleComprobante.getHuesped() != null
+					&& detalleComprobante.getHuesped().getDocumentoIdentidad() != null
+					&& detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null
+					&& StringUtils.isNotBlank(
+							detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().getValor())) {
 				partyIdentificacion = new PartyIdentificationType();
-				partyIdentificacion.setID(
-						UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
+				partyIdentificacion.setID(UtilUBL
+						.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
 			}
-			if (detalleComprobante.getHuesped()!=  null && StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())){
+			if (detalleComprobante.getHuesped() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())) {
 				PartyNameType partyNameHuesped = new PartyNameType();
 				partyNameHuesped.setName(UtilUBL.generarName(detalleComprobante.getHuesped().getNombrePersona()));
 			}
 			AddressType postalAdress = null;
-			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDireccion() != null && detalleComprobante.getHuesped().getDireccion().getUbigeo() != null && detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais() != null){
+			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDireccion() != null
+					&& detalleComprobante.getHuesped().getDireccion().getUbigeo() != null
+					&& detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais() != null
+					&& StringUtils.isNotBlank(
+							detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais().getValor())) {
 				pais = new CountryType();
-				pais.setIdentificationCode(UtilUBL.generarIdentificationCode(detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais()));
-				
+				pais.setIdentificationCode(UtilUBL.generarIdentificationCode(
+						detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais()));
+
 				postalAdress = new AddressType();
 				postalAdress.setCountry(pais);
 			}
 			PersonType personHuesped = new PersonType();
-			if (detalleComprobante.getHuesped() != null && detalleComprobante.getHuesped().getDocumentoIdentidad() != null && detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null){
-				personHuesped.setID(UtilUBL.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
+			boolean idHuesped = false;
+			if (detalleComprobante.getHuesped() != null
+					&& detalleComprobante.getHuesped().getDocumentoIdentidad() != null
+					&& detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento() != null
+					&& StringUtils.isNotBlank(
+							detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().getValor())) {
+				personHuesped.setID(UtilUBL
+						.generarId(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento()));
+				idHuesped = true;
 			}
-			if (detalleComprobante.getHuesped() != null && StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())){
-				personHuesped.setFirstName(UtilUBL.generarFirstName(detalleComprobante.getHuesped().getNombrePersona()));
+			boolean nombreHuesped = false;
+			if (detalleComprobante.getHuesped() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())) {
+				personHuesped
+						.setFirstName(UtilUBL.generarFirstName(detalleComprobante.getHuesped().getNombrePersona()));
+				nombreHuesped = true;
+			}
+			boolean dato4 = false;
+			PartyType deliveryPartyDetalle = null;
+			if (partyIdentificacion != null) {
+				if (deliveryPartyDetalle == null) {
+					deliveryPartyDetalle = new PartyType();
+				}
+				deliveryPartyDetalle.getPartyIdentification().add(partyIdentificacion);
+				dato4 = true;
+			}
+			if (detalleComprobante.getHuesped() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getHuesped().getNombrePersona())) {
+				if (deliveryPartyDetalle == null) {
+					deliveryPartyDetalle = new PartyType();
+				}
+				deliveryPartyDetalle.getPartyName()
+						.add(UtilUBL.generarPartyName(detalleComprobante.getHuesped().getNombrePersona()));
+				dato4 = true;
+			}
+			if (postalAdress != null) {
+				if (deliveryPartyDetalle == null) {
+					deliveryPartyDetalle = new PartyType();
+				}
+				deliveryPartyDetalle.setPostalAddress(postalAdress);
+				dato4 = true;
+			}
+			if (nombreHuesped || idHuesped) {
+				if (deliveryPartyDetalle == null) {
+					deliveryPartyDetalle = new PartyType();
+				}
+				deliveryPartyDetalle.getPerson().add(personHuesped);
+				dato4 = true;
 			}
 
-			PartyType deliveryPartyDetalle = new PartyType();
-			deliveryPartyDetalle.getPartyIdentification().add(partyIdentificacion);
-			deliveryPartyDetalle.getPartyName()
-					.add(UtilUBL.generarPartyName(detalleComprobante.getHuesped().getNombrePersona()));
-			deliveryPartyDetalle.setPostalAddress(postalAdress);
-			deliveryPartyDetalle.getPerson().add(personHuesped);
-
-			DeliveryType deliveryPasajero = new DeliveryType();
-			deliveryPasajero.setDeliveryAddress(
-					UtilUBL.generarAddress(detalleComprobante.getCiudadDestino().getCodigoUbigeoInei()));
-
-			AddressType originAddressPasajero = new AddressType();
-			originAddressPasajero.setCountrySubentityCode(
-					UtilUBL.generarCountrySubentityCode(detalleComprobante.getCiudadOrigen().getCodigoUbigeoInei()));
-
+			DeliveryType deliveryPasajero = null;
+			if (detalleComprobante.getCiudadDestino() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getCiudadDestino().getCodigoUbigeoInei())) {
+				deliveryPasajero = new DeliveryType();
+				deliveryPasajero.setDeliveryAddress(
+						UtilUBL.generarAddress(detalleComprobante.getCiudadDestino().getCodigoUbigeoInei()));
+			}
+			AddressType originAddressPasajero = null;
+			if (detalleComprobante.getCiudadOrigen() != null
+					&& StringUtils.isNotBlank(detalleComprobante.getCiudadOrigen().getCodigoUbigeoInei())) {
+				originAddressPasajero = new AddressType();
+				originAddressPasajero.setCountrySubentityCode(UtilUBL
+						.generarCountrySubentityCode(detalleComprobante.getCiudadOrigen().getCodigoUbigeoInei()));
+			}
 			ShipmentType shipmentDelivery = new ShipmentType();
 			ShipmentStageType shipmentStagePasajero = null;
 			TransportEventType departureTransport = null;
 			OccurrenceDateType fechaOcurencia = null;
 			PersonType pasajero = null;
 			FirstNameType nombrePasajero = null;
+			boolean dato3 = false;
 			for (ProductoServicioDTO proServicio : detalleComprobante.getListaProductoServicio()) {
-				fechaOcurencia = new OccurrenceDateType();
-				fechaOcurencia.setValue(UtilEjb.convertirDateAGregorian(proServicio.getFechaInicioProgramado()));
-
-				departureTransport = new TransportEventType();
-				departureTransport.setOccurrenceDate(fechaOcurencia);
-
+				if (proServicio.getFechaInicioProgramado() != null) {
+					fechaOcurencia = new OccurrenceDateType();
+					
+					Date fecha = UtilEjb.parseaFecha(UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(),"dd/MM/yyyy"),"dd/MM/yyyy");
+					XMLGregorianCalendar fecha2 = UtilEjb.convertirDateAGregorian(fecha);
+					fechaOcurencia.setValue(fecha2);
+					
+					fecha = UtilEjb.parseaFecha(UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(),"hh:mm:ss.SSSS"),"hh:mm:ss.SSSS");
+					
+					OccurrenceTimeType timeOcurencia = new OccurrenceTimeType();
+					timeOcurencia.setValue(UtilEjb.convertirDateAGregorian(fecha));
+					departureTransport = new TransportEventType();
+					departureTransport.setOccurrenceDate(fechaOcurencia);
+					departureTransport.setOccurrenceTime(timeOcurencia);
+				}
+				boolean dato2 = false;
 				shipmentStagePasajero = new ShipmentStageType();
-				shipmentStagePasajero.setID(UtilUBL.generarId(proServicio.getNumeroAsiento()));
-				shipmentStagePasajero.setPlannedDepartureTransportEvent(departureTransport);
+				if (proServicio.getNumeroAsiento() != null) {
+					shipmentStagePasajero.setID(UtilUBL.generarId(proServicio.getNumeroAsiento()));
+					dato2 = true;
+				}
+				if (departureTransport != null) {
+					shipmentStagePasajero.setPlannedDepartureTransportEvent(departureTransport);
+					dato2 = true;
+				}
+
 				for (PersonaDTO paxs : proServicio.getListaPasajeros()) {
-					nombrePasajero = new FirstNameType();
-					nombrePasajero.setValue(paxs.getNombrePersona());
+					if (StringUtils.isNotBlank(paxs.getNombrePersona())) {
+						nombrePasajero = new FirstNameType();
+						nombrePasajero.setValue(paxs.getNombrePersona());
+					}
 
 					pasajero = new PersonType();
-					pasajero.setID(UtilUBL.generarId(paxs.getDocumentoIdentidad().getNumeroDocumento()));
-					pasajero.setFirstName(nombrePasajero);
-
-					shipmentStagePasajero.getPassengerPerson().add(pasajero);
+					boolean dato = false;
+					if (paxs.getDocumentoIdentidad() != null
+							&& paxs.getDocumentoIdentidad().getNumeroDocumento() != null) {
+						pasajero.setID(UtilUBL.generarId(paxs.getDocumentoIdentidad().getNumeroDocumento()));
+						dato = true;
+					}
+					if (nombrePasajero != null) {
+						pasajero.setFirstName(nombrePasajero);
+						dato = true;
+					}
+					if (dato) {
+						shipmentStagePasajero.getPassengerPerson().add(pasajero);
+						dato2 = true;
+					}
 				}
-				shipmentDelivery.getShipmentStage().add(shipmentStagePasajero);
+				if (dato2) {
+					shipmentDelivery.getShipmentStage().add(shipmentStagePasajero);
+					dato3 = true;
+				}
 			}
-			shipmentDelivery.setDelivery(deliveryPasajero);
-			shipmentDelivery.setOriginAddress(originAddressPasajero);
+			if (deliveryPasajero != null) {
+				shipmentDelivery.setDelivery(deliveryPasajero);
+				dato3 = true;
+			}
+			if (originAddressPasajero != null) {
+				shipmentDelivery.setOriginAddress(originAddressPasajero);
+				dato3 = true;
+			}
 
-			DeliveryType deliveryDetalle = new DeliveryType();
-			deliveryDetalle.setDeliveryParty(deliveryPartyDetalle);
-			deliveryDetalle.setShipment(shipmentDelivery);
+			boolean dato5 = false;
+			DeliveryType deliveryDetalle = null;
+			if (dato4) {
+				if (deliveryDetalle == null) {
+					deliveryDetalle = new DeliveryType();
+				}
+				deliveryDetalle.setDeliveryParty(deliveryPartyDetalle);
+				dato5 = true;
+			}
+			if (dato3) {
+				if (deliveryDetalle == null) {
+					deliveryDetalle = new DeliveryType();
+				}
+				deliveryDetalle.setShipment(shipmentDelivery);
+				dato5 = true;
+			}
 
 			invoiceLine = new InvoiceLineType();
 			invoiceLine.setID(UtilUBL.generarIdType(String.valueOf((i + 1))));
-			invoiceLine.setInvoicedQuantity(UtilUBL.generarInvoicedQuantity(detalleComprobante.getCantidad()));
-			invoiceLine.setLineExtensionAmount(lineExtensionAmountDetalle);
-			invoiceLine.setPricingReference(pricingReference);
-			invoiceLine.getDelivery().add(deliveryDetalle);
+			if (detalleComprobante.getCantidad() != null) {
+				invoiceLine.setInvoicedQuantity(UtilUBL.generarInvoicedQuantity(detalleComprobante.getCantidad()));
+			}
+			if (lineExtensionAmountDetalle != null) {
+				invoiceLine.setLineExtensionAmount(lineExtensionAmountDetalle);
+			}
+			if (pricingReference != null) {
+				invoiceLine.setPricingReference(pricingReference);
+			}
+			if (dato5) {
+				invoiceLine.getDelivery().add(deliveryDetalle);
+			}
 
-			for (DescuentoDTO dscto : detalleComprobante.getListaDescuento()) {
-				montoCargoDescuentoDetalle = new AmountType();
-				montoCargoDescuentoDetalle.setValue(dscto.getMontoCargoDescuento().getMonto());
-				montoCargoDescuentoDetalle
-						.setCurrencyID(dscto.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
+			if (detalleComprobante.getListaDescuento() != null && !detalleComprobante.getListaDescuento().isEmpty()) {
+				for (DescuentoDTO dscto : detalleComprobante.getListaDescuento()) {
+					montoCargoDescuentoDetalle = new AmountType();
+					if (dscto.getMontoCargoDescuento() != null && dscto.getMontoCargoDescuento().getMonto() != null) {
+						montoCargoDescuentoDetalle.setValue(dscto.getMontoCargoDescuento().getMonto());
+					}
+					if (dscto.getMontoCargoDescuento() != null && dscto.getMontoCargoDescuento().getMoneda() != null
+							&& StringUtils
+									.isNotBlank(dscto.getMontoCargoDescuento().getMoneda().getCodigoInternacional())) {
+						montoCargoDescuentoDetalle
+								.setCurrencyID(dscto.getMontoCargoDescuento().getMoneda().getCodigoInternacional());
+					}
 
-				baseMontoCargoDescuento = new BaseAmountType();
-				baseMontoCargoDescuento.setValue(dscto.getMontoBaseCargoDescuento().getMonto());
-				baseMontoCargoDescuento
-						.setCurrencyID(dscto.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
+					baseMontoCargoDescuento = new BaseAmountType();
+					if (dscto.getMontoBaseCargoDescuento() != null
+							&& dscto.getMontoBaseCargoDescuento().getMonto() != null) {
+						baseMontoCargoDescuento.setValue(dscto.getMontoBaseCargoDescuento().getMonto());
+					}
+					if (dscto.getMontoBaseCargoDescuento() != null
+							&& dscto.getMontoBaseCargoDescuento().getMoneda() != null && StringUtils.isNotBlank(
+									dscto.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional())) {
+						baseMontoCargoDescuento
+								.setCurrencyID(dscto.getMontoBaseCargoDescuento().getMoneda().getCodigoInternacional());
+					}
 
-				allowanceChargeDetalle = new AllowanceChargeType();
-				allowanceChargeDetalle.setChargeIndicator(UtilUBL.generarChargeIndicator(dscto.isFlagCargoDescuento()));
-				allowanceChargeDetalle.setAllowanceChargeReasonCode(
-						UtilUBL.generarAllowanceChargeReasonCode(dscto.getCodigoMotivoCargoDescuento()));
-				allowanceChargeDetalle.setMultiplierFactorNumeric(
-						UtilUBL.generarMultiplierFactorNumeric(dscto.getFactorCargoDescuento()));
-				allowanceChargeDetalle.setAmount(montoCargoDescuentoDetalle);
-				allowanceChargeDetalle.setBaseAmount(baseMontoCargoDescuento);
+					allowanceChargeDetalle = new AllowanceChargeType();
+					allowanceChargeDetalle
+							.setChargeIndicator(UtilUBL.generarChargeIndicator(dscto.isFlagCargoDescuento()));
+					if (StringUtils.isNotBlank(dscto.getCodigoMotivoCargoDescuento())) {
+						allowanceChargeDetalle.setAllowanceChargeReasonCode(
+								UtilUBL.generarAllowanceChargeReasonCode(dscto.getCodigoMotivoCargoDescuento()));
+					}
+					if (dscto.getFactorCargoDescuento() != null) {
+						allowanceChargeDetalle.setMultiplierFactorNumeric(
+								UtilUBL.generarMultiplierFactorNumeric(dscto.getFactorCargoDescuento()));
+					}
+					allowanceChargeDetalle.setAmount(montoCargoDescuentoDetalle);
+					allowanceChargeDetalle.setBaseAmount(baseMontoCargoDescuento);
 
-				invoiceLine.getAllowanceCharge().add(allowanceChargeDetalle);
+					invoiceLine.getAllowanceCharge().add(allowanceChargeDetalle);
+				}
 			}
 
 			TaxTotalType taxTotalDetalle = null;
@@ -1098,85 +1245,180 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			TaxCategoryType taxCategoryDetalle = null;
 			TaxSchemeType taxSchemeCategory = null;
 			for (AfectacionImptoDTO afecImpto : detalleComprobante.getAfectacionImpuestos()) {
-				taxAmountDetalle = new TaxAmountType();
-				taxAmountDetalle.setValue(afecImpto.getTotalImpuesto().getMonto());
-				taxAmountDetalle.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+				if (afecImpto.getTotalImpuesto() != null && afecImpto.getTotalImpuesto().getMonto() != null) {
+					taxAmountDetalle = new TaxAmountType();
+					taxAmountDetalle.setValue(afecImpto.getTotalImpuesto().getMonto());
+					taxAmountDetalle.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+				}
 
-				taxableAmountDetalle = new TaxableAmountType();
-				taxableAmountDetalle.setValue(detalleComprobante.getMontoTotal().getMonto());
-				taxableAmountDetalle
-						.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
+				if (detalleComprobante.getMontoTotal() != null
+						&& detalleComprobante.getMontoTotal().getMonto() != null) {
+					taxableAmountDetalle = new TaxableAmountType();
+					taxableAmountDetalle.setValue(detalleComprobante.getMontoTotal().getMonto());
+					taxableAmountDetalle
+							.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
+				}
 
-				taxAmountSubtotal2 = new TaxAmountType();
-				taxAmountSubtotal2.setValue(afecImpto.getTotalImpuesto().getMonto());
-				taxAmountSubtotal2.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+				if (afecImpto.getTotalImpuesto() != null && afecImpto.getTotalImpuesto().getMonto() != null) {
+					taxAmountSubtotal2 = new TaxAmountType();
+					taxAmountSubtotal2.setValue(afecImpto.getTotalImpuesto().getMonto());
+					taxAmountSubtotal2.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
+				}
 
-				taxSchemeCategory = new TaxSchemeType();
-				taxSchemeCategory.setID(UtilUBL.generarId(afecImpto.getTributo().getCodigoInternacional()));
-				taxSchemeCategory.setName(UtilUBL.generarName(afecImpto.getTributo().getNombre()));
-				taxSchemeCategory.setTaxTypeCode(UtilUBL.generarTaxTypeCode(afecImpto.getTributo().getCodigo()));
+				if (afecImpto.getTributo().getCodigoInternacional() != null && StringUtils.isNotBlank(afecImpto.getTributo().getCodigoInternacional().getValor())) {
+					taxSchemeCategory = new TaxSchemeType();
+					taxSchemeCategory.setID(UtilUBL.generarId(afecImpto.getTributo().getCodigoInternacional()));
+					taxSchemeCategory.setName(UtilUBL.generarName(afecImpto.getTributo().getNombre()));
+					taxSchemeCategory.setTaxTypeCode(UtilUBL.generarTaxTypeCode(afecImpto.getTributo().getCodigo()));
+				}
 
-				taxCategoryDetalle = new TaxCategoryType();
-				taxCategoryDetalle.setID(UtilUBL.generarId(afecImpto.getCodigoCategoria()));
-				taxCategoryDetalle.setPercent(UtilUBL.generarPercent(afecImpto.getPorcentaje()));
-				taxCategoryDetalle
-						.setTaxExemptionReasonCode(UtilUBL.generarTaxExemptionReasonCode(afecImpto.getAfectacion()));
-				taxCategoryDetalle.setTierRange(UtilUBL.generarTierRange(afecImpto.getCodigoSistemaIsc().getCodigo()));
-				taxCategoryDetalle.setTaxScheme(taxSchemeCategory);
+				if (afecImpto.getCodigoCategoria() != null && StringUtils.isNotBlank(afecImpto.getCodigoCategoria().getValor())) {
+					if (taxCategoryDetalle == null){
+						taxCategoryDetalle = new TaxCategoryType();
+					}
+					taxCategoryDetalle.setID(UtilUBL.generarId(afecImpto.getCodigoCategoria()));
+				}
+				if (afecImpto.getPorcentaje() != null) {
+					if (taxCategoryDetalle == null){
+						taxCategoryDetalle = new TaxCategoryType();
+					}
+					taxCategoryDetalle.setPercent(UtilUBL.generarPercent(afecImpto.getPorcentaje()));
+				}
+				if (afecImpto.getAfectacion() != null && StringUtils.isNotBlank(afecImpto.getAfectacion().getValor())) {
+					if (taxCategoryDetalle == null){
+						taxCategoryDetalle = new TaxCategoryType();
+					}
+					taxCategoryDetalle.setTaxExemptionReasonCode(
+							UtilUBL.generarTaxExemptionReasonCode(afecImpto.getAfectacion()));
+				}
+				if (afecImpto.getCodigoSistemaIsc() != null
+						&& StringUtils.isNotBlank(afecImpto.getCodigoSistemaIsc().getCodigo())) {
+					if (taxCategoryDetalle == null){
+						taxCategoryDetalle = new TaxCategoryType();
+					}
+					taxCategoryDetalle
+							.setTierRange(UtilUBL.generarTierRange(afecImpto.getCodigoSistemaIsc().getCodigo()));
+				}
+				if (taxSchemeCategory != null) {
+					if (taxCategoryDetalle == null){
+						taxCategoryDetalle = new TaxCategoryType();
+					}
+					taxCategoryDetalle.setTaxScheme(taxSchemeCategory);
+				}
 
 				TaxSubtotalType taxSubtotalDetalle = new TaxSubtotalType();
-				taxSubtotalDetalle.setTaxableAmount(taxableAmountDetalle);
-				taxSubtotalDetalle.setTaxAmount(taxAmountSubtotal2);
-				taxSubtotalDetalle.setTaxCategory(taxCategoryDetalle);
+				if (taxableAmountDetalle != null) {
+					taxSubtotalDetalle.setTaxableAmount(taxableAmountDetalle);
+				}
+				if (taxAmountSubtotal2 != null) {
+					taxSubtotalDetalle.setTaxAmount(taxAmountSubtotal2);
+				}
+				if (taxCategoryDetalle != null) {
+					taxSubtotalDetalle.setTaxCategory(taxCategoryDetalle);
+				}
 
 				taxTotalDetalle = new TaxTotalType();
-				taxTotalDetalle.setTaxAmount(taxAmountDetalle);
-				taxTotalDetalle.getTaxSubtotal().add(taxSubtotalDetalle);
+				if (taxAmountDetalle != null) {
+					taxTotalDetalle.setTaxAmount(taxAmountDetalle);
+				}
+				if (taxSubtotalDetalle != null) {
+					taxTotalDetalle.getTaxSubtotal().add(taxSubtotalDetalle);
+				}
 
 				invoiceLine.getTaxTotal().add(taxTotalDetalle);
 			}
-			ItemIdentificationType sellersItemIdentification = new ItemIdentificationType();
-			sellersItemIdentification.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
+			ItemIdentificationType sellersItemIdentification = null;
 
-			CommodityClassificationType commodityClassification = new CommodityClassificationType();
-			commodityClassification.setItemClassificationCode(
-					UtilUBL.generarItemClassificationCode(detalleComprobante.getProducto().getCodigoProductoSunat()));
+			if (detalleComprobante.getProducto() != null
+					&& detalleComprobante.getProducto().getCodigoProducto() != null) {
+				sellersItemIdentification = new ItemIdentificationType();
+				sellersItemIdentification
+						.setID(UtilUBL.generarId(detalleComprobante.getProducto().getCodigoProducto()));
+			}
+
+			CommodityClassificationType commodityClassification = null;
+
+			if (detalleComprobante.getProducto() != null
+					&& detalleComprobante.getProducto().getCodigoProductoSunat() != null) {
+				commodityClassification = new CommodityClassificationType();
+				commodityClassification.setItemClassificationCode(UtilUBL
+						.generarItemClassificationCode(detalleComprobante.getProducto().getCodigoProductoSunat()));
+			}
 
 			ItemType itemDetalle = null;
-			for (String descripcion : detalleComprobante.getProducto().getListaDescripcionProducto()) {
-				itemDetalle = new ItemType();
-				itemDetalle.getDescription().add(UtilUBL.generarDescription(descripcion));
-
-				itemDetalle.getCommodityClassification().add(commodityClassification);
+			if (detalleComprobante.getProducto() != null
+					&& detalleComprobante.getProducto().getListaDescripcionProducto() != null
+					&& !detalleComprobante.getProducto().getListaDescripcionProducto().isEmpty()) {
+				for (String descripcion : detalleComprobante.getProducto().getListaDescripcionProducto()) {
+					itemDetalle = new ItemType();
+					if (StringUtils.isNotBlank(descripcion)) {
+						itemDetalle.getDescription().add(UtilUBL.generarDescription(descripcion));
+					}
+					if (commodityClassification != null) {
+						itemDetalle.getCommodityClassification().add(commodityClassification);
+					}
+				}
+				if (sellersItemIdentification != null) {
+					itemDetalle.setSellersItemIdentification(sellersItemIdentification);
+				}
 			}
-			itemDetalle.setSellersItemIdentification(sellersItemIdentification);
 
 			PeriodType usabilityPeriodo = null;
+			ItemPropertyType adicionalProperty = null;
 			for (PropiedadesAdicionalesDTO propiedad : detalleComprobante.getListaPropiedadesAdicionales()) {
-				usabilityPeriodo = new PeriodType();
-				usabilityPeriodo.setStartDate(UtilUBL.generarStartDate(propiedad.getFechaInicio()));
-				usabilityPeriodo.setEndDate(UtilUBL.generarEndDate(propiedad.getFechaFin()));
+				if (propiedad.getFechaInicio() != null) {
+					if (usabilityPeriodo == null){
+						usabilityPeriodo = new PeriodType();
+					}
+					usabilityPeriodo.setStartDate(UtilUBL.generarStartDate(propiedad.getFechaInicio()));
+				}
+				if (propiedad.getFechaFin() != null) {
+					if (usabilityPeriodo == null){
+						usabilityPeriodo = new PeriodType();
+					}
+					usabilityPeriodo.setEndDate(UtilUBL.generarEndDate(propiedad.getFechaFin()));
+				}
 
-				ItemPropertyType adicionalProperty = new ItemPropertyType();
-				adicionalProperty.setName(UtilUBL.generarName(propiedad.getNombreConceptoTributario()));
-				adicionalProperty.setNameCode(UtilUBL.generarNameCode(propiedad.getCodigoConceptoTributario()));
-				adicionalProperty.setValue(UtilUBL.generarValue(propiedad.getItem().getValor()));
-				adicionalProperty.getValueQualifier()
-						.add(UtilUBL.generarValueQualifier(propiedad.getItem().getCodigo()));
+				adicionalProperty = new ItemPropertyType();
+				if (StringUtils.isNotBlank(propiedad.getNombreConceptoTributario())) {
+					adicionalProperty.setName(UtilUBL.generarName(propiedad.getNombreConceptoTributario()));
+				}
+				if (propiedad.getCodigoConceptoTributario() != null) {
+					adicionalProperty.setNameCode(UtilUBL.generarNameCode(propiedad.getCodigoConceptoTributario()));
+				}
+				if (propiedad.getItem() != null && StringUtils.isNotBlank(propiedad.getItem().getValor())) {
+					adicionalProperty.setValue(UtilUBL.generarValue(propiedad.getItem().getValor()));
+				}
+				if (propiedad.getItem() != null && StringUtils.isNotBlank(propiedad.getItem().getCodigo())) {
+					adicionalProperty.getValueQualifier()
+							.add(UtilUBL.generarValueQualifier(propiedad.getItem().getCodigo()));
+				}
 				adicionalProperty.setUsabilityPeriod(usabilityPeriodo);
-
-				itemDetalle.getAdditionalItemProperty().add(adicionalProperty);
+				if (itemDetalle != null) {
+					itemDetalle.getAdditionalItemProperty().add(adicionalProperty);
+				}
 			}
-			PriceAmountType priceAmountDetalle2 = new PriceAmountType();
-			priceAmountDetalle2.setValue(detalleComprobante.getMontoTotal().getMonto());
-			priceAmountDetalle2.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
-
-			PriceType price = new PriceType();
-			price.setPriceAmount(priceAmountDetalle2);
-
-			invoice.getInvoiceLine().add(invoiceLine);
-			invoiceLine.setItem(itemDetalle);
-			invoiceLine.setPrice(price);
+			PriceAmountType priceAmountDetalle2 = null;
+			if (detalleComprobante.getMontoTotal() != null && detalleComprobante.getMontoTotal().getMonto() != null) {
+				priceAmountDetalle2 = new PriceAmountType();
+				priceAmountDetalle2.setValue(detalleComprobante.getMontoTotal().getMonto());
+				priceAmountDetalle2
+						.setCurrencyID(detalleComprobante.getMontoTotal().getMoneda().getCodigoInternacional());
+			}
+			PriceType price = null;
+			if (priceAmountDetalle2 != null) {
+				price = new PriceType();
+				price.setPriceAmount(priceAmountDetalle2);
+			}
+			if (itemDetalle != null) {
+				invoiceLine.setItem(itemDetalle);
+			}
+			if (price != null) {
+				invoiceLine.setPrice(price);
+			}
+			if (invoiceLine != null) {
+				invoice.getInvoiceLine().add(invoiceLine);
+			}
 		}
 
 		return invoice;

@@ -3,7 +3,9 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Edwin
@@ -17,6 +19,26 @@ public class TransporteDTO extends BaseDTO {
 	private Date fechaInicioTraslado;
 	private String numeroRegistroMTC;
 	private String numeroPlaca;
+	private List<TransportistaDTO> listaTransportista;
+	private String numeroCertificadoHabilitacionVehicular;
+	private List<PersonaDTO> listaConductores;
+	
+	
+	/**
+	 * @return the listaConductores
+	 */
+	public List<PersonaDTO> getListaConductores() {
+		if (listaConductores == null){
+			listaConductores = new ArrayList<PersonaDTO>();
+		}
+		return listaConductores;
+	}
+	/**
+	 * @param listaConductores the listaConductores to set
+	 */
+	public void setListaConductores(List<PersonaDTO> listaConductores) {
+		this.listaConductores = listaConductores;
+	}
 	/**
 	 * @return the modalidadTraslado
 	 */
@@ -67,5 +89,32 @@ public class TransporteDTO extends BaseDTO {
 	 */
 	public void setNumeroPlaca(String numeroPlaca) {
 		this.numeroPlaca = numeroPlaca;
+	}
+	/**
+	 * @return the listaTransportista
+	 */
+	public List<TransportistaDTO> getListaTransportista() {
+		if (listaTransportista == null){
+			listaTransportista = new ArrayList<TransportistaDTO>();
+		}
+		return listaTransportista;
+	}
+	/**
+	 * @param listaTransportista the listaTransportista to set
+	 */
+	public void setListaTransportista(List<TransportistaDTO> listaTransportista) {
+		this.listaTransportista = listaTransportista;
+	}
+	/**
+	 * @return the numeroCertificadoHabilitacionVehicular
+	 */
+	public String getNumeroCertificadoHabilitacionVehicular() {
+		return numeroCertificadoHabilitacionVehicular;
+	}
+	/**
+	 * @param numeroCertificadoHabilitacionVehicular the numeroCertificadoHabilitacionVehicular to set
+	 */
+	public void setNumeroCertificadoHabilitacionVehicular(String numeroCertificadoHabilitacionVehicular) {
+		this.numeroCertificadoHabilitacionVehicular = numeroCertificadoHabilitacionVehicular;
 	}
 }

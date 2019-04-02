@@ -25,6 +25,11 @@ public class EntregaDTO extends BaseDTO {
 	private MedidaDTO pesoBruto;
 	private String unidadMedida;
 	private boolean flagSubcontratacion;
+	private List<TransporteDTO> listaTransporte;
+	private List<DireccionDTO> listaDireccionLlegada;
+	private List<DireccionDTO> listaDireccionPartida;
+	private String codigoUbigeoLlegada;
+	private String codigoUbigeoPartida;
 	
 	/**
 	 * @return the codigoUnidadMedida
@@ -178,5 +183,74 @@ public class EntregaDTO extends BaseDTO {
 	 */
 	public void setListaDestinatarios(List<PersonaDTO> listaDestinatarios) {
 		this.listaDestinatarios = listaDestinatarios;
+	}
+	/**
+	 * @return the listaTransporte
+	 */
+	public List<TransporteDTO> getListaTransporte() {
+		if (listaTransporte == null){
+			listaTransporte = new ArrayList<TransporteDTO>();
+		}
+		return listaTransporte;
+	}
+	/**
+	 * @param listaTransporte the listaTransporte to set
+	 */
+	public void setListaTransporte(List<TransporteDTO> listaTransporte) {
+		this.listaTransporte = listaTransporte;
+	}
+	/**
+	 * @return the listaDireccionLlegada
+	 */
+	public List<DireccionDTO> getListaDireccionLlegada() {
+		if (listaDireccionLlegada == null){
+			listaDireccionLlegada = new ArrayList<DireccionDTO>();
+		}
+		return listaDireccionLlegada;
+	}
+	/**
+	 * @param listaDireccionLlegada the listaDireccionLlegada to set
+	 */
+	public void setListaDireccionLlegada(List<DireccionDTO> listaDireccionLlegada) {
+		this.listaDireccionLlegada = listaDireccionLlegada;
+	}
+	/**
+	 * @return the listaDireccionPartida
+	 */
+	public List<DireccionDTO> getListaDireccionPartida() {
+		if (listaDireccionPartida == null){
+			listaDireccionPartida = new ArrayList<DireccionDTO>();
+		}
+		return listaDireccionPartida;
+	}
+	/**
+	 * @param listaDireccionPartida the listaDireccionPartida to set
+	 */
+	public void setListaDireccionPartida(List<DireccionDTO> listaDireccionPartida) {
+		this.listaDireccionPartida = listaDireccionPartida;
+	}
+	/**
+	 * @return the codigoUbigeoLlegada
+	 */
+	public String getCodigoUbigeoLlegada() {
+		return codigoUbigeoLlegada;
+	}
+	/**
+	 * @param codigoUbigeoLlegada the codigoUbigeoLlegada to set
+	 */
+	public void setCodigoUbigeoLlegada(String codigoUbigeoLlegada) {
+		this.codigoUbigeoLlegada = codigoUbigeoLlegada;
+	}
+	/**
+	 * @return the codigoUbigeoPartida
+	 */
+	public String getCodigoUbigeoPartida() {
+		return codigoUbigeoPartida;
+	}
+	/**
+	 * @param codigoUbigeoPartida the codigoUbigeoPartida to set
+	 */
+	public void setCodigoUbigeoPartida(String codigoUbigeoPartida) {
+		this.codigoUbigeoPartida = codigoUbigeoPartida;
 	}
 }

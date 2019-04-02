@@ -64,6 +64,9 @@ public class ProductoDTO extends BaseDTO {
 	 * @return the codigoProductoSunat
 	 */
 	public CodigoDTO getCodigoProductoSunat() {
+		if (codigoProductoSunat == null){
+			codigoProductoSunat = new CodigoDTO(); 
+		}
 		return codigoProductoSunat;
 	}
 	/**

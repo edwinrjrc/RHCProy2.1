@@ -75,7 +75,6 @@ public class ComprobanteDTO extends BaseDTO {
 	private List<EntregaDTO> listaEntregas;
 	private List<TransporteDTO> listaTransportes;
 	private List<TransportistaDTO> listaTransportista;
-	private List<PersonaDTO> listaChoferes;
 	private List<DireccionDTO> listaDireccionLlegada;
 	private List<DireccionDTO> listaDireccionPartida;
 	
@@ -647,21 +646,6 @@ public class ComprobanteDTO extends BaseDTO {
 	 */
 	public void setListaTransportista(List<TransportistaDTO> listaTransportista) {
 		this.listaTransportista = listaTransportista;
-	}
-	/**
-	 * @return the listaChoferes
-	 */
-	public List<PersonaDTO> getListaChoferes() {
-		if (listaChoferes == null){
-			listaChoferes = new ArrayList<PersonaDTO>();
-		}
-		return listaChoferes;
-	}
-	/**
-	 * @param listaChoferes the listaChoferes to set
-	 */
-	public void setListaChoferes(List<PersonaDTO> listaChoferes) {
-		this.listaChoferes = listaChoferes;
 	}
 	/**
 	 * @return the numeroRegistroMTC
