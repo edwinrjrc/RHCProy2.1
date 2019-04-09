@@ -62,6 +62,7 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountTy
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeTotalAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DocumentTypeCodeType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.DurationMeasureType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.FirstNameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineExtensionAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoteType;
@@ -106,7 +107,7 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 
 	public void generarXML(ComprobanteDTO comprobante) {
 		try {
-			byte[] bytes = generadorXML(comprobante);
+			byte[] bytes = generadorXML(completarDatosSunat(comprobante));
 			String nombreArchivo = comprobante.getNumeroSerie() + "-";
 			nombreArchivo = nombreArchivo + comprobante.getCorrelativo() + ".xml";
 			FileOutputStream fos = new FileOutputStream("D:\\" + nombreArchivo);
@@ -117,6 +118,247 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private ComprobanteDTO completarDatosSunat(ComprobanteDTO comprobante) {
+
+		if (StringUtils.isNotBlank(comprobante.getTipoComprobante().getValor())) {
+			comprobante.getTipoComprobante().setListNombreAgencia("PE:SUNAT");
+			comprobante.getTipoComprobante().setListNombre("SUNAT:Identificador de Tipo de Documento");
+			comprobante.getTipoComprobante().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01");
+		}
+		/*
+		 * if (comprobante.getListaNotas() != null &&
+		 * !comprobante.getListaNotas().isEmpty()){ for (BaseVODTO baseVO :
+		 * comprobante.getListaNotas()) { } }
+		 */
+		if (comprobante.getMonedaComprobante() != null
+				&& StringUtils.isNotBlank(comprobante.getMonedaComprobante().getValor())) {
+			comprobante.getMonedaComprobante().setListId("ISO 4217 Alpha");
+			comprobante.getMonedaComprobante().setListNombre("Currency");
+			comprobante.getMonedaComprobante().setListNombreAgencia("United Nations Economic Commission for Europe");
+		}
+		if (comprobante.getListaGuiaRelacionada() != null && !comprobante.getListaGuiaRelacionada().isEmpty()) {
+			for (ComprobanteRelacionadoDTO relacionado : comprobante.getListaGuiaRelacionada()) {
+				relacionado.getTipoComprobante().setListNombreAgencia("PE:SUNAT");
+				relacionado.getTipoComprobante().setListNombre("SUNAT:Identificador de guía relacionada");
+				relacionado.getTipoComprobante().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12");
+			}
+		}
+		if (StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getTipoServicio().getValor())) {
+			comprobante.getServicioReferenciaDTO().getTipoServicio().setListNombreAgencia("PE:SUNAT");
+			comprobante.getServicioReferenciaDTO().getTipoServicio()
+					.setListNombre("SUNAT:Identificador de Tipo de Servicio");
+			comprobante.getServicioReferenciaDTO().getTipoServicio()
+					.setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo56");
+		}
+		if (StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getCodigoServicio().getValor())) {
+			comprobante.getServicioReferenciaDTO().getCodigoServicio().setListNombreAgencia("PE:SUNAT");
+			comprobante.getServicioReferenciaDTO().getCodigoServicio()
+					.setListNombre("SUNAT:Identificador de Servicio de Telecomunicación");
+			comprobante.getServicioReferenciaDTO().getCodigoServicio()
+					.setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo57");
+		}
+		if (StringUtils.isNotBlank(comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa().getValor())) {
+			comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa().setListNombreAgencia("PE:SUNAT");
+			comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa()
+					.setListNombre("SUNAT:Identificador de Tipo de Tarifa");
+			comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa()
+					.setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo24");
+		}
+		if (comprobante.getListaComprobanteRelacionado() != null
+				&& !comprobante.getListaComprobanteRelacionado().isEmpty()) {
+			for (ComprobanteRelacionadoDTO relacionado : comprobante.getListaComprobanteRelacionado()) {
+				relacionado.getTipoComprobante().setListNombreAgencia("PE:SUNAT");
+				relacionado.getTipoComprobante().setListNombre("SUNAT:Identificador de documento relacionado");
+				relacionado.getTipoComprobante().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo12");
+			}
+		}
+		if (comprobante.getListaEmisores() != null && !comprobante.getListaEmisores().isEmpty()) {
+			for (PersonaDTO persona : comprobante.getListaEmisores()) {
+				persona.getDocumentoIdentidad().getNumeroDocumento()
+						.setEsquemaNombre("SUNAT:Identificador de Documento de Identidad");
+				persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+				persona.getDocumentoIdentidad().getNumeroDocumento()
+						.setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+			}
+		}
+		if (comprobante.getListaAdquiriente() != null && !comprobante.getListaAdquiriente().isEmpty()) {
+			for (PersonaDTO persona : comprobante.getListaAdquiriente()) {
+				persona.getDocumentoIdentidad().getNumeroDocumento()
+						.setEsquemaNombre("SUNAT:Identificador de Documento de Identidad");
+				persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+				persona.getDocumentoIdentidad().getNumeroDocumento()
+						.setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+			}
+		}
+		if (comprobante.getListaEntregas() != null && !comprobante.getListaEntregas().isEmpty()) {
+			for (EntregaDTO entrega : comprobante.getListaEntregas()) {
+				entrega.getNumeroMedidor().setEsquemaNombre("SUNAT:Identificador de Tipo de Medidor");
+				entrega.getNumeroMedidor().setEsquemaNombreAgencia("PE:SUNAT");
+				entrega.getNumeroMedidor().setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo58");
+
+				entrega.getCantidad().setUnidadListaId("UN/ECE rec 20");
+				entrega.getCantidad().setUnidadListaAgencia("United Nations Economic Commission for Europe");
+
+				entrega.getPotenciaContratada().setUnidadListaId("UN/ECE rec 20");
+				entrega.getPotenciaContratada().setUnidadListaAgencia("United Nations Economic Commission for Europe");
+
+				if (entrega.getListaDestinatarios() != null && !entrega.getListaDestinatarios().isEmpty()) {
+					for (PersonaDTO persona : entrega.getListaDestinatarios()) {
+						persona.getDocumentoIdentidad().getNumeroDocumento()
+								.setEsquemaNombre("SUNAT:Identificador de Documento de Identidad");
+						persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+						persona.getDocumentoIdentidad().getNumeroDocumento()
+								.setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+					}
+				}
+
+				if (entrega.getEnvioDTO() != null) {
+					if (entrega.getEnvioDTO().getMotivoTraslado() != null
+							&& StringUtils.isNotBlank(entrega.getEnvioDTO().getMotivoTraslado().getValor())) {
+						entrega.getEnvioDTO().getMotivoTraslado().setListNombre("SUNAT:Indicador de Motivo de Traslado");
+						entrega.getEnvioDTO().getMotivoTraslado().setListNombreAgencia("PE:SUNAT");
+						entrega.getEnvioDTO().getMotivoTraslado().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo20");
+					}
+					if (entrega.getEnvioDTO().getPesoBruto().getValor() != null){
+						entrega.getEnvioDTO().getPesoBruto().setCodigoListaVersionId("UN/ECE rec 20 Revision 4");
+					}
+					if (entrega.getEnvioDTO().getListaTransportes() != null && !entrega.getEnvioDTO().getListaTransportes().isEmpty()){
+						for (TransporteDTO transporte : entrega.getEnvioDTO().getListaTransportes()){
+							if (StringUtils.isNotBlank(transporte.getModalidadTraslado().getValor())){
+								transporte.getModalidadTraslado().setListNombre("SUNAT:indicador de Modalidad de Transporte");
+								transporte.getModalidadTraslado().setListNombreAgencia("PE:SUNAT");
+								transporte.getModalidadTraslado().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo18");
+							}
+							if (!transporte.getListaTransportista().isEmpty()){
+								for(TransportistaDTO transportista : transporte.getListaTransportista()){
+									if (StringUtils.isNotBlank(transportista.getDocumentoIdentidad().getNumeroDocumento().getValor())){
+										transportista.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombre("SUNAT:Indicador de Tipo de Documento de Identidad");
+										transportista.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+										transportista.getDocumentoIdentidad().getNumeroDocumento().setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+									}
+								}
+							}
+							if (!transporte.getListaConductores().isEmpty()){
+								for (PersonaDTO persona : transporte.getListaConductores()){
+									persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombre("SUNAT:Indicador de Tipo de Documento de Identidad");
+									persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+									persona.getDocumentoIdentidad().getNumeroDocumento().setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (!comprobante.getListaDireccionEntrega().isEmpty()){
+			for (DireccionDTO direccion : comprobante.getListaDireccionEntrega()){
+				if (StringUtils.isNotBlank(direccion.getUbigeo().getCodigoPais().getValor())){
+					direccion.getUbigeo().getCodigoPais().setListId("ISO 3166-1");
+					direccion.getUbigeo().getCodigoPais().setListNombreAgencia("United Nations Economic Commission for Europe");
+					direccion.getUbigeo().getCodigoPais().setListNombre("Country");
+				}
+			}
+		}
+		
+		if (!comprobante.getDetalleComprobante().isEmpty()){
+			for (DetalleComprobanteDTO detalleComprobante : comprobante.getDetalleComprobante()) {
+				if (StringUtils.isNotBlank(detalleComprobante.getProducto().getCodigoProducto().getValor())){
+					if (detalleComprobante.getProducto().isAplicaDetraccion()){
+						detalleComprobante.getProducto().getCodigoProducto().setEsquemaNombre("SUNAT:Codigo de detraccion");
+						detalleComprobante.getProducto().getCodigoProducto().setEsquemaNombreAgencia("PE:SUNAT");
+						detalleComprobante.getProducto().getCodigoProducto().setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo54");
+					}
+				}
+				
+				if (StringUtils.isNotBlank(detalleComprobante.getCantidad().getValor())){
+					detalleComprobante.getCantidad().setUnidadListaId("UN/ECE rec 20");
+					detalleComprobante.getCantidad().setUnidadListaAgencia("United Nations Economic Commission for Europe");
+				}
+				
+				if (detalleComprobante.getListaPrecios().isEmpty()){
+					for (PrecioDetalleDTO precioDetalle : detalleComprobante.getListaPrecios()){
+						if (StringUtils.isNotBlank(precioDetalle.getTipoPrecio().getValor())){
+							precioDetalle.getTipoPrecio().setListNombre("SUNAT:Indicador de Tipo de Precio");
+							precioDetalle.getTipoPrecio().setListNombreAgencia("PE:SUNAT");
+							precioDetalle.getTipoPrecio().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo16");
+						}
+					}
+				}
+				
+				if (StringUtils.isNotBlank(detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().getValor())){
+					detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombre("SUNAT:Identificador de Documento de Identidad");
+					detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().setEsquemaNombreAgencia("PE:SUNAT");
+					detalleComprobante.getHuesped().getDocumentoIdentidad().getNumeroDocumento().setEsquemaURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06");
+					
+					if (StringUtils.isNotBlank(detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais().getValor())){
+						detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais().setListId("ISO 3166-1");
+						detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais().setListNombreAgencia("United Nations Economic Commission for Europe");
+						detalleComprobante.getHuesped().getDireccion().getUbigeo().getCodigoPais().setListNombre("Country");
+					}
+				}
+				
+				if (!detalleComprobante.getAfectacionImpuestos().isEmpty()){
+					for (AfectacionImptoDTO afectacion : detalleComprobante.getAfectacionImpuestos()){
+						if (StringUtils.isNotBlank(afectacion.getCodigoCategoria().getValor())){
+							afectacion.getCodigoCategoria().setEsquemaId("UN/ECE 5305");
+							afectacion.getCodigoCategoria().setEsquemaIdAgencia("6");
+							
+							if (StringUtils.isNotBlank(afectacion.getAfectacion().getValor())){
+								afectacion.getAfectacion().setListNombre("SUNAT:Codigo de Tipo de Afectación del IGV");
+								afectacion.getAfectacion().setListNombreAgencia("PE:SUNAT");
+								afectacion.getAfectacion().setListURI("urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07");
+							}
+							
+							if (StringUtils.isNotBlank(afectacion.getTributo().getCodigoInternacional().getValor())){
+								afectacion.getTributo().getCodigoInternacional().setEsquemaId("UN/ECE 5153");
+								afectacion.getTributo().getCodigoInternacional().setEsquemaNombre("Tax Scheme Identifier");
+								afectacion.getTributo().getCodigoInternacional().setEsquemaNombreAgencia("United Nations Economic Commission for Europe");
+							}
+						}
+					}
+				}
+				
+				if (StringUtils.isNotBlank(detalleComprobante.getProducto().getCodigoProductoSunat().getValor())){
+					detalleComprobante.getProducto().getCodigoProductoSunat().setListId("UNSPSC");
+					detalleComprobante.getProducto().getCodigoProductoSunat().setListNombreAgencia("GS1 US");
+					detalleComprobante.getProducto().getCodigoProductoSunat().setListNombre("Item Classification");
+				}
+				
+				if (!detalleComprobante.getListaPropiedadesAdicionales().isEmpty()){
+					for (PropiedadesAdicionalesDTO propiedadAdd : detalleComprobante.getListaPropiedadesAdicionales()){
+						if (StringUtils.isNotBlank(propiedadAdd.getCodigoConceptoTributario().getValor())){
+							propiedadAdd.getCodigoConceptoTributario().setListNombre("SUNAT:Identificador de la propiedad del ítem");
+							propiedadAdd.getCodigoConceptoTributario().setListNombreAgencia("PE:SUNAT");
+						}
+					}
+				}
+			}
+		}
+		
+		if (!comprobante.getListaComprobantesAnticipo().isEmpty()){
+			for(ComprobanteAnticipoDTO compAnticipo : comprobante.getListaComprobantesAnticipo()){
+				compAnticipo.getNumeroComprobanteAnticipo().setEsquemaNombre("SUNAT:Identificador de Documentos Relacionados");
+				compAnticipo.getNumeroComprobanteAnticipo().setEsquemaNombreAgencia("PE:SUNAT");
+			}
+		}
+		
+		if (!comprobante.getListaMontoOperaciones().isEmpty()){
+			for (MontoOperacionDTO montoOperacion : comprobante.getListaMontoOperaciones()){
+				if (StringUtils.isNotBlank(montoOperacion.getCodigoCategoriaImpuesto().getValor())) {
+					montoOperacion.getCodigoCategoriaImpuesto().setEsquemaId("UN/ECE 5305");
+					montoOperacion.getCodigoCategoriaImpuesto().setEsquemaNombre("Tax Category Identifier");
+					montoOperacion.getCodigoCategoriaImpuesto().setEsquemaNombreAgencia("United Nations Economic Commission for Europe");
+					
+					montoOperacion.getCodigoTributo().setEsquemaId("UN/ECE 5153");
+					montoOperacion.getCodigoTributo().setEsquemaIdAgencia("6");
+				}
+			}
+		}
+
+		return comprobante;
 	}
 
 	private byte[] generadorXML(ComprobanteDTO comprobante) {
@@ -265,12 +507,12 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 					UtilUBL.generarDocumentTypeCode(comprobante.getServicioReferenciaDTO().getTipoServicio()));
 			existeDato = true;
 		}
-		if (comprobante.getServicioReferenciaDTO().getCodigoServicio() == null) {
+		if (comprobante.getServicioReferenciaDTO().getCodigoServicio() != null) {
 			contratoReference.setLocaleCode(
 					UtilUBL.generarLocaleCode(comprobante.getServicioReferenciaDTO().getCodigoServicio()));
 			existeDato = true;
 		}
-		if (comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa() == null) {
+		if (comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa() != null) {
 			contratoReference.setDocumentStatusCode(
 					UtilUBL.generarDocumentStatusCode(comprobante.getServicioReferenciaDTO().getCodigoTipoTarifa()));
 			existeDato = true;
@@ -414,12 +656,12 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 				}
 			}
 
-			canti = comprobante.getListaDireccionPartida().size();
+			canti = entrega.getListaDireccionPartida().size();
 			if (canti > 0) {
 				AddressType originAddress = new AddressType();
 				originAddress.setCountrySubentityCode(UtilUBL
-						.generarCountrySubentityCode(comprobante.getListaDireccionPartida().get(0).getCodigoUbigeo()));
-				for (DireccionDTO direccion : comprobante.getListaDireccionPartida()) {
+						.generarCountrySubentityCode(entrega.getListaDireccionPartida().get(0).getCodigoUbigeo()));
+				for (DireccionDTO direccion : entrega.getListaDireccionPartida()) {
 					originAddress.getAddressLine().add(UtilUBL.generarAddressLine(direccion.getDireccionCompleta()));
 				}
 				shipment.setOriginAddress(originAddress);
@@ -468,12 +710,14 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			delivery.setDeliveryParty(deliveryParty);
 
 			boolean dato = false;
-			if (entrega.getMotivoTraslado() != null && StringUtils.isNotBlank(entrega.getMotivoTraslado().getValor())) {
-				shipment.setHandlingCode(UtilUBL.generarHandlingCode(entrega.getMotivoTraslado()));
+			if (entrega.getEnvioDTO().getMotivoTraslado() != null
+					&& StringUtils.isNotBlank(entrega.getEnvioDTO().getMotivoTraslado().getValor())) {
+				shipment.setHandlingCode(UtilUBL.generarHandlingCode(entrega.getEnvioDTO().getMotivoTraslado()));
 				dato = true;
 			}
-			if (entrega.getPesoBruto() != null && entrega.getPesoBruto().getValor() != null) {
-				shipment.setGrossWeightMeasure(UtilUBL.generarWeightMeasure(entrega.getPesoBruto()));
+			if (entrega.getEnvioDTO().getPesoBruto() != null
+					&& entrega.getEnvioDTO().getPesoBruto().getValor() != null) {
+				shipment.setGrossWeightMeasure(UtilUBL.generarWeightMeasure(entrega.getEnvioDTO().getPesoBruto()));
 				dato = true;
 			}
 			if (dato) {
@@ -486,12 +730,12 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 	}
 
 	private DeliveryTermsType generarDeliveryTerms(ComprobanteDTO comprobante) {
-		int canti = comprobante.getListaDireccionLlegada().size();
+		int canti = comprobante.getListaDireccionEntrega().size();
 		AddressType addressLocation = null;
 		LocationType deliveryLocationTerms = new LocationType();
 		boolean dato = false;
 		if (canti > 0) {
-			DireccionDTO direccionLlegada = comprobante.getListaDireccionLlegada().get(0);
+			DireccionDTO direccionLlegada = comprobante.getListaDireccionEntrega().get(0);
 			CountryType country = null;
 			addressLocation = new AddressType();
 			if (direccionLlegada.getUbigeo().getCodigoPais() != null
@@ -713,7 +957,7 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		TaxAmountType taxAmount = null;
 		TaxTotalType taxTotal = null;
 		boolean datoTax = false;
-		
+
 		if (comprobante.getMontoTotalImpuestos() != null && comprobante.getMontoTotalImpuestos().getMonto() != null) {
 			taxAmount = new TaxAmountType();
 			taxAmount.setValue(comprobante.getMontoTotalImpuestos().getMonto());
@@ -744,19 +988,18 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			}
 
 			if (montoOperacion.getCodigoTributo() != null
-					&& StringUtils.isNotBlank(comprobante.getCodigoTributo().getValor())
-					&& StringUtils.isNotBlank(comprobante.getCodigoTributo().getCodigo())) {
+					&& StringUtils.isNotBlank(montoOperacion.getCodigoTributo().getValor())) {
 				taxScheme = new TaxSchemeType();
 				taxScheme.setID(UtilUBL.generarId(montoOperacion.getCodigoTributo()));
-				taxScheme.setName(UtilUBL.generarName(comprobante.getCodigoTributo().getValor()));
-				taxScheme.setTaxTypeCode(UtilUBL.generarTaxTypeCode(comprobante.getCodigoTributo().getCodigo()));
+				taxScheme.setName(UtilUBL.generarName(montoOperacion.getNombreTributo()));
+				taxScheme.setTaxTypeCode(UtilUBL.generarTaxTypeCode(montoOperacion.getCodigoInternacionalTributo()));
+			}
 
-				if (comprobante.getCodigoCategoriaImpuesto() != null
-						&& StringUtils.isNotBlank(comprobante.getCodigoCategoriaImpuesto().getCodigo())) {
-					taxCategory = new TaxCategoryType();
-					taxCategory.setID(UtilUBL.generarIdType(comprobante.getCodigoCategoriaImpuesto().getCodigo()));
-					taxCategory.setTaxScheme(taxScheme);
-				}
+			if (montoOperacion.getCodigoCategoriaImpuesto() != null
+					&& StringUtils.isNotBlank(montoOperacion.getCodigoCategoriaImpuesto().getValor())) {
+				taxCategory = new TaxCategoryType();
+				taxCategory.setID(UtilUBL.generarId(montoOperacion.getCodigoCategoriaImpuesto()));
+				taxCategory.setTaxScheme(taxScheme);
 			}
 
 			boolean dato = false;
@@ -768,13 +1011,13 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			if (taxAmountSubtotal != null) {
 				taxSubtotal.setTaxAmount(taxAmountSubtotal);
 				dato = true;
-			} 
+			}
 			if (taxCategory != null) {
 				taxSubtotal.setTaxCategory(taxCategory);
 				dato = true;
 			}
-			
-			if (dato){
+
+			if (dato) {
 				taxTotal.getTaxSubtotal().add(taxSubtotal);
 			}
 
@@ -869,19 +1112,21 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 		PartyType partyAdquiriente = null;
 		CustomerPartyType adquiriente = null;
 		for (PersonaDTO persona : comprobante.getListaAdquiriente()) {
-			codigoTipoDireccionAdquiriente = new AddressTypeCodeType();
-			codigoTipoDireccionAdquiriente
-					.setValue(UtilUBL.parsearDatoSiNull(persona.getDireccion().getCodigo(), "0000"));
+			if (StringUtils.isNotBlank(persona.getDireccion().getCodigo())) {
+				codigoTipoDireccionAdquiriente = new AddressTypeCodeType();
+				codigoTipoDireccionAdquiriente.setValue(persona.getDireccion().getCodigo());
 
-			direccionAdquiriente = new AddressType();
-			direccionAdquiriente.setAddressTypeCode(codigoTipoDireccionAdquiriente);
-
+				direccionAdquiriente = new AddressType();
+				direccionAdquiriente.setAddressTypeCode(codigoTipoDireccionAdquiriente);
+			}
 			partyTaxSchemaAdquiriente = new PartyTaxSchemeType();
 			if (StringUtils.isNotBlank(persona.getNombrePersona())) {
 				partyTaxSchemaAdquiriente
 						.setRegistrationName(UtilUBL.generarRegistrationName(persona.getNombrePersona()));
 			}
-			partyTaxSchemaAdquiriente.setRegistrationAddress(direccionAdquiriente);
+			if (codigoTipoDireccionAdquiriente != null) {
+				partyTaxSchemaAdquiriente.setRegistrationAddress(direccionAdquiriente);
+			}
 			if (persona.getDocumentoIdentidad().getNumeroDocumento() != null
 					&& StringUtils.isNotBlank(persona.getDocumentoIdentidad().getNumeroDocumento().getValor())) {
 				partyTaxSchemaAdquiriente
@@ -1103,13 +1348,16 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			for (ProductoServicioDTO proServicio : detalleComprobante.getListaProductoServicio()) {
 				if (proServicio.getFechaInicioProgramado() != null) {
 					fechaOcurencia = new OccurrenceDateType();
-					
-					Date fecha = UtilEjb.parseaFecha(UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(),"dd/MM/yyyy"),"dd/MM/yyyy");
+
+					Date fecha = UtilEjb.parseaFecha(
+							UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(), "dd/MM/yyyy"), "dd/MM/yyyy");
 					XMLGregorianCalendar fecha2 = UtilEjb.convertirDateAGregorian(fecha);
 					fechaOcurencia.setValue(fecha2);
-					
-					fecha = UtilEjb.parseaFecha(UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(),"hh:mm:ss.SSSS"),"hh:mm:ss.SSSS");
-					
+
+					fecha = UtilEjb.parseaFecha(
+							UtilEjb.parseaFecha(proServicio.getFechaInicioProgramado(), "hh:mm:ss.SSSS"),
+							"hh:mm:ss.SSSS");
+
 					OccurrenceTimeType timeOcurencia = new OccurrenceTimeType();
 					timeOcurencia.setValue(UtilEjb.convertirDateAGregorian(fecha));
 					departureTransport = new TransportEventType();
@@ -1265,27 +1513,29 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 					taxAmountSubtotal2.setCurrencyID(afecImpto.getTotalImpuesto().getMoneda().getCodigoInternacional());
 				}
 
-				if (afecImpto.getTributo().getCodigoInternacional() != null && StringUtils.isNotBlank(afecImpto.getTributo().getCodigoInternacional().getValor())) {
+				if (afecImpto.getTributo().getCodigoInternacional() != null
+						&& StringUtils.isNotBlank(afecImpto.getTributo().getCodigoInternacional().getValor())) {
 					taxSchemeCategory = new TaxSchemeType();
 					taxSchemeCategory.setID(UtilUBL.generarId(afecImpto.getTributo().getCodigoInternacional()));
 					taxSchemeCategory.setName(UtilUBL.generarName(afecImpto.getTributo().getNombre()));
 					taxSchemeCategory.setTaxTypeCode(UtilUBL.generarTaxTypeCode(afecImpto.getTributo().getCodigo()));
 				}
 
-				if (afecImpto.getCodigoCategoria() != null && StringUtils.isNotBlank(afecImpto.getCodigoCategoria().getValor())) {
-					if (taxCategoryDetalle == null){
+				if (afecImpto.getCodigoCategoria() != null
+						&& StringUtils.isNotBlank(afecImpto.getCodigoCategoria().getValor())) {
+					if (taxCategoryDetalle == null) {
 						taxCategoryDetalle = new TaxCategoryType();
 					}
 					taxCategoryDetalle.setID(UtilUBL.generarId(afecImpto.getCodigoCategoria()));
 				}
 				if (afecImpto.getPorcentaje() != null) {
-					if (taxCategoryDetalle == null){
+					if (taxCategoryDetalle == null) {
 						taxCategoryDetalle = new TaxCategoryType();
 					}
 					taxCategoryDetalle.setPercent(UtilUBL.generarPercent(afecImpto.getPorcentaje()));
 				}
 				if (afecImpto.getAfectacion() != null && StringUtils.isNotBlank(afecImpto.getAfectacion().getValor())) {
-					if (taxCategoryDetalle == null){
+					if (taxCategoryDetalle == null) {
 						taxCategoryDetalle = new TaxCategoryType();
 					}
 					taxCategoryDetalle.setTaxExemptionReasonCode(
@@ -1293,14 +1543,14 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 				}
 				if (afecImpto.getCodigoSistemaIsc() != null
 						&& StringUtils.isNotBlank(afecImpto.getCodigoSistemaIsc().getCodigo())) {
-					if (taxCategoryDetalle == null){
+					if (taxCategoryDetalle == null) {
 						taxCategoryDetalle = new TaxCategoryType();
 					}
 					taxCategoryDetalle
 							.setTierRange(UtilUBL.generarTierRange(afecImpto.getCodigoSistemaIsc().getCodigo()));
 				}
 				if (taxSchemeCategory != null) {
-					if (taxCategoryDetalle == null){
+					if (taxCategoryDetalle == null) {
 						taxCategoryDetalle = new TaxCategoryType();
 					}
 					taxCategoryDetalle.setTaxScheme(taxSchemeCategory);
@@ -1367,16 +1617,24 @@ public class GeneracionXML implements GeneracionXMLRemote, GeneracionXMLLocal {
 			ItemPropertyType adicionalProperty = null;
 			for (PropiedadesAdicionalesDTO propiedad : detalleComprobante.getListaPropiedadesAdicionales()) {
 				if (propiedad.getFechaInicio() != null) {
-					if (usabilityPeriodo == null){
+					if (usabilityPeriodo == null) {
 						usabilityPeriodo = new PeriodType();
 					}
 					usabilityPeriodo.setStartDate(UtilUBL.generarStartDate(propiedad.getFechaInicio()));
 				}
 				if (propiedad.getFechaFin() != null) {
-					if (usabilityPeriodo == null){
+					if (usabilityPeriodo == null) {
 						usabilityPeriodo = new PeriodType();
 					}
 					usabilityPeriodo.setEndDate(UtilUBL.generarEndDate(propiedad.getFechaFin()));
+				}
+				if (propiedad.getFechaInicio() != null && propiedad.getFechaFin() != null) {
+					BigDecimal duracion = BigDecimal.ZERO;
+					duracion = duracion.add(BigDecimal
+							.valueOf(UtilEjb.diferenciaFechas(propiedad.getFechaInicio(), propiedad.getFechaFin())));
+					DurationMeasureType durationMeasure = new DurationMeasureType();
+					durationMeasure.setValue(duracion);
+					usabilityPeriodo.setDurationMeasure(durationMeasure);
 				}
 
 				adicionalProperty = new ItemPropertyType();

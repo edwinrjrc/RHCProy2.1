@@ -663,6 +663,24 @@ public class UtilUBL {
 		return taxTypeCode;
 	}
 	
+	public static TaxTypeCodeType generarTaxTypeCode(CodigoDTO valor){
+		TaxTypeCodeType taxTypeCode = new TaxTypeCodeType();
+		taxTypeCode.setValue(valor.getValor());
+		if (StringUtils.isNotBlank(valor.getListNombreAgencia())){
+			taxTypeCode.setListAgencyName(valor.getListNombreAgencia());
+		}
+		if (StringUtils.isNotBlank(valor.getListNombre())){
+			taxTypeCode.setListName(valor.getListNombre());
+		}
+		if (StringUtils.isNotBlank(valor.getListURI())){
+			taxTypeCode.setListURI(valor.getListURI());
+		}
+		if (StringUtils.isNotBlank(valor.getListId())){
+			taxTypeCode.setListID(valor.getListId());
+		}
+		return taxTypeCode;
+	}
+	
 	public static PriceTypeCodeType generarPriceTypeCode(String valor){
 		PriceTypeCodeType priceTypeCode = new PriceTypeCodeType();
 		priceTypeCode.setValue(valor);

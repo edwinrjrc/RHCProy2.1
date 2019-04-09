@@ -6,6 +6,10 @@ package pe.com.rh.sunat.ejb.util;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.ChronoPeriod;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -57,5 +61,18 @@ public class UtilEjb {
 			}
 		}
 		return false;
+	}
+	
+	public static long diferenciaFechas(Date fechaInicio, Date fechaFin) throws ParseException{
+		String feInicio = parseaFecha(fechaInicio,"dd/MM/yyyy");
+		String feFin    = parseaFecha(fechaFin,"dd/MM/yyyy");
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        ChronoLocalDate from = ChronoLocalDate.from(formatter.parse(feInicio));
+        ChronoLocalDate to = ChronoLocalDate.from(formatter.parse(feFin));
+        ChronoPeriod period = ChronoPeriod.between(from, to);
+        
+        long diferencia = period.get(ChronoUnit.DAYS);
+		return diferencia;
 	}
 }
