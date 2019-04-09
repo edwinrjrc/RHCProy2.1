@@ -21,8 +21,7 @@ public class EntregaDTO extends BaseDTO {
 	private List<UbicacionMedidorDTO> listaUbicacionesMedidor;
 	private List<PersonaDTO> listaDestinatarios;
 	private String codigoUnidadMedidaPotenciaContratada;
-	private CodigoDTO motivoTraslado;
-	private MedidaDTO pesoBruto;
+	private EnvioDTO envioDTO;
 	private String unidadMedida;
 	private boolean flagSubcontratacion;
 	private List<TransporteDTO> listaTransporte;
@@ -69,36 +68,6 @@ public class EntregaDTO extends BaseDTO {
 	 */
 	public void setCodigoUnidadMedidaPotenciaContratada(String codigoUnidadMedidaPotenciaContratada) {
 		this.codigoUnidadMedidaPotenciaContratada = codigoUnidadMedidaPotenciaContratada;
-	}
-	/**
-	 * @return the motivoTraslado
-	 */
-	public CodigoDTO getMotivoTraslado() {
-		if (motivoTraslado == null){
-			motivoTraslado = new CodigoDTO();
-		}
-		return motivoTraslado;
-	}
-	/**
-	 * @param motivoTraslado the motivoTraslado to set
-	 */
-	public void setMotivoTraslado(CodigoDTO motivoTraslado) {
-		this.motivoTraslado = motivoTraslado;
-	}
-	/**
-	 * @return the pesoBruto
-	 */
-	public MedidaDTO getPesoBruto() {
-		if (pesoBruto == null){
-			pesoBruto = new MedidaDTO();
-		}
-		return pesoBruto;
-	}
-	/**
-	 * @param pesoBruto the pesoBruto to set
-	 */
-	public void setPesoBruto(MedidaDTO pesoBruto) {
-		this.pesoBruto = pesoBruto;
 	}
 	/**
 	 * @return the unidadMedida
@@ -252,5 +221,20 @@ public class EntregaDTO extends BaseDTO {
 	 */
 	public void setCodigoUbigeoPartida(String codigoUbigeoPartida) {
 		this.codigoUbigeoPartida = codigoUbigeoPartida;
+	}
+	/**
+	 * @return the envioDTO
+	 */
+	public EnvioDTO getEnvioDTO() {
+		if (envioDTO == null){
+			envioDTO = new EnvioDTO();
+		}
+		return envioDTO;
+	}
+	/**
+	 * @param envioDTO the envioDTO to set
+	 */
+	public void setEnvioDTO(EnvioDTO envioDTO) {
+		this.envioDTO = envioDTO;
 	}
 }

@@ -14,6 +14,8 @@ public class EnvioDTO extends BaseDTO {
 
 	private static final long serialVersionUID = -3426526251813674429L;
 	
+	private CodigoDTO motivoTraslado;
+	private MedidaDTO pesoBruto;
 	private List<TransporteDTO> listaTransportes;
 	private List<DireccionDTO> listaDireccionLlegada;
 	private String numeroPlaca;
@@ -89,6 +91,36 @@ public class EnvioDTO extends BaseDTO {
 	 */
 	public void setListaDireccionPartida(List<DireccionDTO> listaDireccionPartida) {
 		this.listaDireccionPartida = listaDireccionPartida;
+	}
+	/**
+	 * @return the motivoTraslado
+	 */
+	public CodigoDTO getMotivoTraslado() {
+		if (motivoTraslado == null){
+			motivoTraslado = new CodigoDTO();
+		}
+		return motivoTraslado;
+	}
+	/**
+	 * @param motivoTraslado the motivoTraslado to set
+	 */
+	public void setMotivoTraslado(CodigoDTO motivoTraslado) {
+		this.motivoTraslado = motivoTraslado;
+	}
+	/**
+	 * @return the pesoBruto
+	 */
+	public MedidaDTO getPesoBruto() {
+		if (pesoBruto == null){
+			pesoBruto = new MedidaDTO();
+		}
+		return pesoBruto;
+	}
+	/**
+	 * @param pesoBruto the pesoBruto to set
+	 */
+	public void setPesoBruto(MedidaDTO pesoBruto) {
+		this.pesoBruto = pesoBruto;
 	}
 	
 	

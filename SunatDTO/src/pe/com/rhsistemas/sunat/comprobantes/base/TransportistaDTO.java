@@ -3,9 +3,6 @@
  */
 package pe.com.rhsistemas.sunat.comprobantes.base;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Edwin
  *
@@ -16,7 +13,6 @@ public class TransportistaDTO extends PersonaDTO {
 	
 	private String numeroHabilitacionVehicular;
 	private String numeroPlacaVehiculo;
-	private List<PersonaDTO> conductores;
 
 	/**
 	 * @return the numeroHabilitacionVehicular
@@ -45,22 +41,4 @@ public class TransportistaDTO extends PersonaDTO {
 	public void setNumeroPlacaVehiculo(String numeroPlacaVehiculo) {
 		this.numeroPlacaVehiculo = numeroPlacaVehiculo;
 	}
-
-	/**
-	 * @return the conductores
-	 */
-	public List<PersonaDTO> getConductores() {
-		if (conductores == null){
-			conductores = new ArrayList<PersonaDTO>();
-		}
-		return conductores;
-	}
-
-	/**
-	 * @param conductores the conductores to set
-	 */
-	public void setConductores(List<PersonaDTO> conductores) {
-		this.conductores = conductores;
-	}
-
 }

@@ -75,8 +75,8 @@ public class ComprobanteDTO extends BaseDTO {
 	private List<EntregaDTO> listaEntregas;
 	private List<TransporteDTO> listaTransportes;
 	private List<TransportistaDTO> listaTransportista;
-	private List<DireccionDTO> listaDireccionLlegada;
-	private List<DireccionDTO> listaDireccionPartida;
+	private List<DireccionDTO> listaDireccionEntrega;
+	//private List<DireccionDTO> listaDireccionPartida;
 	
 	private String numeroCuentaBNDetraccion;
 	
@@ -605,22 +605,22 @@ public class ComprobanteDTO extends BaseDTO {
 	/**
 	 * @return the listaDireccionLlegada
 	 */
-	public List<DireccionDTO> getListaDireccionLlegada() {
-		if (listaDireccionLlegada == null){
-			listaDireccionLlegada = new ArrayList<DireccionDTO>();
+	public List<DireccionDTO> getListaDireccionEntrega() {
+		if (listaDireccionEntrega == null){
+			listaDireccionEntrega = new ArrayList<DireccionDTO>();
 		}
-		return listaDireccionLlegada;
+		return listaDireccionEntrega;
 	}
 	/**
 	 * @param listaDireccionLlegada the listaDireccionLlegada to set
 	 */
-	public void setListaDireccionLlegada(List<DireccionDTO> listaDireccionLlegada) {
-		this.listaDireccionLlegada = listaDireccionLlegada;
+	public void setListaDireccionEntrega(List<DireccionDTO> listaDireccionEntrega) {
+		this.listaDireccionEntrega = listaDireccionEntrega;
 	}
 	/**
 	 * @return the listaDireccionPartida
 	 */
-	public List<DireccionDTO> getListaDireccionPartida() {
+	/*public List<DireccionDTO> getListaDireccionPartida() {
 		if (listaDireccionPartida == null){
 			listaDireccionPartida = new ArrayList<DireccionDTO>();
 		}
@@ -629,7 +629,7 @@ public class ComprobanteDTO extends BaseDTO {
 	/**
 	 * @param listaDireccionPartida the listaDireccionPartida to set
 	 */
-	public void setListaDireccionPartida(List<DireccionDTO> listaDireccionPartida) {
+	/*public void setListaDireccionPartida(List<DireccionDTO> listaDireccionPartida) {
 		this.listaDireccionPartida = listaDireccionPartida;
 	}
 	/**
